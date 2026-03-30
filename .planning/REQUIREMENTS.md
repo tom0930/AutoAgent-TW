@@ -1,13 +1,22 @@
-# Requirements: AutoAgent-TW i18n support
-Issue: #1
+# Requirements: v0.3.0 Transparency Upgrade
 
-## Req-ID-01: Multi-language Header
-- Every workflow (`_agents/workflows/*.md`) must have a bilingual or language-selectable description in the header.
-- The description should ideally show both languages or use a standard multi-language format if the IDE supports it (or just "English / Chinese").
+## Task Notifications (STATUS)
+- **STATUS-01**: Top-level banner showing the "Current Task" (e.g., "Builder is generating code...").
+- **STATUS-02**: "Next Goal" display showing the immediate next phase.
+- **STATUS-03**: Estimated Time Remaining (ETR) display (can be static or dynamic).
 
-## Req-ID-02: User-selectable Language
-- A configuration (e.g., in `.planning/config.json` or globally) that determines the primary language for the agent's internal reporting/steps.
-- For now, providing dual-language is more robust for the UI.
+## Visualization Dashboard (VIS)
+- **VIS-01**: Execution Tree based on Mermaid.js showing Parent-Child relationship of agents (AutoBuild → [Planning, Builder, QA, Guardian]).
+- **VIS-02**: Numbered step list showing progress (e.g., "Step 2/4").
+- **VIS-03**: Real-time status coloring (Completed: Green, Running: Pulse Green, Blocked: Red).
+- **VIS-04**: Live Log stream (last 5 lines) updated every 2-3 seconds.
 
-## Req-ID-03: English Descriptions for Skills
-- Each `SKILL.md` in `C:\Users\TOM\.gemini\antigravity\skills\` should also have an English translation in the description header.
+## Advanced Features (ADV)
+- **ADV-01**: Self-Repair loop round tracking and notification.
+- **ADV-02**: Stagnation detection (alert after 90s of no log activity).
+- **ADV-03**: Line Notify integration for critical events (QA Fail, Build Finish, Security Warning).
+- **ADV-04**: Voice announcement for major stage transitions (Optional).
+
+## Command & Control (CMD)
+- **CMD-01**: `/aa-status` command to force show the dashboard.
+- **CMD-02**: `/aa-pause` / `/aa-resume` for manual control.
