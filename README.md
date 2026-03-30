@@ -1,6 +1,6 @@
 # AutoAgent-TW: Advanced Autonomous Agent System
 
-[![Version](https://img.shields.io/badge/version-1.4.0--stable-green)](https://github.com/tom0930/AutoAgent-TW)
+[![Version](https://img.shields.io/badge/version-1.5.0--v0.3--transparency-blue)](https://github.com/tom0930/AutoAgent-TW)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 🚀 繁體中文介紹 (Introduction)
@@ -17,6 +17,8 @@
     - **QA**: 嚴格的品質把關。
     - **Guardian**: 安全審計與 Checkpoint 管理。
 4.  **中斷恢復**: 指令中斷後可使用 `/aa-resume` 無縫恢復上次進度。
+5.  **視覺化儀表板 (Visual Dashboard)**: v0.3.0 引入的透明度升級，即時查看執行樹、日誌流與 LINE 異常警報。
+    - 開啟路徑：`.agents/skills/status-notifier/templates/status.html`
 
 ---
 
