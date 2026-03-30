@@ -14,11 +14,16 @@ This skill is designed to solve the transparency gap in AI agent execution. It p
 3.  **Execution Status**: High-quality visual indicators (color-coded).
 4.  **Live Logs**: Real-time log streaming in the browser dashboard.
 
-## Usage
-- **Initialization**: Call `/aa-status` to open the status dashboard.
-- **Auto-Update**: The dashboard polls `.agent-state/status_state.json` every 2 seconds for updates.
-- **Manual Update**: Use `python scripts/status_updater.py` to push new state updates.
+## Integration Pattern
+To integrate this status notifier into ANY workflow, add the following turbo step at phase boundaries:
+```markdown
+// turbo
+- python .agents/skills/status-notifier/scripts/status_updater.py --task "Current Activity" --next "Upcoming Goal" --phase N --total M
+```
 
-## Components
-- `templates/status.html`: The visualization frontend.
-- `scripts/status_updater.py`: The state management backend.
+## External Alerts (LINE Notify)
+- Critical failures (`--status fail`) automatically trigger a LINE notification if `LINE_NOTIFY_TOKEN` environment variable is set.
+
+## Viewing the Dashboard
+1. Start a local server: `python -m http.server 9999` in project root.
+2. Open: `http://localhost:9999/.agents/skills/status-notifier/templates/status.html`
