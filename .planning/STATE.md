@@ -5,7 +5,7 @@
 - Phase 1: Foundation & Status Notifier Skill [DONE]
 - Phase 2: Dynamic Execution Tree & Indicators [DONE]
 - Phase 3: Live Logs & Advanced Monitors [DONE]
-- Phase 4: Integrations & Commands [PLANNED]
+- Phase 4: Integrations & Commands [DONE]
 - Phase 5: QA, Polish & Release [PENDING]
 
 ## Phase 0 summary
