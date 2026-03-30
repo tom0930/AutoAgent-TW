@@ -1,5 +1,13 @@
 # Version List (Changelog) - AutoAgent-TW
 
+## [v1.4.0] - 2026-03-30
+### Fixed
+- 修復 `aa-testclaw` 執行過程中可能導致的 HTTP 400 (Bad Request) 錯誤。
+- 優化工作流步驟，減少 token 消耗與 IDE 負載。
+- 自動修復完成後的結案邏輯優化。
+
+---
+
 ## [v1.3.0] - 2026-03-30
 ### Added
 - `aa-testclaw`: 自主代理模式 (TestClaw Agent Loop)。具備觀察、思考、決定、反思的動態循環。
