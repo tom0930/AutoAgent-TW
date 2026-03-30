@@ -1,11 +1,12 @@
-# Project State: AutoAgent-TW i18n Support
-Issue: #1
+# Project State: v0.3.0 Transparency Upgrade
 
 ## Completion Status
-- Phase 1: Preparation & Research [DONE]
-- Phase 2: Updating All Workflows [DONE]
-- Phase 3: Updating All Skills [DONE]
-- Phase 4: Verification & QA [DONE]
+- Phase 0: Initialization [DONE]
+- Phase 1: Foundation & Status Notifier Skill [PENDING]
+- Phase 2: Dynamic Execution Tree & Indicators [PENDING]
+- Phase 3: Live Logs & Advanced Monitors [PENDING]
+- Phase 4: Integrations & Commands [PENDING]
+- Phase 5: QA, Polish & Release [PENDING]
 
-## Summary
-Updated 14 workflow files and 14 skill manifestation files to have bilingual (English / Traditional Chinese) descriptions. This satisfies the requirement for "multi-language support" for the command names in the IDE.
+## Phase 0 summary
+- Project context, configuration, research, requirements, and roadmap have been established based on v0.3.0 transparency proposal (idea1.md).
