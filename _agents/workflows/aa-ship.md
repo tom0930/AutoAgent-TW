@@ -1,8 +1,8 @@
-﻿---
-description: ?箄疏?挾 N嚗遣蝡?PR + Phase ??
+---
+description: Ship Phase N / 出貨階段 N 與 PR 生成。
 ---
 
-# Claw Ship Workflow
+# AutoAgent-TW Ship Workflow
 
 ## Input
 - Phase number: N (from $ARGUMENTS)
@@ -11,43 +11,28 @@ description: ?箄疏?挾 N嚗遣蝡?PR + Phase ??
 
 ## Steps
 
-### Step 1: 撽?摰?摨?1. 蝣箄? Phase N ???Plans 撌脣???2. 蝣箄? QA PASS
-3. 蝣箄? Guardian checkpoint 撌脣遣蝡?
-### Step 2: ?Ｗ Phase ??
-撖怠 `N-SUMMARY.md`嚗?```markdown
-# Phase N Summary: [Phase Name]
+### Step 1: 匯入上下文
+1. 讀取 `.planning/PROJECT.md`。
+2. 讀取 `.planning/ROADMAP.md` 與當前 Phase N 已完成的所有計畫、研究與代碼 Commit。
+3. 讀取 `.planning/phases/{N}-*/QA-REPORT.md` 確認質量。
 
-## Completed
-- Plan 01: [Title] ??[files changed]
-- Plan 02: [Title] ??[files changed]
+### Step 2: 產出摘要 (Phase Summary)
+針對 Phase N 的變更：
+1. 自動讀取 git diff。
+2. 產出一個包含變更範疇、技術實施與測試結果的 JSON 報告。
+3. 為該階段生成 README 或 CHANGELOG 更新內容。
 
-## Stats
-- Commits: X
-- Files created: X
-- Files modified: X
-- Tests: X passed / Y total
+### Step 3: 自動化發布與 Commit (若為 auto 模式)
+1. 確保所有 Phase 相關的 `.planning` 文件已提交。
+2. 自動建立 Git 分支 (如果指定了 Git 工作流)。
+3. 在 `.planning/ROADMAP.md` 中將 Phase N 狀態標記為 `Completed`。
+4. 在 `.agent-state/current-phase` 更新為 `N+1`。
 
-## QA Result
-- Overall Score: X/10
-- Issues found and fixed: X
+### Step 4: 建立 Pull Request (可選)
+1. 根據使用者的 Git 分支模式，建立 Pull Request 並添加 Phase 摘要。
+2. 標註相關的 GitHub Issue ID (如果存在)。
 
-## Key Decisions
-- [Decision 1]
-- [Decision 2]
-```
-
-### Step 3: Git Tag
-```bash
-git tag "phase-${N}-shipped" -m "Phase ${N}: [Phase Name] ??shipped"
-```
-
-### Step 4: ?湔 STATE.md
-- 璅? Phase N ??`shipped`
-- ?湔 `.agent-state/current-phase` ??N+1
-
-### Step 5: Commit
-```bash
-git add .planning/
-git commit -m "docs: phase ${N} shipped"
-```
-
+### Step 5: 準備下一個階段
+1. 提示 Phase N 已完成。
+2. 推薦執行 `/aa-discuss N+1` 進入下一階段討論。
+3. 交互模式下為使用者產出總結信息。

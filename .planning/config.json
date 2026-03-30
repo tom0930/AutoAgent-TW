@@ -1,0 +1,8 @@
+{
+  "project": "AutoAgent-TW",
+  "version": "1.1.0",
+  "language": "zh-TW",
+  "available_languages": ["en", "zh-TW"],
+  "granularity": "standard",
+  "mode": "interactive"
+}

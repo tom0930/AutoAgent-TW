@@ -1,77 +1,72 @@
-﻿---
-description: ???撠?嚗?蝑????弦 ???瘙???頝舐???
+---
+description: Initialize New Project / 初始化新專案。
 ---
 
-# Claw New Project Workflow
+# AutoAgent-TW New Project Workflow
 
-## Phase 0: ????
-### Step 1: ?啣?瑼Ｘ
+## Phase 0: 初始化
+
+### Step 1: 目錄結構與初始化
 // turbo
-1. 瑼Ｘ?臬撌脣???`.planning/PROJECT.md`嚗???梢嚗?獢歇????隢 `/aa-progress`
-2. 瑼Ｘ git ?臬?????亦嚗?```bash
+1. 檢查是否已存在 `.planning/PROJECT.md`。若已存在且有內容，則跳至 `/aa-progress`。
+2. 檢查 git 是否初始化，若無，執行：
+```bash
 git init
 ```
-3. 撱箇??桅?蝯?嚗?```bash
+3. 建立基礎目錄結構：
+```bash
 mkdir -p .planning/research .planning/phases .agent-state
 ```
 
-### Step 2: 撠???嚗eep Questioning嚗?
-**?亙葆 `--auto` flag + ?辣撘嚗?*
-- 頝喲???嚗?????隞嗆???獢?銝?
-- ?芸?雿輻???身??
-**?乩??芋撘?**
-1. 閰Ｗ?雿輻?????喳遣隞暻潘???2. ?寞????脰?瘛勗漲餈賢?嚗?   - ?銵??憟?   - ?格?撟喳
-   - ??瘙?   - 雿輻??璅?   - 撌脫捱摰?vs ?芣捱摰?鈭?
-3. ?游頞喃誑?啣神 PROJECT.md ?箸迫
+### Step 2: 深度訪談 (Deep Questioning)
+**如果是 `--auto` 模式：**
+- 自動讀取輸入文件（如 PR 或 Issue 詳情）。
+- 使用推薦的預設配置。
 
-### Step 3: 撱箇? PROJECT.md
-1. 蝬????銝?撖怠 `.planning/PROJECT.md`
-2. ?嚗?獢??胯敹?潦?銵??嗚歇?仿?瘙??日???3. Commit嚗?```bash
+**如果是交互模式：**
+1. 詢問使用者：專案主要是要做什麼？
+2. 明確核心技術棧、Granularity (粒度)、模式 (YOLO vs Interactive)。
+3. 確認完成後產出 PROJECT.md。
+
+### Step 3: 建立 PROJECT.md
+1. 將訪談結果寫入 `.planning/PROJECT.md`。
+2. 包含：專案背景、核心價值、技術目標、已定義的變量與路徑。
+3. Commit：
+```bash
 git add .planning/PROJECT.md
-git commit -m "docs: initialize project"
+git commit -m "docs: initialize project context"
 ```
 
-### Step 4: 撌乩?瘚?憟質身摰?1. 閰Ｗ?閮剖?嚗?雿輻 --auto ?身嚗?
-   - **Mode**: YOLO嚗?銵? / Interactive嚗?甇亦Ⅱ隤?
-   - **Granularity**: Coarse / Standard / Fine
-   - **Execution**: Parallel / Sequential
-   - **Git Tracking**: ?臬 commit planning docs
-2. 撖怠 `.planning/config.json`
-3. Commit嚗?```bash
+### Step 4: 工作流細項設定
+1. 寫入 `.planning/config.json` 設定開發偏好 (YOLO/Granularity 等)。
+2. Commit：
+```bash
 git add .planning/config.json
-git commit -m "chore: add project config"
+git commit -m "chore: add project initial config"
 ```
 
-### Step 5: ???弦嚗?賂?
-**?仿??蝛塚?**
-1. 撱箇? `.planning/research/` ?桅?
-2. ?弦隞乩??雁摨佗?
-   - **STACK.md** ???銵ㄖ?刻
-   - **FEATURES.md** ?????嚗able stakes vs differentiators嚗?   - **ARCHITECTURE.md** ???嗆?璅∪?
-   - **PITFALLS.md** ??撣貉??琿
-3. 蝬??Ｗ **SUMMARY.md**
-4. Commit嚗?```bash
-git add .planning/research/
-git commit -m "docs: complete domain research"
-```
+### Step 5: 領域研究 (Research)
+1. 建立 `.planning/research/`。
+2. 產出 `STACK.md` (技術棧)、`FEATURES.md` (功能對照)、`ARCHITECTURE.md` (架構建議)。
+3. 匯總成 `SUMMARY.md`。
+4. Commit 研究文檔。
 
-### Step 6: 摰儔?瘙?1. ?箸?弦蝯?嚗?雿輻?撓?伐??Ｗ `.planning/REQUIREMENTS.md`
-2. ?澆?嚗?   - v1 Requirements嚗EQ-ID ?澆?嚗? AUTH-01嚗?   - v2 Requirements嚗辣敺?
-   - Out of Scope嚗?蝣箸??歹?
-3. Commit嚗?```bash
-git add .planning/REQUIREMENTS.md
-git commit -m "docs: define v1 requirements"
-```
+### Step 6: 定義具體需求 (Requirements)
+1. 產出 `.planning/REQUIREMENTS.md`。
+2. 列出 v1/v2 版本的具體需求 ID (如 AUTH-01)。
+3. 確保需求與專案目標對齊。
+4. Commit 需求文件。
 
-### Step 7: 撱箇?頝舐???1. ?Ｗ `.planning/ROADMAP.md`嚗?   - 敺?瘙撠?Phases
-   - 瘥?Phase ?璅???瘙???皞?   - 100% ?瘙???霅?2. ?Ｗ `.planning/STATE.md`嚗?憪???
-3. 撱箇? `.agent-state/current-phase` 撖怠 `1`
-4. Commit嚗?```bash
+### Step 7: 建立發展路線圖 (Roadmap)
+1. 產出 `.planning/ROADMAP.md`，將需求拆解為多個 Phases。
+2. 產出 `.planning/STATE.md` 初始化當前狀態。
+3. 在 `.agent-state/current-phase` 寫入 `1`。
+4. Commit 路線圖與狀態：
+```bash
 git add .planning/ROADMAP.md .planning/STATE.md .agent-state/
-git commit -m "docs: create roadmap (N phases)"
+git commit -m "docs: create project roadmap"
 ```
 
-### Step 8: 摰?
-1. 憿舐內撠?????閬?2. ?內銝?甇伐?`/aa-discuss 1` ??`/aa-plan 1`
-3. ??`--auto` 璅∪? ???芸??瑁? `/aa-discuss 1`
-
+### Step 8: 完成
+1. 提示專案已初始化。
+2. 建議執行 `/aa-discuss 1` 或 `/aa-plan 1` 開始對應的第一階段開發。

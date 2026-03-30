@@ -1,81 +1,65 @@
-﻿---
-description: 銝?菔?遣瑽????摰?嚗?芸?敺芰???Phase??---
+---
+description: Auto Build (One-click) / 一鍵自動建構。
+---
 
-# Claw Auto-Build Workflow
+# AutoAgent-TW Auto-Build Workflow
 
 ## Trigger
-雿輻?撓??`/aa-auto-build` ??"auto build" ??"?芸?撱箸?"
+- 使用者輸入 `/aa-auto-build` 進行全自動執行。
 
-## ?芸???蝝?甇?workflow ????L3/L4嚗?芸? / ?芯蜓璅∪?嚗?
 // turbo-all
 
-## Execution Steps
+## 執行細項
+本 workflow 引導 L3/L4 級別的全自動開發循環。
 
-### Step 1: Initialize
-1. 憒? `.planning/PROJECT.md` 銝??剁?
-   - ?瑁? `/aa-new-project --auto`
-   - 雿輻???身?芸?????
-   - 摰?敺?敺?roadmap
+## 執行步驟
 
-### Step 2: Phase Auto-Loop
-**撠???Phase ?芸??瑁?隞乩?餈游?嚗?*
+### Step 1: 初始化 (Initialize)
+1. 讀取 `.planning/PROJECT.md`。
+2. 若專案未初始化，執行 `/aa-new-project --auto`。
+3. 等待初始化成功後繼續。
+
+### Step 2: 階段自動循環 (Phase Auto-Loop)
+遍歷 ROADMAP.md 中的所有 Phases 並自動執行：
 
 ```
 FOR phase_num IN (1..total_phases):
     
-    # 2a. 閮?嚗atch mode嚗?撠?蝑?
-    echo "????Phase ${phase_num}: [Phase Name] ????
-    /aa-discuss ${phase_num}    ???芸??Ｗ CONTEXT.md
+    # 2a. 討論 (Batch 模式)
+    /aa-discuss ${phase_num} --auto
     
-    # 2b. 閬?
-    /aa-plan ${phase_num}       ???芸??Ｗ PLAN.md
+    # 2b. 規劃
+    /aa-plan ${phase_num} --auto
     
-    # 2c. ?瑁?
-    /aa-execute ${phase_num}    ???芸??瑁? + commit
+    # 2c. 執行 (Wave 併行模式)
+    /aa-execute ${phase_num} --auto
     
-    # 2d. QA 瑼Ｘ
-    /aa-qa ${phase_num}
+    # 2d. QA 驗證
+    /aa-qa ${phase_num} --auto
     
-    # 2e. ?芣?靽桀儔嚗??閬?
-    fix_count = 0
-    WHILE QA_RESULT == "FAIL" AND fix_count < 3:
-        /aa-fix ${phase_num}
-        /aa-qa ${phase_num}
-        fix_count++
+    # 2e. 自我修復 (循環)
+    WHILE QA_RESULT == "FAIL" and tries < 3:
+        /aa-fix ${phase_num} --auto
+        /aa-qa ${phase_num} --auto
     
-    IF fix_count >= 3 AND QA_RESULT == "FAIL":
-        NOTIFY_USER "Fix loop exceeded max iterations for Phase ${phase_num}"
-        OFFER: retry / skip / manual
-        WAIT_FOR_USER
+    # 2f. Guardian 檢查點
+    /aa-guard ${phase_num} --auto
     
-    # 2f. Guardian checkpoint
-    /aa-guard ${phase_num}
+    # 2g. 出貨與 Commit
+    /aa-ship ${phase_num} --auto
     
-    # 2g. ?箄疏
-    /aa-ship ${phase_num}
+    # 更新目前第 N 階段完成狀態
+    echo $((phase_num + 1)) > .agent-state/current-phase
     
-    # 2h. ?湔???    echo $((phase_num + 1)) > .agent-state/current-phase
-    
-    # ?脣銝? Phase
 ENDFOR
 ```
 
-### Step 3: Complete
-1. ?瑁??蝯?QA pass
-2. Guardian ?蝯?checkpoint + 摰??
-3. ?Ｗ?函蔡?蔭嚗??拍嚗?4. ?湔 STATE.md ??milestone complete
-5. ?雿輻????獢???????
-## Error Handling
-- 隞颱?甇仿?憭望? ???脣??? `.agent-state/auto-resume.json`嚗?  ```json
-  {
-    "phase": N,
-    "step": "execute|qa|fix",
-    "timestamp": "ISO-8601",
-    "error": "error message"
-  }
-  ```
-- ?雿輻?擃隤?- ??嚗etry / skip / manual intervention
+### Step 3: 完成 (Complete)
+1. 更新 `.planning/STATE.md` 為完成。
+2. 將所有 Phase 進行 Git 合併 (如果需要)。
+3. 產生全專案執行總結報告。
 
-## State Persistence
-- 瘥郊撽????湔 `STATE.md`
-- ?臬?隞颱?銝剜暺敺抬?`/aa-resume`嚗?
+### Step 4: 異常用處處理 (Error Handling)
+1. 自動記錄錯誤日誌至 `.agent-state/auto-resume.json`。
+2. 支持續點續傳 (`/aa-resume`)。
+3. 在嚴重錯誤時通知使用者並介入。

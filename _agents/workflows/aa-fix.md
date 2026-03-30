@@ -1,8 +1,8 @@
-﻿---
-description: ?芣?靽桀儔敺芰嚗???QA ?勗??芸?閮箸 + 靽桀儔
+---
+description: Self-Repair Cycle / 自我修復循環。
 ---
 
-# Claw Fix Workflow
+# AutoAgent-TW Fix Workflow
 
 ## Input
 - Phase number: N (from $ARGUMENTS)
@@ -11,40 +11,32 @@ description: ?芣?靽桀儔敺芰嚗???QA ?勗??芸?閮箸 + 靽桀儔
 
 ## Steps
 
-### Step 1: 霈??QA ?勗?
-1. 霈??`.planning/phases/{N}-*/QA-REPORT.md`
-2. ?????FAIL ???Issues
-3. ???摨行?摨?High ??Medium ??Low嚗?
-### Step 2: ?芸?閮箸
-撠???Issue嚗?1. 霈???獢??航炊閮
-2. ???孵?
-3. 憒??⊥??斗 ??雿輻 web search ??閫?捱?寞?
-4. ?Ｗ靽桀儔閮
+### Step 1: 讀取 QA 報告
+1. 讀取 `.planning/phases/{N}-*/QA-REPORT.md`。
+2. 提取所有 FAIL 標籤對應的 Issues。
+3. 按照優先順序排列 Issues。
 
-### Step 3: ?芸?靽桀儔
-```
-FOR issue IN issues:
-    echo "  ??Fixing: ${issue.description}"
-    
-    # 靽格蝔?蝣?    [apply fix]
-    
-    # Commit
-    git add [changed files]
-    git commit -m "fix(phase-${N}): ${issue.short_description}"
-    
-    echo "  ??Fixed: ${issue.description}"
-ENDFOR
+### Step 2: 自動診斷
+對於每個失敗的 Issue：
+1. 讀取發生錯誤的代碼片段。
+2. 使用 `run_command` 重新執行測試並捕捉錯誤日誌。
+3. 如果需要，使用 `search_web` 或查閱相關庫文檔。
+4. 針對 Issue 產出具體修復方案。
+
+### Step 3: 自動修復與 Commit
+1. 依次修復所有 Issues。
+2. 套用修正代碼、增加必要的測試或更新配置。
+3. 為每個修復產出獨立的 Commit：
+```bash
+git add [changed-files]
+git commit -m "fix(phase-${N}): [issue-description]"
 ```
 
-### Step 4: ?撽?
-- ??瑁? QA 瑼Ｘ
-- 憒??券 PASS ??摰?
-- 憒?隞? FAIL ??餈? Step 2嚗?憭?3 頛迎?
+### Step 4: 重新驗證
+1. 重新執行 `/aa-qa N` 以確信問題已修復。
+2. 如果仍存在 FAIL，重複 Step 2-3 (最多 3 輪)。
 
-### Step 5: ??嚗? 3 頛芷憭望?嚗?1. 撖怠 `.agent-state/error-log`嚗?   - ???閰衣?靽桀儔
-   - 瘥活靽桀儔敺?蝯?
-   - ?拚??芾圾瘙箇???
-2. ?雿輻??
-   - ?琿??航炊?膩
-   - 撌脣?閰衣?靽桀儔
-   - 撱箄降???耨敺拇??
+### Step 5: 結案報告
+1. 記錄所有修復詳情於 `.agent-state/fix-log`。
+2. 告知使用者哪些部分已被自動修復。
+3. 若修復失敗（超過 3 輪），請求使用者介入人工排除。

@@ -1,8 +1,8 @@
-﻿---
-description: 閮??挾 N ?身閮捱蝑??Ｗ CONTEXT.md
+---
+description: Discuss Phase N / 討論階段 N 的設計決策。
 ---
 
-# Claw Discuss Workflow
+# AutoAgent-TW Discuss Workflow
 
 ## Input
 - Phase number: N (from $ARGUMENTS)
@@ -11,34 +11,44 @@ description: 閮??挾 N ?身閮捱蝑??Ｗ CONTEXT.md
 
 ## Steps
 
-### Step 1: 頛銝???1. 霈??`.planning/PROJECT.md`
-2. 霈??`.planning/REQUIREMENTS.md`
-3. 霈??`.planning/ROADMAP.md` ???曉 Phase N ?璅??瘙?4. 霈??`.planning/STATE.md` ??鈭圾?? Phase ?捱蝑?5. 霈???? CONTEXT.md嚗?摮嚗??踹???閮?
+### Step 1: 匯入上下文
+1. 讀取 `.planning/PROJECT.md`
+2. 讀取 `.planning/REQUIREMENTS.md`
+3. 讀取 `.planning/ROADMAP.md` 並定位到 Phase N 的需求與目標
+4. 讀取 `.planning/STATE.md` 以了解之前 Phase 的決策
+5. 讀取之前的 CONTEXT.md（如果存在）作為接續討論
 
-### Step 2: ???啗?啣葆
-?? Phase N ??瘙?霅?芣捱摰?鈭?嚗?- ?銵??獢?澈?極?瘀?
-- ?嗆?璅∪?嚗VC?凝???onolith嚗?- 鞈?蝯???API 閮剛?
-- 蝚砌??寞????- 皜祈岫蝑
+### Step 2: 核心設計決策
+針對 Phase N 的需求，明確討論下列決策：
+- 技術選型（資料庫、框架、工具等）
+- 整體架構（MVC、微服務、Monolith 等）
+- 數據模型與 API 設計
+- 第三方庫選擇
+- 測試策略
 
-### Step 3: 閮?
-**??auto-build 璅∪?嚗?*
-- ?芸?雿輻?刻?身??- ?湔?Ｗ CONTEXT.md
+### Step 3: 討論流程
+**如果是 auto-build 模式：**
+- 自動使用預設推薦配置
+- 直接產出 CONTEXT.md
 
-**?乩??芋撘?**
-1. ??啗?啣葆
-2. 霈蝙?刻??閮??芯?
-3. 撠??銝剔??啗?啣葆嚗?   - ??刻?寞? + ?蹂誨?寞?
-   - 蝑?雿輻?捱摰?4. ?芷銝剔??啗?啣葆 ??雿輻?身??
-### Step 4: ?Ｗ CONTEXT.md
-1. 撱箇? Phase ?桅?嚗?```bash
+**如果是交互模式：**
+1. 列出關鍵決策點
+2. 讓使用者選擇或提供建議
+3. 針對每個選擇產出優缺點分析
+4. 確認所有決策點均已完成
+
+### Step 4: 產出 CONTEXT.md
+1. 建立 Phase 目錄：
+```bash
 mkdir -p ".planning/phases/$(printf '%03d' $N)-phase-name"
 ```
-2. 撖怠 `N-CONTEXT.md`嚗?   - 撌脤?摰?瘙箇?
-   - ?銵????   - 蝝???閮?   - ?閬?蝛嗥??
-3. Commit嚗?```bash
-git add ".planning/phases/"
+2. 寫入 `CONTEXT.md`
+3. Commit 變更：
+```bash
+git add .planning/phases/
 git commit -m "docs: phase ${N} context decisions"
 ```
 
-### Step 5: ?內銝?甇?- 鈭?璅∪?嚗遣霅?`/aa-plan N`
-- Auto-build 璅∪?嚗?匱蝥?
+### Step 5: 下一步建議
+- 交互模式：`/aa-plan N`
+- 其他：自動執行
