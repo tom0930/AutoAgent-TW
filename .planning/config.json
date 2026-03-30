@@ -1,8 +1,12 @@
 {
-  "project": "AutoAgent-TW",
-  "version": "1.4.0",
-  "language": "zh-TW",
-  "available_languages": ["en", "zh-TW"],
-  "granularity": "standard",
-  "mode": "interactive"
+  "project_name": "AA-TW-Transparency-v0.3.0",
+  "version": "0.3.0",
+  "mode": "YOLO",
+  "granularity": "TASK",
+  "notifications": {
+    "browser_panel": true,
+    "line_notify": true,
+    "voice_announcement": false
+  },
+  "locales": ["zh-TW", "en-US"]
 }
