@@ -8,7 +8,7 @@ import sys
 sys.path.append(str(Path(__file__).parent))
 import roadmap_parser
 
-def update_status(task, next_goal, phase, total_phases, status="running"):
+def update_status(task, next_goal, phase, total_phases, status="running", logs=None, repair_round=0):
     # Ensure current working directory is z:\AutoAgent-TW or similar
     state_dir = Path(".agent-state")
     if not state_dir.exists():
@@ -20,6 +20,9 @@ def update_status(task, next_goal, phase, total_phases, status="running"):
     # Generate roadmap mermaid
     mermaid_code = roadmap_parser.get_roadmap_mermaid()
     
+    # Parse logs
+    log_list = logs.split(",") if logs else []
+    
     data = {
         "current_task": task,
         "next_goal": next_goal,
@@ -27,6 +30,8 @@ def update_status(task, next_goal, phase, total_phases, status="running"):
         "total_phases": total_phases,
         "status": status,
         "mermaid_code": mermaid_code,
+        "logs": log_list,
+        "repair_round": repair_round,
         "timestamp": datetime.now().isoformat()
     }
     
@@ -47,6 +52,8 @@ if __name__ == "__main__":
     parser.add_argument("--phase", type=int, default=1, help="Current phase number")
     parser.add_argument("--total", type=int, default=5, help="Total phases")
     parser.add_argument("--status", type=str, default="running", choices=["running", "done", "fail", "idle"], help="Current status")
+    parser.add_argument("--logs", type=str, help="Recent log lines (comma separated)")
+    parser.add_argument("--repair", type=int, default=0, help="Self-repair round (0..3)")
     
     args = parser.parse_args()
-    update_status(args.task, args.next, args.phase, args.total, args.status)
+    update_status(args.task, args.next, args.phase, args.total, args.status, args.logs, args.repair)
