@@ -28,8 +28,10 @@
         <div class="flex items-center gap-3">
             <div id="status-dot" class="p-2 bg-green-500 rounded-full pulse-green"></div>
             <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest">目前執行中</p>
-                <h1 id="current-task" class="text-sm font-bold text-white">初始化中...</h1>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    目前執行中 <span id="repair-tag" class="hidden px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded-full text-[10px]">Self-Repair #1</span>
+                </p>
+                <h1 id="current-task" class="text-sm font-bold text-white leading-tight">初始化中...</h1>
             </div>
         </div>
         <div class="hidden md:flex flex-col items-end">
@@ -45,7 +47,10 @@
                 <i data-lucide="layers" class="w-8 h-8 text-blue-400"></i>
                 <h2 class="text-2xl font-bold text-white">AutoAgent-TW</h2>
             </div>
-            <div id="timestamp" class="text-xs text-gray-500">最後更新: 剛才</div>
+            <div id="timestamp" class="text-xs text-gray-500 flex flex-col items-end">
+                <span id="update-time">最後更新: 剛才</span>
+                <span id="stuck-timer" class="text-[10px] text-gray-600">已過 0s</span>
+            </div>
         </div>
 
         <!-- Next Goal Card -->
@@ -61,15 +66,30 @@
 
         <!-- Execution Tree -->
         <div class="glass rounded-2xl p-6 min-h-[300px]">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="p-2 bg-purple-500/20 rounded-lg text-purple-400">
-                    <i data-lucide="git-branch" class="w-5 h-5"></i>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+                        <i data-lucide="git-branch" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white">執行路徑圖 (Execution Tree)</h3>
                 </div>
-                <h3 class="text-lg font-semibold text-white">執行路徑圖 (Execution Tree)</h3>
             </div>
             <div id="mermaid-container" class="mermaid overflow-hidden">
                 graph TD
                 Loading[載入中...]
+            </div>
+        </div>
+
+        <!-- Live Logs -->
+        <div class="glass rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
+                    <i data-lucide="terminal" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white">即時日誌流 (Live Logs)</h3>
+            </div>
+            <div id="log-container" class="bg-black/40 rounded-xl p-4 font-mono text-xs space-y-1 h-32 overflow-y-auto overflow-x-hidden border border-gray-800 scroll-smooth">
+                <div class="text-gray-500 italic">正在等待日誌串流...</div>
             </div>
         </div>
 
@@ -96,6 +116,7 @@
         });
         
         let lastMermaidCode = "";
+        let lastTimestamp = Date.now();
 
         async function updateStatus() {
             try {
@@ -110,6 +131,7 @@
                     if (!window.AA_STATUS) return;
                     
                     const data = window.AA_STATUS;
+                    lastTimestamp = new Date(data.timestamp).getTime();
                     
                     // Update DOM elements
                     document.getElementById('current-task').innerText = data.current_task || 'Idle';
@@ -120,9 +142,29 @@
                     document.getElementById('percent-text').innerText = `${percent}%`;
                     document.getElementById('progress-bar').style.width = `${percent}%`;
                     
-                    const lastUpdate = new Date(data.timestamp);
-                    document.getElementById('timestamp').innerText = `最後更新: ${lastUpdate.toLocaleTimeString()}`;
+                    document.getElementById('update-time').innerText = `最後更新: ${new Date(lastTimestamp).toLocaleTimeString()}`;
                     
+                    // Repair Round Tag
+                    const repairTag = document.getElementById('repair-tag');
+                    if (data.repair_round > 0) {
+                        repairTag.innerText = `Self-Repair #${data.repair_round}`;
+                        repairTag.classList.remove('hidden');
+                    } else {
+                        repairTag.classList.add('hidden');
+                    }
+
+                    // Live Logs
+                    if (data.logs && data.logs.length > 0) {
+                        const logBox = document.getElementById('log-container');
+                        logBox.innerHTML = data.logs.map(log => `
+                            <div class="flex gap-2 animate-[fadeIn_0.3s_ease-out]">
+                                <span class="text-blue-500 shrink-0">›</span>
+                                <span class="text-gray-300 truncate">${log}</span>
+                            </div>
+                        `).join('');
+                        logBox.scrollTop = logBox.scrollHeight;
+                    }
+
                     // Status mapping
                     const dot = document.getElementById('status-dot');
                     dot.className = 'p-2 rounded-full ' + (
@@ -147,6 +189,24 @@
                 console.error("Failed to update status:", err);
             }
         }
+
+        // Timer Logic for Stagnation
+        setInterval(() => {
+            const diffInSec = Math.floor((Date.now() - lastTimestamp) / 1000);
+            const stuckTimer = document.getElementById('stuck-timer');
+            stuckTimer.innerText = `已過 ${diffInSec}s`;
+            
+            const dot = document.getElementById('status-dot');
+            const banner = document.querySelector('header') || document.querySelector('.fixed');
+            
+            if (diffInSec > 90) {
+                stuckTimer.classList.add('text-yellow-500', 'font-bold');
+                dot.classList.add('bg-yellow-500');
+                dot.classList.remove('bg-green-500');
+            } else {
+                stuckTimer.classList.remove('text-yellow-500', 'font-bold');
+            }
+        }, 1000);
 
         // Poll every 2 seconds
         setInterval(updateStatus, 2000);
