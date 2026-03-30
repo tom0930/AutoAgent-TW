@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoAgent-TW Status Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
@@ -12,6 +13,13 @@
         .glass { background: rgba(22, 27, 34, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .pulse-green { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
+        
+        /* Mermaid Specific Overrides */
+        .node.running { animation: pulse-node 2s infinite; }
+        @keyframes pulse-node { 50% { opacity: 0.6; } }
+        .mermaid { background: transparent; display: flex; justify-content: center; transform: scale(0.9); }
+        .mermaid path { stroke: #30363d !important; }
+        .mermaid .edgeLabel { background: transparent !important; color: #8b949e !important; }
     </style>
 </head>
 <body class="p-6 md:pt-20">
@@ -51,6 +59,20 @@
             <p id="next-goal" class="text-gray-300 text-lg">正在等待 AI 核心指令...</p>
         </div>
 
+        <!-- Execution Tree -->
+        <div class="glass rounded-2xl p-6 min-h-[300px]">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+                    <i data-lucide="git-branch" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white">執行路徑圖 (Execution Tree)</h3>
+            </div>
+            <div id="mermaid-container" class="mermaid overflow-hidden">
+                graph TD
+                Loading[載入中...]
+            </div>
+        </div>
+
         <!-- Progress Bar -->
         <div class="glass rounded-2xl p-6">
             <div class="flex justify-between items-center mb-4">
@@ -63,36 +85,63 @@
         </div>
     </div>
 
+    <script id="status-script"></script>
     <script>
         lucide.createIcons();
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+        });
         
+        let lastMermaidCode = "";
+
         async function updateStatus() {
             try {
-                // Fetch status from the central agent-state folder
-                const response = await fetch('../../../.agent-state/status_state.json');
-                if (!response.ok) throw new Error('Status file not found');
+                // To avoid CORS and file caching, we reload the script tag with a timestamp
+                const oldScript = document.getElementById('status-script');
+                const newScript = document.createElement('script');
+                newScript.id = 'status-script';
+                newScript.src = '../../../../.agent-state/status_state.js?t=' + Date.now();
                 
-                const data = await response.json();
-                
-                // Update DOM elements
-                document.getElementById('current-task').innerText = data.current_task || 'Idle';
-                document.getElementById('next-goal').innerText = data.next_goal || 'Waiting for tasks...';
-                document.getElementById('progress-text').innerText = `Phase ${data.phase_num}/${data.total_phases}`;
-                
-                const percent = Math.round((data.phase_num / data.total_phases) * 100);
-                document.getElementById('percent-text').innerText = `${percent}%`;
-                document.getElementById('progress-bar').style.width = `${percent}%`;
-                
-                const lastUpdate = new Date(data.timestamp);
-                document.getElementById('timestamp').innerText = `最後更新: ${lastUpdate.toLocaleTimeString()}`;
-                
-                // Status mapping
-                const dot = document.getElementById('status-dot');
-                dot.className = 'p-2 rounded-full ' + (
-                    data.status === 'running' ? 'bg-green-500 pulse-green' :
-                    data.status === 'fail' ? 'bg-red-500' :
-                    data.status === 'done' ? 'bg-blue-500' : 'bg-gray-500'
-                );
+                // When the new script loads, it updates window.AA_STATUS
+                newScript.onload = async () => {
+                    if (!window.AA_STATUS) return;
+                    
+                    const data = window.AA_STATUS;
+                    
+                    // Update DOM elements
+                    document.getElementById('current-task').innerText = data.current_task || 'Idle';
+                    document.getElementById('next-goal').innerText = data.next_goal || 'Waiting for tasks...';
+                    document.getElementById('progress-text').innerText = `Phase ${data.phase_num}/${data.total_phases}`;
+                    
+                    const percent = Math.round((data.phase_num / data.total_phases) * 100);
+                    document.getElementById('percent-text').innerText = `${percent}%`;
+                    document.getElementById('progress-bar').style.width = `${percent}%`;
+                    
+                    const lastUpdate = new Date(data.timestamp);
+                    document.getElementById('timestamp').innerText = `最後更新: ${lastUpdate.toLocaleTimeString()}`;
+                    
+                    // Status mapping
+                    const dot = document.getElementById('status-dot');
+                    dot.className = 'p-2 rounded-full ' + (
+                        data.status === 'running' ? 'bg-green-500 pulse-green' :
+                        data.status === 'fail' ? 'bg-red-500' :
+                        data.status === 'done' ? 'bg-blue-500' : 'bg-gray-500'
+                    );
+
+                    // Update Mermaid logic
+                    if (data.mermaid_code && data.mermaid_code !== lastMermaidCode) {
+                        lastMermaidCode = data.mermaid_code;
+                        const container = document.getElementById('mermaid-container');
+                        const { svg } = await mermaid.render('mermaid-svg', data.mermaid_code);
+                        container.innerHTML = svg;
+                    }
+                };
+
+                // Replace the script tag
+                oldScript.parentNode.replaceChild(newScript, oldScript);
                 
             } catch (err) {
                 console.error("Failed to update status:", err);
