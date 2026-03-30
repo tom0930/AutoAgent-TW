@@ -1,5 +1,15 @@
 # Version List (Changelog) - AutoAgent-TW
 
+## [v1.3.0] - 2026-03-30
+### Added
+- `aa-testclaw`: 自主代理模式 (TestClaw Agent Loop)。具備觀察、思考、決定、反思的動態循環。
+- 引入 `Orchestrator` 與 `ToolRegistry` 架構理念。
+
+### Improved
+- `aa-helper`: 智慧助手優化。
+
+---
+
 ## [v1.2.0] - 2026-03-30
 ### Added
 - `aa-helper`: AI 智慧助手，問題診斷、方案比較、選項執行。
