@@ -1,5 +1,15 @@
 # Version List (Changelog) - AutoAgent-TW
 
+## [v1.2.0] - 2026-03-30
+### Added
+- `aa-helper`: AI 智慧助手，問題診斷、方案比較、選項執行。
+
+### Improved
+- `aa-fixgit-issue` / `aa-fixgit-pr`: 修正後自動 Commit + Push + 回報 GitHub。
+- 版本號納入 `config.json` 管理。
+
+---
+
 ## [v1.1.0] - 2026-03-30
 ### Added
 - Bilingual (English / Traditional Chinese) support for all 14 `aa-` commands.
