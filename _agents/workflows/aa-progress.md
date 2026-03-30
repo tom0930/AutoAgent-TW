@@ -37,3 +37,8 @@ description: Check Project Progress / 查看目前的專案進度。
 ### Step 5: 自動推薦下一步
 1. 基於當前進度狀態，自動顯示推薦執行的下一個命令（如 `/aa-discuss N`）。
 2. 更新並提醒任何逾期或高優先級的任務。
+
+### Step 6: 顯示視覺化儀表板
+1. 顯示儀表板本地連結：`http://localhost:9999/.agents/skills/status-notifier/templates/status.html` (請確保已啟動本地伺服器)。
+2. // turbo
+   - 執行 `python .agents/skills/status-notifier/scripts/status_updater.py --task "Progress Check" --next "Next Recommended Phase" --status idle` 以確保狀態同步。
