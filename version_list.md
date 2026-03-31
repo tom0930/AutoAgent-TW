@@ -6,6 +6,7 @@
 - **動態執行樹 (Execution Tree)**: 整合 Mermaid.js 自動渲染 ROADMAP.md 的開發流程圖。
 - **即時日誌流 (Live Logs)**: 瀏覽器即時日誌串流與動畫顯示。
 - **停滯偵測與 LINE 警報**: 90 秒異常偵測與 LINE Notify 遠端推送邏輯。
+- **系統工具指令**: 新增 `/aa-version` (查版本) 與 `/aa-versionupdate` (一鍵更新)。
 
 ### 📁 新增/修改文件 (@file:)
 - `.agents/skills/status-notifier/SKILL.md`: 技能說明與集成指南。
