@@ -1,0 +1,74 @@
+# ⏰ AutoAgent-TW 排程器 (aa-schedule) 完全指南
+
+`aa-schedule` 是 AutoAgent-TW 自主開發環境的核心動力。它允許您設定**定時任務**與**事件觸發器**，讓 Agent 在背景自動執行 QA 檢查、進度同步、甚至定時的自我修復任務。
+
+---
+
+## 🛠 核心功能指令
+
+### 1. 守護進程管理 (Daemon Control)
+排程器需要一個背景進程 (Daemon) 來持續監控時間，請在使用前確保其已啟動。
+- **啟動**: `python scripts/aa_schedule_cli.py start`
+- **停止**: `python scripts/aa_schedule_cli.py stop`
+- **狀態查詢**: `python scripts/aa_schedule_cli.py status` (✅ 顯示 PID 與最近 5 條日誌)
+
+### 2. 任務清單 (List Tasks)
+顯示目前所有已登記的自動化任務。
+- **指令**: `python scripts/aa_schedule_cli.py list`
+
+### 3. 新增任務 (Add Task)
+您可以設定 `interval` (間隔執行) 或 `cron` (特定時間執行) 任務。
+- **格式**: `python scripts/aa_schedule_cli.py add --name "任務名稱" --trigger "類型" --params "JSON參數" --command "指令"`
+
+### 4. 移除任務 (Remove Task)
+- **指令**: `python scripts/aa_schedule_cli.py remove <任務ID或名稱>`
+
+---
+
+## 💡 實戰範例 (Examples)
+
+### 範例 A：每 2 分鐘自動同步進度儀表板
+這對於保持 Dashboard 最新狀態非常有用。
+```powershell
+python scripts/aa_schedule_cli.py add --name "Dashboard-Sync" --trigger "interval" --params "{'minutes': 2}" --command "aa-progress"
+```
+*(提示：系統會自動將 `aa-progress` 工作流映射到正確的 Python 執行腳本)*
+
+### 範例 B：每小時執行一次自動化 QA 檢查
+```powershell
+python scripts/aa_schedule_cli.py add --name "Hourly-QA" --trigger "interval" --params "{'hours': 1}" --command "aa-qa"
+```
+
+### 範例 C：每天午夜執行專案備份與清理
+```powershell
+python scripts/aa_schedule_cli.py add --name "Daily-Cleanup" --trigger "cron" --params "{'hour': 0, 'minute': 0}" --command "git gc"
+```
+
+---
+
+## 🚀 進階技術特性 (Advanced Features)
+
+### 1. 智慧引號修復 (Regex Auto-Fix)
+在 Windows PowerShell 或 CMD 下，輸入 JSON 時引號常被剝離導致報錯。`aa-schedule` 內建了**正規表達式修復引擎**，即使您輸入的是 `{minutes: 2}` (無引號)，它也會自動在背景修正為 `{"minutes": 2}`，確保 100% 執行成功。
+
+### 2. 多進程安全鎖 (File Locking)
+使用 `portalocker` 實作互斥鎖保護。當背景 Daemon 正在讀取排程時，若您同時透過 CLI 新增任務，系統會確保數據寫入完整，**徹底杜絕 JSON 損壞問題**。
+
+### 3. 指令自動映射
+為了方便使用，我們在背景自動對應了常用的指令別名：
+- `aa-progress` ➜ 自動對應到 `status_updater.py` 並帶入進度感應邏輯。
+
+---
+
+## 📂 檔案與數據結構
+- **任務定義**: `.agent-state/scheduled_tasks.json`
+- **日誌檔案**: `.agents/logs/scheduler.log`
+- **守護進程**: `scripts/scheduler_daemon.py`
+- **命令列工具**: `scripts/aa_schedule_cli.py`
+
+---
+
+## 📝 最佳實踐建議
+1. **先 Start 後 Add**：雖然任務會被保存到 JSON，但 Daemon 必須在運行中才能按時執行它們。
+2. **善用 Status**：遇到任務沒執行時，先下 `status` 指令看最近的日誌報錯。
+3. **路徑問題**：若要執行您自訂的腳本，建議使用專案根目錄的相對路徑 (例如 `python scripts/my_test.py`)。
