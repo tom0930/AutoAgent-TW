@@ -1,0 +1,11 @@
+[
+  {
+    "id": "478d962a-9708-4f7e-ac9c-95e6030d6061",
+    "name": "QA-Verification",
+    "trigger_type": "interval",
+    "params": {
+      "minutes": 1
+    },
+    "command": "python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running"
+  }
+]
