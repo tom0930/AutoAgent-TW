@@ -5,6 +5,7 @@ import os
 import sys
 from pathlib import Path
 from datetime import datetime
+import portalocker
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
@@ -30,24 +31,30 @@ def update_task_status(task_id, status):
     if not TASKS_FILE.exists():
         return
     try:
-        with open(TASKS_FILE, "r", encoding="utf-8") as f:
+        with portalocker.Lock(TASKS_FILE, "r+", timeout=10) as f:
             tasks = json.load(f)
-        
-        changed = False
-        for t in tasks:
-            if t.get("id") == task_id:
-                t["last_run"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                t["last_status"] = status
-                changed = True
-                break
-        
-        if changed:
-            with open(TASKS_FILE, "w", encoding="utf-8") as f:
+            
+            changed = False
+            for t in tasks:
+                if t.get("id") == task_id:
+                    t["last_run"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    t["last_status"] = status
+                    changed = True
+                    break
+            
+            if changed:
+                f.seek(0)
                 json.dump(tasks, f, indent=2, ensure_ascii=False)
+                f.truncate()
     except Exception as e:
         log_message(f"Error updating task status for {task_id}: {e}")
 
 def execute_task(task_id, cmd):
+    # Command Mapping for common workflows
+    if cmd == "aa-progress":
+        updater = PROJECT_ROOT / ".agents" / "skills" / "status-notifier" / "scripts" / "status_updater.py"
+        cmd = f'{sys.executable} "{updater}" --task "Progress Check" --status idle'
+    
     log_message(f"Starting scheduled task: {task_id} :: CMD: {cmd}")
     try:
         process = subprocess.Popen(
@@ -105,7 +112,7 @@ class SchedulerDaemon:
 
     def _has_definition_changed(self):
         try:
-            with open(TASKS_FILE, "r", encoding="utf-8") as f:
+            with portalocker.Lock(TASKS_FILE, "r", timeout=5) as f:
                 current = json.load(f)
             
             # Create a thumbprint of definitions
@@ -119,7 +126,7 @@ class SchedulerDaemon:
 
     def _reload_tasks(self):
         try:
-            with open(TASKS_FILE, "r", encoding="utf-8") as f:
+            with portalocker.Lock(TASKS_FILE, "r", timeout=5) as f:
                 current_tasks = json.load(f)
 
             active_ids = set()
