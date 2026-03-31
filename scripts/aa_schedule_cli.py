@@ -115,6 +115,45 @@ def start_daemon():
     except Exception as e:
         print(f"Failed to start daemon: {e}")
 
+def show_status():
+    tasks = load_tasks()
+    daemon_running = False
+    pid = None
+    
+    if PID_FILE.exists():
+        try:
+            with open(PID_FILE, "r") as f:
+                pid = int(f.read().strip())
+            
+            # Check if process exists on Windows
+            import ctypes
+            PROCESS_QUERY_INFORMATION = 0x0400
+            process_handle = ctypes.windll.kernel32.OpenProcess(PROCESS_QUERY_INFORMATION, False, pid)
+            if process_handle:
+                ctypes.windll.kernel32.CloseHandle(process_handle)
+                daemon_running = True
+            else:
+                PID_FILE.unlink() # Clean up stale PID file
+        except:
+            if PID_FILE.exists(): PID_FILE.unlink()
+
+    print("\n" + "="*50)
+    print("AutoAgent-TW Scheduler Status")
+    print("="*50)
+    print(f"Daemon Status: {'[RUNNING]' if daemon_running else '[STOPPED]'}")
+    if pid and daemon_running:
+        print(f"Daemon PID:    {pid}")
+    print(f"Active Tasks:  {len(tasks)}")
+    
+    if tasks:
+        print("\nNext runs (Recent logs from scheduler.log):")
+        log_file = PROJECT_ROOT / ".agents" / "logs" / "scheduler.log"
+        if log_file.exists():
+            with open(log_file, "r", encoding="utf-8") as f:
+                last_lines = f.readlines()[-5:]
+                print("".join(last_lines))
+    print("="*50)
+
 def stop_daemon():
     if not PID_FILE.exists():
         print("No PID file found. Daemon might not be running.")
@@ -124,9 +163,16 @@ def stop_daemon():
         with open(PID_FILE, "r") as f:
             pid = int(f.read().strip())
         
-        os.kill(pid, signal.SIGTERM)
-        PID_FILE.unlink()
-        print(f"Stopped daemon (PID {pid}).")
+        # Try to terminate
+        try:
+            os.kill(pid, signal.SIGTERM)
+            print(f"Stopping daemon (PID {pid})...")
+        except:
+            pass
+            
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+        print("Daemon stopped.")
     except Exception as e:
         print(f"Failed to stop daemon: {e}")
         if PID_FILE.exists():
@@ -177,6 +223,7 @@ if __name__ == "__main__":
     # Daemon control
     subparsers.add_parser("start", help="Start the scheduler daemon in background")
     subparsers.add_parser("stop", help="Stop the scheduler daemon")
+    subparsers.add_parser("status", help="Show scheduler daemon status and active tasks")
 
     args = parser.parse_args()
 
@@ -192,5 +239,7 @@ if __name__ == "__main__":
         start_daemon()
     elif args.subcommand == "stop":
         stop_daemon()
+    elif args.subcommand == "status":
+        show_status()
     else:
         parser.print_help()
