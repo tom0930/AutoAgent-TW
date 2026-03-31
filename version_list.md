@@ -1,5 +1,24 @@
 # Version List (Changelog) - AutoAgent-TW
 
+## [v1.5.0] - 2026-03-31
+### Added (v0.3.0 Transparency Upgrade)
+- **視覺化儀表板 (Status Dashboard)**: 提供即時執行進度、下一步標與狀態顯示。
+- **動態執行樹 (Execution Tree)**: 整合 Mermaid.js 自動渲染 ROADMAP.md 的開發流程圖。
+- **即時日誌流 (Live Logs)**: 瀏覽器即時日誌串流與動畫顯示。
+- **停滯偵測與 LINE 警報**: 90 秒異常偵測與 LINE Notify 遠端推送邏輯。
+
+### 📁 新增/修改文件 (@file:)
+- `.agents/skills/status-notifier/SKILL.md`: 技能說明與集成指南。
+- `.agents/skills/status-notifier/scripts/status_updater.py`: 狀態更新核心路徑。
+- `.agents/skills/status-notifier/scripts/roadmap_parser.py`: ROADMAP Markdown 轉 Mermaid Parser。
+- `.agents/skills/status-notifier/scripts/line_notifier.py`: LINE Notify API 接口。
+- `.agents/skills/status-notifier/templates/status.html`: 視覺化 Dashboard 前端。
+- `_agents/workflows/aa-progress.md`: 注入儀表板刷新與連結顯示。
+- `README.md`: 更新開發版本資訊與功能介紹。
+- `.planning/`: 項目研發流程文件 (PROJECT/ROADMAP/STATE/PHASES)。
+
+---
+
 ## [v1.4.0] - 2026-03-30
 ### Fixed
 - 修復 `aa-testclaw` 執行過程中可能導致的 HTTP 400 (Bad Request) 錯誤。
