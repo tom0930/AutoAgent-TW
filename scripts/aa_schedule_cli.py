@@ -44,14 +44,23 @@ def list_tasks():
 def add_task(name, trigger, params, command):
     tasks = load_tasks()
     param_dict = None
+    
+    # Pre-process for shell-stripped quotes (common in PowerShell/CMD)
+    # e.g., {minutes: 2} -> {"minutes": 2}
+    import re
+    cleaned_params = params.strip()
+    if cleaned_params.startswith('{') and cleaned_params.endswith('}'):
+        # Match word-like keys that don't have quotes
+        cleaned_params = re.sub(r'([{,]\s*)([a-zA-Z_]\w*)\s*:', r'\1"\2":', cleaned_params)
+    
     try:
         # Try standard JSON first
-        param_dict = json.loads(params)
+        param_dict = json.loads(cleaned_params)
     except Exception:
         try:
-            # Fallback for shell-mangled strings (e.g. single quotes from powershell/cmd)
+            # Fallback for complex mangled strings
             import ast
-            parsed = ast.literal_eval(params)
+            parsed = ast.literal_eval(cleaned_params)
             if isinstance(parsed, dict):
                 param_dict = parsed
         except:
@@ -60,6 +69,7 @@ def add_task(name, trigger, params, command):
     if param_dict is None:
         print(f"Error: Could not parse params. Expected JSON like '{{\"minutes\": 10}}'.")
         print(f"Received: {params}")
+        print(f"Attempted fix: {cleaned_params}")
         return
 
     new_task = {
