@@ -6,7 +6,7 @@
 - Phase 2: Event-Driven Hooks [DONE]
 - Phase 3: Adaptive Repair Loop [DONE]
 - Phase 4: Task Chaining & Pipelines [DONE]
-- Phase 5: Multi-Project Dashboard & QA [PLANNED]
+- Phase 5: Multi-Project Dashboard & QA [DONE]
 
 ## Phase 0 summary
 - Analyzed `idea_claueloop.mf` and translated into v1.6.0 project definition and roadmap.
@@ -34,3 +34,9 @@
 - Implemented conditional operators: `&&` (Success-only), `||` (Recovery-only), and `|` (Sequential).
 - Integrated chain execution with real-time dashboard status updates.
 - Created `/aa-chain` workflow documentation.
+
+## Phase 5 summary
+- Upgraded `status.html` dashboard with Tabbed navigation (Flow/Logs/Scheduler).
+- Increased version to `v1.6.0` across all metadata and documentation.
+- Integrated scheduler and hook status reporting into the unified state bundle.
+- Final cross-phase integration testing completed.

@@ -1,6 +1,6 @@
 {
-  "project_name": "AA-TW-Transparency-v0.3.0",
-  "version": "0.3.0",
+  "project_name": "AA-TW-Autonomous-Scheduling-v1.6.0",
+  "version": "1.6.0",
   "mode": "YOLO",
   "granularity": "TASK",
   "notifications": {
