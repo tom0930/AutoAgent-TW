@@ -1,0 +1,15 @@
+{
+  "on": {
+    "git.post-commit": [
+      "python .agents/skills/status-notifier/scripts/status_updater.py --task 'Git Hook: Post-Commit' --status running",
+      "aa-progress"
+    ],
+    "ci.failure": [
+      "python .agents/skills/status-notifier/scripts/status_updater.py --task 'CI Recovery: Auto-Fixing' --status fail",
+      "aa-fix --auto"
+    ],
+    "daily.scan": [
+      "aa-guard --auto"
+    ]
+  }
+}
