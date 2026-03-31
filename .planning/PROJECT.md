@@ -1,22 +1,13 @@
-# Project: AutoAgent-TW Autonomous Scheduling (v1.6.0)
+# 🎯 AutoAgent-TW
+Version: 1.7.0
+Status: ACTIVE
+Type: Python CLI & Autonomous Agent Workspace
 
-## Project Background
-Current version (v1.5.0) of AutoAgent-TW is highly automated during execution (self-repair, visual monitoring) but completely dependent on manual human triggers. To reach a "fully autonomous agent" state, we need to implement a scheduler daemon and event-driven triggers.
+## 📝 專案說明 (Project Description)
+AutoAgent-TW 是一個高度自動化、具備背景排程與防呆修復（Self-Repair）能力的自主代理開發環境。
+v1.7.0 之開發核心為「底層韌性與容錯升級 (Resilience Upgrade)」，導入全方位的錯誤分類、指數退避重試、降級熔斷、花費監控與人工介入等待機制。
 
-## Core Objectives
-1.  Implement **Autonomous Scheduling (`/aa-schedule`)**: A lightweight cron-like daemon to trigger tasks at specific times.
-2.  Implement **Event-Driven Hooks (`hooks.json`)**: Automatic triggers for git hooks, CI failures, or pull requests.
-3.  Implement **Adaptive Termination Logic**: Replacing the hardcoded 3-round repair limit with progress-based trend analysis.
-4.  Implement **Task Chaining (`/aa-chain`)**: Flexible pipeline composition (e.g., `pull → test → repair → report`).
-5.  Implement **Multi-Project Monitoring**: A centralized dashboard view for all scheduled agent runs.
-
-## Technology Stack
-- Python `apscheduler` or `schedule` (for the daemon)
-- Git Webhooks / Local git hooks
-- Agent Persistence (Daemon mode)
-- Refined Repair Loop Strategy (Trend tracking)
-
-## Target Outcomes
-- No need for developers to manually start the agent for recurring tasks (like nightly builds).
-- Automatic diagnostic-and-repair triggered by CI failures.
-- Faster development-to-prod velocity.
+## 🎯 核心目標 (Core Objectives)
+1. 將原本脆弱的單次腳本執行強化為能在惡劣網路環境與突發異常下存活的高韌性系統。
+2. 在發生嚴重例外狀況（如 Token 花費暴走、權限阻擋）時，能有效暫停並透過 LINE 通知人工介入，不再盲目無限循環。
+3. 把各類底層例外精準分類並實施隔離對策 (TRANSIENT, RECOVERABLE, DEPENDENCY, LOGICAL, FATAL)。
