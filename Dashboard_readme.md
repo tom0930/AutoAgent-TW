@@ -1,0 +1,67 @@
+# 📊 AutoAgent-TW 狀態儀表板 (Status Dashboard) 完全指南
+
+儀表板是 AutoAgent-TW 的「大腦視覺化中心」。它能讓您即時監控 Agent 的執行流程、檢視歷史日誌，並管理所有的背景排程任務與事件鉤子。
+
+---
+
+## 🚀 快速啟動
+您可以在瀏覽器中直接開啟下列檔案（無需啟動 Web Server，已內建 CORS 繞過方案）：
+🔗 **[status.html](.agents/skills/status-notifier/templates/status.html)**
+
+---
+
+## 🎨 核心三大分頁內容
+
+### 1. 執行流程 (Execution Flow)
+這是 Agent 執行任務時的即時狀態顯示。
+- **動態流程圖**: 使用 Mermaid.js 生成，標記當前執行到的步驟（綠色為完成，藍色為進行中）。
+- **進度指示器**: 顯示當前 Phase（如 Phase 5/5）與完成百分比。
+- **即時通知**: 包含當前任務描述、下一階段目標、以及自我修復 (Self-Repair) 的輪次。
+
+![Execution Flow](.agents/docs/images/dashboard_flow.webp)
+
+### 2. 進度日誌 (Terminal Logs)
+將背景執行的終端機輸出同步到網頁中，方便除錯。
+- **即時滾動**: 自動捕獲 `status_updater.py` 傳送的最新日誌行。
+- **錯誤標記**: 當狀態為 `fail` 時，背景會變紅，並觸發 LINE Notify 警報。
+
+![Terminal Logs](.agents/docs/images/dashboard_logs.webp)
+
+### 3. 排程與鉤子 (Scheduler & Hooks)
+**v1.6.0 新增功能**，用於監控自主任務。
+- **Scheduled Tasks**: 顯示所有由 `aa-schedule` 加入的定時任務（如心跳檢查、自動測試）。
+  - 欄位包含：任務名稱、觸發類型（cron/interval）、參數、**上次執行時間**與**執行結果**。
+- **Event Hooks**: 顯示目前掛載的所有 Git 事件鉤子（如 `post-commit` 會觸發哪些背景自動化操作）。
+
+![Scheduler Dashboard](.agents/docs/images/dashboard_main.webp)
+
+---
+
+## 🛠 技術架構與原理
+
+### 數據流 (Data Pipeline)
+1. **觸發源**: CLI 指令、背景 Daemon 或 Git Hooks 調用 `status_updater.py`。
+2. **數據持久化**: 狀態被寫入 `.agent-state/status_state.json`。
+3. **JS 封裝**: 同步產生 `.agent-state/status_state.js` 用於繞過瀏覽器本地檔案讀取的 CORS 限制。
+4. **前端渲染**: `status.html` 透過 `setInterval` 每 2 秒輪詢一次數據並重新渲染 UI。
+
+### 核心檔案位置
+- **UI 模板**: `.agents/skills/status-notifier/templates/status.html` (CSS/JS 內建於 single file)
+- **更新腳本**: `.agents/skills/status-notifier/scripts/status_updater.py`
+- **狀態緩存**: `.agent-state/status_state.js`
+
+---
+
+## ❓ 常見問題與排除 (Troubleshooting)
+
+| 問題現象 | 可能原因 | 解決方法 |
+| :--- | :--- | :--- |
+| **數據沒有更新** | 背景 Daemon 未啟動 | 執行 `python scripts/aa_schedule_cli.py start` |
+| **進度卡在 Phase 1/5** | 未自動感應 Phase | 執行 `aa-progress` 觸發一次全局狀態同步 |
+| **亂碼 (CP950)** | Windows 終端機編碼衝突 | 已在 v1.6.0 修復，請確保使用 `utf-8` 保存 JSON |
+| **任務顯示 FAILED** | 排程指令路徑錯誤 | 檢查 `.agents/logs/scheduler.log` 獲取詳細報錯 |
+
+---
+
+## 📝 建議操作
+在使用 AutoAgent-TW 進行開發時，建議**在您的副螢幕或背景持續開啟 status.html**，它能在 Agent 陷入修復循環或遇到嚴重錯誤時，第一時間透過視覺顏色變化通知您。
