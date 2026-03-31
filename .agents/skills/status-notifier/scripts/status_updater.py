@@ -35,6 +35,24 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
     # Parse logs
     log_list = logs.split(",") if logs else []
     
+    # Load Scheduled Tasks
+    sched_file = state_dir / "scheduled_tasks.json"
+    scheduled_tasks = []
+    if sched_file.exists():
+        try:
+            with open(sched_file, "r", encoding="utf-8") as f:
+                scheduled_tasks = json.load(f)
+        except: pass
+
+    # Load Hooks
+    hooks_file = state_dir / "hooks.json"
+    hooks_config = {}
+    if hooks_file.exists():
+        try:
+            with open(hooks_file, "r", encoding="utf-8") as f:
+                hooks_config = json.load(f)
+        except: pass
+
     data = {
         "current_task": task,
         "next_goal": next_goal,
@@ -44,6 +62,8 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
         "mermaid_code": mermaid_code,
         "logs": log_list,
         "repair_round": repair_round,
+        "scheduled_tasks": scheduled_tasks,
+        "hooks": hooks_config,
         "timestamp": datetime.now().isoformat()
     }
     

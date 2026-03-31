@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoAgent-TW Status Dashboard</title>
+    <title>AutoAgent-TW v1.6.0 Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -29,100 +29,111 @@
         .pulse-green { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
         
+        .tab-btn.active { 
+            background: rgba(59, 130, 246, 0.1); 
+            color: #60a5fa; 
+            border-bottom: 2px solid #3b82f6; 
+        }
+        
         /* Mermaid Specific Overrides */
         .node.running { animation: pulse-node 2s infinite; }
         @keyframes pulse-node { 50% { opacity: 0.7; transform: scale(1.02); } }
-        .mermaid { background: transparent; display: flex; justify-content: center; transform: scale(0.9); transition: all 0.5s ease; }
+        .mermaid { background: transparent; display: flex; justify-content: center; transform: scale(0.9); transition: all 0.3s ease; }
         .mermaid .label { font-weight: 600; color: #fff !important; }
 
-        /* Custom Scrollbar */
-        #log-container::-webkit-scrollbar { width: 5px; }
-        #log-container::-webkit-scrollbar-track { background: transparent; }
+        #log-container::-webkit-scrollbar { width: 4px; }
         #log-container::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
         
-        @keyframes fadeInSlide { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-        .log-entry { animation: fadeInSlide 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
     </style>
 </head>
-<body class="p-6 md:pt-20">
+<body class="p-4 md:pt-16">
     <!-- Top Fixed Banner -->
-    <div class="fixed top-0 left-0 right-0 glass z-50 px-6 py-3 flex items-center justify-between border-b border-gray-800">
+    <div class="fixed top-0 left-0 right-0 glass z-50 px-6 py-2 flex items-center justify-between border-b border-gray-800">
         <div class="flex items-center gap-3">
             <div id="status-dot" class="p-2 bg-green-500 rounded-full pulse-green"></div>
             <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                    目前執行中 <span id="repair-tag" class="hidden px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded-full text-[10px]">Self-Repair #1</span>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                    System Active <span id="v-tag" class="ml-2 text-blue-500 font-mono">v1.6.0</span>
+                    <span id="repair-tag" class="hidden px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded-full">Repair #1</span>
                 </p>
-                <h1 id="current-task" class="text-sm font-bold text-white leading-tight">初始化中...</h1>
+                <h1 id="current-task" class="text-xs font-bold text-white uppercase truncate max-w-[200px]">Idle</h1>
             </div>
         </div>
-        <div class="hidden md:flex flex-col items-end">
-            <p class="text-xs font-semibold text-gray-400 uppercase">進度</p>
-            <p id="progress-text" class="text-sm font-bold text-blue-400">Phase 0/0</p>
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex flex-col items-end">
+                <p class="text-[10px] font-bold text-gray-500 uppercase">Phase Progress</p>
+                <p id="progress-text" class="text-xs font-bold text-blue-400">0/0</p>
+            </div>
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto space-y-6">
-        <!-- Dashboard Header -->
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <i data-lucide="layers" class="w-8 h-8 text-blue-400"></i>
-                <h2 class="text-2xl font-bold text-white">AutoAgent-TW</h2>
+    <div class="max-w-4xl mx-auto space-y-4">
+        <!-- Main Info Layer -->
+        <div class="glass rounded-xl p-4 flex items-start gap-4">
+            <div class="p-3 bg-blue-500/10 rounded-xl text-blue-400 shrink-0">
+                <i data-lucide="target" class="w-6 h-6"></i>
             </div>
-            <div id="timestamp" class="text-xs text-gray-500 flex flex-col items-end">
-                <span id="update-time">最後更新: 剛才</span>
-                <span id="stuck-timer" class="text-[10px] text-gray-600">已過 0s</span>
+            <div class="space-y-1">
+                <h3 class="text-sm font-bold text-blue-400 uppercase tracking-tighter">Current Objective</h3>
+                <p id="next-goal" class="text-white text-lg font-medium leading-tight">Waiting for tasks...</p>
             </div>
         </div>
 
-        <!-- Next Goal Card -->
-        <div class="glass rounded-2xl p-6 transition-all hover:border-blue-500/50">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 bg-blue-500/20 rounded-lg text-blue-400">
-                    <i data-lucide="target" class="w-5 h-5"></i>
+        <!-- Tabs Navigation -->
+        <div class="flex border-b border-gray-800 gap-2 overflow-x-auto no-scrollbar">
+            <button onclick="showTab('flow')" class="tab-btn px-4 py-2 text-sm font-semibold transition-all active" id="tab-flow">Execution Flow</button>
+            <button onclick="showTab('logs')" class="tab-btn px-4 py-2 text-sm font-semibold transition-all" id="tab-logs">Live Logs</button>
+            <button onclick="showTab('scheduler')" class="tab-btn px-4 py-2 text-sm font-semibold transition-all" id="tab-scheduler">Scheduler & Hooks</button>
+        </div>
+
+        <!-- Tab Content: Flow -->
+        <div id="content-flow" class="tab-content fade-in">
+            <div class="glass rounded-xl p-6 min-h-[350px]">
+                <div id="mermaid-container" class="mermaid">Loading execution map...</div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Logs -->
+        <div id="content-logs" class="tab-content hidden fade-in">
+            <div class="glass rounded-xl p-4">
+                <div id="log-container" class="bg-black/60 rounded-lg p-3 font-mono text-xs space-y-1 h-[400px] overflow-y-auto border border-gray-800">
+                    <div class="text-gray-600">Waiting for log stream...</div>
                 </div>
-                <h3 class="text-lg font-semibold text-white">下一步目標</h3>
             </div>
-            <p id="next-goal" class="text-gray-300 text-lg">正在等待 AI 核心指令...</p>
         </div>
 
-        <!-- Execution Tree -->
-        <div class="glass rounded-2xl p-6 min-h-[300px]">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-purple-500/20 rounded-lg text-purple-400">
-                        <i data-lucide="git-branch" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-white">執行路徑圖 (Execution Tree)</h3>
+        <!-- Tab Content: Scheduler -->
+        <div id="content-scheduler" class="tab-content hidden fade-in space-y-4">
+            <div class="glass rounded-xl p-6">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="clock" class="w-5 h-5 text-purple-400"></i>
+                    Scheduled Tasks
+                </h3>
+                <div id="scheduler-list" class="space-y-3">
+                    <p class="text-sm text-gray-500 italic">No scheduled tasks active.</p>
                 </div>
             </div>
-            <div id="mermaid-container" class="mermaid overflow-hidden">
-                graph TD
-                Loading[載入中...]
-            </div>
-        </div>
-
-        <!-- Live Logs -->
-        <div class="glass rounded-2xl p-6">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
-                    <i data-lucide="terminal" class="w-5 h-5"></i>
+            <div class="glass rounded-xl p-6">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-5 h-5 text-yellow-400"></i>
+                    Event Hooks
+                </h3>
+                <div id="hooks-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p class="text-sm text-gray-500 italic">No hooks configured.</p>
                 </div>
-                <h3 class="text-lg font-semibold text-white">即時日誌流 (Live Logs)</h3>
-            </div>
-            <div id="log-container" class="bg-black/40 rounded-xl p-4 font-mono text-xs space-y-1 h-32 overflow-y-auto overflow-x-hidden border border-gray-800 scroll-smooth">
-                <div class="text-gray-500 italic">正在等待日誌串流...</div>
             </div>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="glass rounded-2xl p-6">
-            <div class="flex justify-between items-center mb-4">
-                 <h3 class="text-sm font-semibold text-gray-400 uppercase">階段進度</h3>
-                 <span id="percent-text" class="text-blue-400 font-bold">0%</span>
+        <!-- Overall Progress -->
+        <div class="glass rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+                 <span class="text-[10px] font-bold text-gray-500 uppercase">System Integrity</span>
+                 <span id="percent-text" class="text-xs font-mono text-blue-400">0%</span>
             </div>
-            <div class="w-full bg-gray-800 rounded-full h-3">
-                <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            <div class="w-full bg-gray-800/50 rounded-full h-1.5 overflow-hidden">
+                <div id="progress-bar" class="bg-blue-500 h-full transition-all duration-700" style="width: 0%"></div>
             </div>
         </div>
     </div>
@@ -130,109 +141,92 @@
     <script id="status-script"></script>
     <script>
         lucide.createIcons();
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: 'dark',
-            securityLevel: 'loose',
-            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
-        });
+        mermaid.initialize({ startOnLoad: false, theme: 'dark', flowchart: { htmlLabels: true } });
         
         let lastMermaidCode = "";
         let lastTimestamp = Date.now();
 
-        async function updateStatus() {
-            try {
-                // To avoid CORS and file caching, we reload the script tag with a timestamp
-                const oldScript = document.getElementById('status-script');
-                const newScript = document.createElement('script');
-                newScript.id = 'status-script';
-                newScript.src = '../../../../.agent-state/status_state.js?t=' + Date.now();
-                
-                // When the new script loads, it updates window.AA_STATUS
-                newScript.onload = async () => {
-                    if (!window.AA_STATUS) return;
-                    
-                    const data = window.AA_STATUS;
-                    lastTimestamp = new Date(data.timestamp).getTime();
-                    
-                    // Update DOM elements
-                    document.getElementById('current-task').innerText = data.current_task || 'Idle';
-                    document.getElementById('next-goal').innerText = data.next_goal || 'Waiting for tasks...';
-                    document.getElementById('progress-text').innerText = `Phase ${data.phase_num}/${data.total_phases}`;
-                    
-                    const percent = Math.round((data.phase_num / data.total_phases) * 100);
-                    document.getElementById('percent-text').innerText = `${percent}%`;
-                    document.getElementById('progress-bar').style.width = `${percent}%`;
-                    
-                    document.getElementById('update-time').innerText = `最後更新: ${new Date(lastTimestamp).toLocaleTimeString()}`;
-                    
-                    // Repair Round Tag
-                    const repairTag = document.getElementById('repair-tag');
-                    if (data.repair_round > 0) {
-                        repairTag.innerText = `Self-Repair #${data.repair_round}`;
-                        repairTag.classList.remove('hidden');
-                    } else {
-                        repairTag.classList.add('hidden');
-                    }
-
-                    // Live Logs
-                    if (data.logs && data.logs.length > 0) {
-                        const logBox = document.getElementById('log-container');
-                        logBox.innerHTML = data.logs.map((log, idx) => `
-                            <div class="flex gap-2 log-entry" style="animation-delay: ${idx * 0.05}s">
-                                <span class="text-blue-500 shrink-0">›</span>
-                                <span class="text-gray-300 truncate">${log}</span>
-                            </div>
-                        `).join('');
-                        logBox.scrollTop = logBox.scrollHeight;
-                    }
-
-                    // Status mapping
-                    const dot = document.getElementById('status-dot');
-                    dot.className = 'p-2 rounded-full ' + (
-                        data.status === 'running' ? 'bg-green-500 pulse-green' :
-                        data.status === 'fail' ? 'bg-red-500' :
-                        data.status === 'done' ? 'bg-blue-500' : 'bg-gray-500'
-                    );
-
-                    // Update Mermaid logic
-                    if (data.mermaid_code && data.mermaid_code !== lastMermaidCode) {
-                        lastMermaidCode = data.mermaid_code;
-                        const container = document.getElementById('mermaid-container');
-                        const { svg } = await mermaid.render('mermaid-svg', data.mermaid_code);
-                        container.innerHTML = svg;
-                    }
-                };
-
-                // Replace the script tag
-                oldScript.parentNode.replaceChild(newScript, oldScript);
-                
-            } catch (err) {
-                console.error("Failed to update status:", err);
-            }
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`content-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('active');
         }
 
-        // Timer Logic for Stagnation
-        setInterval(() => {
-            const diffInSec = Math.floor((Date.now() - lastTimestamp) / 1000);
-            const stuckTimer = document.getElementById('stuck-timer');
-            stuckTimer.innerText = `已過 ${diffInSec}s`;
+        async function updateStatus() {
+            const oldScript = document.getElementById('status-script');
+            const newScript = document.createElement('script');
+            newScript.id = 'status-script';
+            newScript.src = '../../../../.agent-state/status_state.js?v=' + Date.now();
             
-            const dot = document.getElementById('status-dot');
-            const banner = document.querySelector('header') || document.querySelector('.fixed');
-            
-            if (diffInSec > 90) {
-                stuckTimer.classList.add('text-yellow-500', 'font-bold');
-                dot.classList.add('bg-yellow-500');
-                dot.classList.remove('bg-green-500');
-            } else {
-                stuckTimer.classList.remove('text-yellow-500', 'font-bold');
-            }
-        }, 1000);
+            newScript.onload = async () => {
+                const data = window.AA_STATUS;
+                if (!data) return;
 
-        // Poll every 2 seconds
-        setInterval(updateStatus, 2000);
-        updateStatus(); // Initial call
+                lastTimestamp = new Date(data.timestamp).getTime();
+                document.getElementById('current-task').innerText = data.current_task;
+                document.getElementById('next-goal').innerText = data.next_goal;
+                document.getElementById('progress-text').innerText = `${data.phase_num}/${data.total_phases}`;
+                
+                const pct = Math.round((data.phase_num / data.total_phases) * 100);
+                document.getElementById('percent-text').innerText = `${pct}%`;
+                document.getElementById('progress-bar').style.width = `${pct}%`;
+
+                // Log Sync
+                const logBox = document.getElementById('log-container');
+                if (data.logs.length > 0) {
+                    logBox.innerHTML = data.logs.map(log => `
+                        <div class="flex gap-2">
+                            <span class="text-blue-500 opacity-50">›</span>
+                            <span class="text-gray-300">${log}</span>
+                        </div>
+                    `).join('');
+                }
+
+                // Mermaid Sync
+                if (data.mermaid_code && data.mermaid_code !== lastMermaidCode) {
+                    lastMermaidCode = data.mermaid_code;
+                    const { svg } = await mermaid.render('mermaid-svg', data.mermaid_code);
+                    document.getElementById('mermaid-container').innerHTML = svg;
+                }
+
+                // Scheduler Sync
+                if (data.scheduled_tasks) {
+                    const sList = document.getElementById('scheduler-list');
+                    if (data.scheduled_tasks.length > 0) {
+                        sList.innerHTML = data.scheduled_tasks.map(t => `
+                            <div class="p-3 bg-white/5 rounded-lg border border-white/5 flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold text-sm text-white">${t.name}</p>
+                                    <p class="text-[10px] text-gray-500 font-mono">${t.command}</p>
+                                </div>
+                                <div class="px-2 py-1 bg-purple-500/20 text-purple-400 text-[10px] rounded font-bold">
+                                    ${t.trigger_type}
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                // Hooks Sync
+                if (data.hooks && data.hooks.on) {
+                    const hList = document.getElementById('hooks-list');
+                    const hookKeys = Object.keys(data.hooks.on);
+                    if (hookKeys.length > 0) {
+                        hList.innerHTML = hookKeys.map(k => `
+                            <div class="p-3 bg-white/5 rounded-lg border border-white/5 space-y-1">
+                                <p class="text-[10px] uppercase font-bold text-yellow-500">${k}</p>
+                                <p class="text-xs text-gray-400">${data.hooks.on[k].length} actions registered</p>
+                            </div>
+                        `).join('');
+                    }
+                }
+            };
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        }
+
+        setInterval(updateStatus, 3000);
+        updateStatus();
     </script>
 </body>
 </html>

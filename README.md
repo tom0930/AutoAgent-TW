@@ -1,6 +1,6 @@
 # AutoAgent-TW: Advanced Autonomous Agent System
 
-[![Version](https://img.shields.io/badge/version-1.5.0--v0.3--transparency-blue)](https://github.com/tom0930/AutoAgent-TW)
+[![Version](https://img.shields.io/badge/version-1.6.0--autonomous--scheduling-blue)](https://github.com/tom0930/AutoAgent-TW)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 🚀 繁體中文介紹 (Introduction)
@@ -10,30 +10,24 @@
 
 ### 核心功能 (Key Features)
 
-1.  **一鍵建構 (Auto-Build)**: 使用 `/aa-auto-build` 啟動全自動開發模式。
-2.  **自我修復 (Self-Repair)**: 當代碼測試失敗時，系統會自動診斷並重寫，直到通過（最多 3 輪）。
-3.  **三位一體 Agent**:
-    - **Builder**: 執行開發與實作。
-    - **QA**: 嚴格的品質把關。
-    - **Guardian**: 安全審計與 Checkpoint 管理。
-4.  **中斷恢復**: 指令中斷後可使用 `/aa-resume` 無縫恢復上次進度。
-5.  **視覺化儀表板 (Visual Dashboard)**: v0.3.0 引入的透明度升級，即時查看執行樹、日誌流與 LINE 異常警報。
+1.  **自主排程 (Auto-Schedule)**: v1.6.0 引入 `/aa-schedule` 守護行程，支援 Cron/Interval 定時執行任務。
+2.  **事件驅動 (Event-Driven)**: 整合 Git Hooks 與 CI 事件，當 Git 提交或 CI 失敗時自動啟動修復鏈。
+3.  **智能修復 (Adaptive-Repair)**: 基於趨勢與多樣性分析的動態修復循環，不再受限於固定三輪。
+4.  **任務鏈 (Task Chaining)**: 使用 `/aa-chain` 組合複雜的條件執行管線 (`&&`, `||`, `|`)。
+5.  **視覺化儀表板 (Visual Dashboard)**: 即時查看執行樹、日誌流、排程任務與事件鉤子。
     - 開啟路徑：`.agents/skills/status-notifier/templates/status.html`
 
 ---
 
-## 🛠 安裝步驟 (Installation)
+## 🛠 安裝與指令 (Commands)
 
-1.  **環境要求**:
-    - Antigravity IDE
-    - Git / Node.js / Python 3.10+
-2.  **下載與配置**:
-    ```bash
-    git clone https://github.com/tom0930/AutoAgent-TW.git
-    cd AutoAgent-TW
-    ```
-3.  **註冊 Skills**:
-    將 `AutoAgent-TW` 目錄下的核心邏輯註冊到 Antigravity 技能系統（詳見 `aa-installer` 腳本）。
+| 指令 | 功能描述 |
+|:---:|:---|
+| `/aa-auto-build` | 啟動全自動開發模式 |
+| `/aa-schedule` | 管理定時排程任務與背景守護行程 |
+| `/aa-chain` | 執行條件式任務鏈組合 |
+| `/aa-progress` | 查看當前開發進度與儀表板連結 |
+| `/aa-version` | 查詢系統版本與變更日誌 |
 
 ---
 
@@ -50,9 +44,10 @@
 
 **AutoAgent-TW** is an autonomous agent system for Antigravity IDE. It orchestrates Builder, QA, and Guardian agents to automate full-stack development cycles.
 
-- **Auto-Build**: One command to build projects end-to-end.
-- **Self-Fix**: Automated bug diagnostic and repair loops.
-- **Guardian**: Integrated security auditing and state management.
+- **Autonomous Scheduling**: Background daemon for cron-based task execution.
+- **Event-Driven**: Git hooks and CI failure triggers for automated recovery.
+- **Adaptive Repair**: Intelligence-based repair loops with trend analysis.
+- **Task Piping**: Flexible command chaining with conditional logic.
 
 ---
 *Created by [tom0930](https://github.com/tom0930)*

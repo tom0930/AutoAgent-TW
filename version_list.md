@@ -1,5 +1,23 @@
 # Version List (Changelog) - AutoAgent-TW
 
+## [v1.6.0] - 2026-03-31
+### Added (Autonomous Scheduling & Event Loop)
+- **自主排程守護行程 (Scheduler Daemon)**: 使用 APScheduler 支援時間觸發 (Cron/Interval) 自動執行任務。
+- **事件驅動鉤子 (Event Hooks)**: 整合 Git `post-commit` 與 CI 失敗自動觸發修復流程。
+- **智能修復終止邏輯 (Adaptive Repair)**: 引入趨勢分析與策略多樣性評分，動態決定修復輪次 (最高 6 輪)。
+- **任務鏈組合 (Task Chaining)**: 新增 `/aa-chain` 指令，支援 `&&`, `||`, `|` 條件執行管線。
+- **儀表板升級**: 儀表板新增排程任務與事件鉤子即時預覽標籤頁。
+
+### 📁 新增/修改文件 (@file:)
+- `scripts/scheduler_daemon.py`: 背景排程核心元件。
+- `scripts/aa_schedule_cli.py`: 排程管理與 Hook 註冊工具。
+- `scripts/event_handler.py`: 事件分發中心。
+- `scripts/repair_loop_strategy.py`: 智能修復決策引擎。
+- `scripts/aa_chain_orchestrator.py`: 任務鏈執行核心。
+- `_agents/workflows/aa-schedule.md` & `aa-chain.md`: 新增排程與任務鏈工作流。
+
+---
+
 ## [v1.5.0] - 2026-03-31
 ### Added (v0.3.0 Transparency Upgrade)
 - **視覺化儀表板 (Status Dashboard)**: 提供即時執行進度、下一步標與狀態顯示。
