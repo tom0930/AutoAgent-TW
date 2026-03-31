@@ -16,6 +16,41 @@ import roadmap_parser
 import line_notifier
 
 def update_status(task, next_goal, phase, total_phases, status="running", logs=None, repair_round=0):
+    # Auto-detect Phase and Total
+    if phase == 1 and total_phases == 5:
+        try:
+            # Try mapping from STATE.md or config.json
+            config_file = Path(".planning/config.json")
+            if config_file.exists():
+                with open(config_file, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+                    # We can use total_phases from config if we added it, but let's check roadmap
+            
+            roadmap_file = Path(".planning/ROADMAP.md")
+            if roadmap_file.exists():
+                with open(roadmap_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    import re
+                    phases = re.findall(r'Phase (\d+):', content)
+                    if phases:
+                        total_phases = max(int(p) for p in phases)
+            
+            state_md = Path(".planning/STATE.md")
+            if state_md.exists():
+                with open(state_md, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    done_phases = re.findall(r'Phase (\d+):.*\[DONE\]', content)
+                    if done_phases:
+                        # Current phase is usually the max done + 1, or just max done if all done
+                        max_done = max(int(p) for p in done_phases)
+                        if max_done < total_phases:
+                            phase = max_done + 1
+                        else:
+                            phase = total_phases
+
+        except:
+            pass
+
     # Ensure current working directory is z:\AutoAgent-TW or similar
     state_dir = Path(".agent-state")
     if not state_dir.exists():

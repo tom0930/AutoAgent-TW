@@ -31,7 +31,7 @@ def update_task_status(task_id, status):
     if not TASKS_FILE.exists():
         return
     try:
-        with portalocker.Lock(TASKS_FILE, "r+", timeout=10) as f:
+        with portalocker.Lock(TASKS_FILE, "r+", timeout=10, encoding="utf-8") as f:
             tasks = json.load(f)
             
             changed = False
@@ -112,7 +112,7 @@ class SchedulerDaemon:
 
     def _has_definition_changed(self):
         try:
-            with portalocker.Lock(TASKS_FILE, "r", timeout=5) as f:
+            with portalocker.Lock(TASKS_FILE, "r", timeout=5, encoding="utf-8") as f:
                 current = json.load(f)
             
             # Create a thumbprint of definitions
@@ -126,7 +126,7 @@ class SchedulerDaemon:
 
     def _reload_tasks(self):
         try:
-            with portalocker.Lock(TASKS_FILE, "r", timeout=5) as f:
+            with portalocker.Lock(TASKS_FILE, "r", timeout=5, encoding="utf-8") as f:
                 current_tasks = json.load(f)
 
             active_ids = set()
