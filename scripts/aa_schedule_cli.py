@@ -43,11 +43,23 @@ def list_tasks():
 
 def add_task(name, trigger, params, command):
     tasks = load_tasks()
+    param_dict = None
     try:
-        # Validate params
+        # Try standard JSON first
         param_dict = json.loads(params)
-    except Exception as e:
-        print(f"Error parsing params JSON: {e}")
+    except Exception:
+        try:
+            # Fallback for shell-mangled strings (e.g. single quotes from powershell/cmd)
+            import ast
+            parsed = ast.literal_eval(params)
+            if isinstance(parsed, dict):
+                param_dict = parsed
+        except:
+            pass
+
+    if param_dict is None:
+        print(f"Error: Could not parse params. Expected JSON like '{{\"minutes\": 10}}'.")
+        print(f"Received: {params}")
         return
 
     new_task = {
