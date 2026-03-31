@@ -26,11 +26,30 @@ def log_message(msg):
     with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(formatted + "\n")
 
+def update_task_status(task_id, status):
+    if not TASKS_FILE.exists():
+        return
+    try:
+        with open(TASKS_FILE, "r", encoding="utf-8") as f:
+            tasks = json.load(f)
+        
+        changed = False
+        for t in tasks:
+            if t.get("id") == task_id:
+                t["last_run"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                t["last_status"] = status
+                changed = True
+                break
+        
+        if changed:
+            with open(TASKS_FILE, "w", encoding="utf-8") as f:
+                json.dump(tasks, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        log_message(f"Error updating task status for {task_id}: {e}")
+
 def execute_task(task_id, cmd):
     log_message(f"Starting scheduled task: {task_id} :: CMD: {cmd}")
     try:
-        # Wrap the command as it might be a single string 'aa-help' etc.
-        # Use full path for python scripts if needed.
         process = subprocess.Popen(
             cmd,
             shell=True,
@@ -43,13 +62,15 @@ def execute_task(task_id, cmd):
         
         if process.returncode == 0:
             log_message(f"Task {task_id} completed successfully.")
+            update_task_status(task_id, "success")
         else:
             log_message(f"Task {task_id} failed with exit code {process.returncode}. Error: {stderr}")
-            # Potentially update status notifier for v1.5.0 dashboard integration
+            update_task_status(task_id, "fail")
             update_dashboard(f"Scheduled Task {task_id} FAILED", "Manual Investigation Required", "fail")
             
     except Exception as e:
         log_message(f"Exception during task {task_id} execution: {e}")
+        update_task_status(task_id, "error")
 
 def update_dashboard(task_name, next_goal, status):
     # Integration with v1.5.0 status-notifier
@@ -75,9 +96,26 @@ class SchedulerDaemon:
 
         mtime = os.path.getmtime(TASKS_FILE)
         if mtime > self.last_mtime:
-            log_message("Detected changes in scheduled_tasks.json, reloading...")
+            # Check if task definitions (name/trigger/cmd) actually changed
+            # to avoid reloading just because 'last_run' changed
+            if self._has_definition_changed():
+                log_message("Detected task definition changes, reloading scheduler...")
+                self._reload_tasks()
             self.last_mtime = mtime
-            self._reload_tasks()
+
+    def _has_definition_changed(self):
+        try:
+            with open(TASKS_FILE, "r", encoding="utf-8") as f:
+                current = json.load(f)
+            
+            # Create a thumbprint of definitions
+            thumbprint = {t['id']: (t['name'], t['trigger_type'], t['params'], t['command']) for t in current}
+            if not hasattr(self, '_last_thumbprint') or thumbprint != self._last_thumbprint:
+                self._last_thumbprint = thumbprint
+                return True
+            return False
+        except:
+            return True
 
     def _reload_tasks(self):
         try:
