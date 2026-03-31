@@ -194,17 +194,28 @@
                 if (data.scheduled_tasks) {
                     const sList = document.getElementById('scheduler-list');
                     if (data.scheduled_tasks.length > 0) {
-                        sList.innerHTML = data.scheduled_tasks.map(t => `
-                            <div class="p-3 bg-white/5 rounded-lg border border-white/5 flex justify-between items-center">
-                                <div>
-                                    <p class="font-bold text-sm text-white">${t.name}</p>
-                                    <p class="text-[10px] text-gray-500 font-mono">${t.command}</p>
+                        sList.innerHTML = data.scheduled_tasks.map(t => {
+                            const statusColor = t.last_status === 'success' ? 'text-green-400' : (t.last_status === 'fail' ? 'text-red-400' : 'text-gray-500');
+                            return `
+                                <div class="p-3 bg-white/5 rounded-lg border border-white/5 flex justify-between items-center">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <p class="font-bold text-sm text-white">${t.name}</p>
+                                            <span class="text-[10px] px-1.5 py-0.5 bg-purple-500/10 text-purple-400 rounded border border-purple-500/20">${t.trigger_type}</span>
+                                        </div>
+                                        <p class="text-[10px] text-gray-500 font-mono mt-1">${t.command}</p>
+                                        <div class="flex items-center gap-3 mt-2">
+                                            <p class="text-[10px] text-gray-400">Last Run: <span class="text-gray-300">${t.last_run || 'Never'}</span></p>
+                                            <p class="text-[10px] font-bold ${statusColor}">Status: ${t.last_status || 'Idle'}</p>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 bg-gray-800/50 rounded-full">
+                                         <i data-lucide="${t.last_status === 'success' ? 'check-circle' : (t.last_status === 'fail' ? 'x-circle' : 'activity')}" class="w-4 h-4 ${statusColor}"></i>
+                                    </div>
                                 </div>
-                                <div class="px-2 py-1 bg-purple-500/20 text-purple-400 text-[10px] rounded font-bold">
-                                    ${t.trigger_type}
-                                </div>
-                            </div>
-                        `).join('');
+                            `;
+                        }).join('');
+                        lucide.createIcons(); // Re-render logic for new icons
                     }
                 }
 
