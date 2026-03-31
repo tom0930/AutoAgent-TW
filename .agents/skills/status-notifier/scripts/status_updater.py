@@ -3,10 +3,17 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 import sys
+import io
+
+# Force UTF-8 for console output on Windows
+if hasattr(sys.stdout, 'detach'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8', errors='replace')
 
 # Add script dir to path for imports
 sys.path.append(str(Path(__file__).parent))
 import roadmap_parser
+import line_notifier
 
 def update_status(task, next_goal, phase, total_phases, status="running", logs=None, repair_round=0):
     # Ensure current working directory is z:\AutoAgent-TW or similar
@@ -14,8 +21,13 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
     if not state_dir.exists():
         state_dir.mkdir(parents=True, exist_ok=True)
     
+    # Critical Alert on Failure
+    if status == "fail":
+        line_notifier.send_line_notification(f"🚨 AutoAgent-TW Failure!\nPhase {phase}: {task}\nRepair Round: {repair_round}")
+    
     state_file = state_dir / "status_state.json"
     js_file = state_dir / "status_state.js"
+    
     
     # Generate roadmap mermaid
     mermaid_code = roadmap_parser.get_roadmap_mermaid()
