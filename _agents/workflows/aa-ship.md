@@ -27,6 +27,7 @@ description: Ship Phase N / 出貨階段 N 與 PR 生成。
 2. 自動建立 Git 分支 (如果指定了 Git 工作流)。
 3. 在 `.planning/ROADMAP.md` 中將 Phase N 狀態標記為 `Completed`。
 4. 在 `.agent-state/current-phase` 更新為 `N+1`。
+5. 更新 `version_log.md`：將此階段的回應細節、主要技術實施與 `@file:` 文件清單寫入版本紀錄。
 
 ### Step 4: 建立 Pull Request (可選)
 1. 根據使用者的 Git 分支模式，建立 Pull Request 並添加 Phase 摘要。

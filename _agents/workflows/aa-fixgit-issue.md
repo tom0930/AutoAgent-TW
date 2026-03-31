@@ -36,4 +36,4 @@ git add .
 git commit -m "fix(issue): resolved issue via AutoAgent-TW"
 git push
 ```
-3. 更新 `version_list.md` 並提示完成。
+3. 更新 `version_log.md` (包含詳細回應細節與 `@file:` 文件清單) 並提示完成。
