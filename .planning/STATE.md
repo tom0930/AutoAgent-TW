@@ -5,8 +5,8 @@
 - Phase 1: Scheduler Foundation [DONE]
 - Phase 2: Event-Driven Hooks [DONE]
 - Phase 3: Adaptive Repair Loop [DONE]
-- Phase 4: Task Chaining & Pipelines [PLANNED]
-- Phase 5: Multi-Project Dashboard & QA [PENDING]
+- Phase 4: Task Chaining & Pipelines [DONE]
+- Phase 5: Multi-Project Dashboard & QA [PLANNED]
 
 ## Phase 0 summary
 - Analyzed `idea_claueloop.mf` and translated into v1.6.0 project definition and roadmap.
@@ -28,3 +28,9 @@
 - Replaced the fixed 3-round limit with dynamic termination logic (up to 6 rounds if improving).
 - Created `adaptive_fix_wrapper.py` for integration.
 - Verified via UAT: Correctly terminates on repetition/no-progress and continues on improvement.
+
+## Phase 4 summary
+- Created `aa_chain_orchestrator.py` to support multi-stage command execution.
+- Implemented conditional operators: `&&` (Success-only), `||` (Recovery-only), and `|` (Sequential).
+- Integrated chain execution with real-time dashboard status updates.
+- Created `/aa-chain` workflow documentation.

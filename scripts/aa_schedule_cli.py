@@ -110,12 +110,36 @@ def stop_daemon():
         if PID_FILE.exists():
             PID_FILE.unlink()
 
+def register_hooks():
+    git_dir = PROJECT_ROOT / ".git"
+    if not git_dir.exists():
+        print("Error: .git directory not found. Are you in a git repository?")
+        return
+    
+    hooks_dir = git_dir / "hooks"
+    hooks_dir.mkdir(parents=True, exist_ok=True)
+    
+    post_commit_file = hooks_dir / "post-commit"
+    event_handler = PROJECT_ROOT / "scripts" / "event_handler.py"
+    
+    # Create the hook script (shell script for git bash or compatible)
+    content = f"#!/bin/sh\npython \"{event_handler}\" git.post-commit &\n"
+    
+    try:
+        with open(post_commit_file, "w", encoding="utf-8") as f:
+            f.write(content)
+        # On Windows, permissions are tricky but git-bash usually handles this script.
+        print(f"Git post-commit hook registered at {post_commit_file}")
+    except Exception as e:
+        print(f"Failed to register hook: {e}")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AutoAgent-TW Scheduler CLI")
     subparsers = parser.add_subparsers(dest="subcommand")
 
     # List subcmd
     subparsers.add_parser("list", help="List all scheduled tasks")
+    subparsers.add_parser("register-hooks", help="Register git hooks for event-driven triggers")
 
     # Add subcmd
     add_p = subparsers.add_parser("add", help="Add a new task")
@@ -136,6 +160,8 @@ if __name__ == "__main__":
 
     if args.subcommand == "list":
         list_tasks()
+    elif args.subcommand == "register-hooks":
+        register_hooks()
     elif args.subcommand == "add":
         add_task(args.name, args.trigger, args.params, args.command)
     elif args.subcommand == "remove":
