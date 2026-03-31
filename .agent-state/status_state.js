@@ -1,4 +1,4 @@
-{
+window.AA_STATUS = {
     "current_task": "Sync Complete",
     "next_goal": "Waiting for user instructions",
     "phase_num": 5,
@@ -11,4 +11,4 @@
     ],
     "repair_round": 0,
     "timestamp": "2026-03-31T08:02:48.217121"
-}
+};
