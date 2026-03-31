@@ -103,8 +103,12 @@ class FallbackManager:
         return None
 
     def _model_fallback(self, error: AgentError, context: dict) -> dict:
-        current_model = context.get("current_model", "gpt-4o")
-        new_model = "gpt-4o-mini" if "gpt-4" in current_model else "gpt-3.5-turbo"
+        current_model = context.get("current_model", "Gemini 3.1 Pro (High)")
+        if "pro" in current_model.lower() or "sonnet" in current_model.lower() or "opus" in current_model.lower():
+            new_model = "Gemini 3 Flash"  # 降級至高效能、低成本的 Flash 模型
+        else:
+            new_model = "claude-3-haiku" # 若已經是便宜模型但仍失敗，交錯廠商降級
+            
         logger.warning(f"💰 觸發降級策略: 模型由 {current_model} 切換為 {new_model}")
         return {"action": "switch_model", "to": new_model}
         
