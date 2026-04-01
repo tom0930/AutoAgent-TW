@@ -29,6 +29,16 @@
         .pulse-green { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
         
+        .thinking::after {
+            content: '...';
+            display: inline-block;
+            width: 0;
+            overflow: hidden;
+            vertical-align: bottom;
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        @keyframes dots { 0%, 20% { width: 0; } 40% { width: 0.3em; } 60% { width: 0.6em; } 80%, 100% { width: 0.9em; } }
+
         .tab-btn.active { 
             background: rgba(59, 130, 246, 0.1); 
             color: #60a5fa; 
@@ -36,8 +46,8 @@
         }
         
         /* Mermaid Specific Overrides */
-        .node.running { animation: pulse-node 2s infinite; }
-        @keyframes pulse-node { 50% { opacity: 0.7; transform: scale(1.02); } }
+        .node.active rect { fill: #1d4ed8 !important; stroke: #60a5fa !important; stroke-width: 3px !important; animation: pulse-node 1.5s infinite; }
+        @keyframes pulse-node { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
         .mermaid { background: transparent; display: flex; justify-content: center; transform: scale(0.9); transition: all 0.3s ease; }
         .mermaid .label { font-weight: 600; color: #fff !important; }
 
@@ -54,26 +64,31 @@
         <div class="flex items-center gap-3">
             <div id="status-dot" class="p-2 bg-green-500 rounded-full pulse-green"></div>
             <div>
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                    System Active <span id="v-tag" class="ml-2 text-blue-500 font-mono">v1.6.0</span>
-                    <span id="repair-tag" class="hidden px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded-full">Repair #1</span>
-                </p>
-                <h1 id="current-task" class="text-xs font-bold text-white uppercase truncate max-w-[200px]">Idle</h1>
+                <div class="flex items-center gap-2">
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                        System Active <span id="v-tag" class="ml-2 text-blue-500 font-mono">v1.6.0</span>
+                    </p>
+                    <span id="repair-tag" class="hidden px-2 py-0.5 text-[8px] bg-yellow-500/20 text-yellow-500 rounded-full font-bold">REPAIRING</span>
+                </div>
+                <h1 id="current-task" class="text-xs font-bold text-white uppercase truncate max-w-[250px] thinking">Idle</h1>
             </div>
         </div>
         <div class="flex items-center gap-6">
             <div class="hidden md:flex flex-col items-end">
                 <p class="text-[10px] font-bold text-gray-500 uppercase">Phase Progress</p>
-                <p id="progress-text" class="text-xs font-bold text-blue-400">0/0</p>
+                <div class="flex items-center gap-2">
+                    <p id="progress-text" class="text-xs font-bold text-blue-400">0/0</p>
+                    <div id="activity-pulse" class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="max-w-4xl mx-auto space-y-4">
         <!-- Main Info Layer -->
-        <div class="glass rounded-xl p-4 flex items-start gap-4">
+        <div class="glass rounded-xl p-4 flex items-start gap-4 border-l-4 border-blue-500">
             <div class="p-3 bg-blue-500/10 rounded-xl text-blue-400 shrink-0">
-                <i data-lucide="target" class="w-6 h-6"></i>
+                <i data-lucide="zap" class="w-6 h-6 animate-bounce"></i>
             </div>
             <div class="space-y-1">
                 <h3 class="text-sm font-bold text-blue-400 uppercase tracking-tighter">Current Objective</h3>
@@ -133,7 +148,7 @@
                  <span id="percent-text" class="text-xs font-mono text-blue-400">0%</span>
             </div>
             <div class="w-full bg-gray-800/50 rounded-full h-1.5 overflow-hidden">
-                <div id="progress-bar" class="bg-blue-500 h-full transition-all duration-700" style="width: 0%"></div>
+                <div id="progress-bar" class="bg-blue-500 h-full transition-all duration-700 shadow-[0_0_10px_#3b82f6]" style="width: 0%"></div>
             </div>
         </div>
     </div>
@@ -141,10 +156,16 @@
     <script id="status-script"></script>
     <script>
         lucide.createIcons();
-        mermaid.initialize({ startOnLoad: false, theme: 'dark', flowchart: { htmlLabels: true } });
+        mermaid.initialize({ 
+            startOnLoad: false, 
+            theme: 'dark', 
+            securityLevel: 'loose',
+            flowchart: { htmlLabels: true, curve: 'basis' } 
+        });
         
         let lastMermaidCode = "";
         let lastTimestamp = Date.now();
+        let lastLogCount = 0;
 
         function showTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
@@ -164,29 +185,60 @@
                 if (!data) return;
 
                 lastTimestamp = new Date(data.timestamp).getTime();
-                document.getElementById('current-task').innerText = data.current_task;
+                
+                // Color mapping
+                const statusColors = {
+                    'running': 'bg-green-500',
+                    'fail': 'bg-red-500',
+                    'done': 'bg-blue-500',
+                    'idle': 'bg-gray-500'
+                };
+                
+                const dot = document.getElementById('status-dot');
+                dot.className = `p-2 rounded-full pulse-green ${statusColors[data.status] || 'bg-gray-500'}`;
+                
+                const taskEl = document.getElementById('current-task');
+                taskEl.innerText = data.current_task;
+                if (data.status === 'running') taskEl.classList.add('thinking');
+                else taskEl.classList.remove('thinking');
+
                 document.getElementById('next-goal').innerText = data.next_goal;
                 document.getElementById('progress-text').innerText = `${data.phase_num}/${data.total_phases}`;
                 
                 const pct = Math.round((data.phase_num / data.total_phases) * 100);
                 document.getElementById('percent-text').innerText = `${pct}%`;
                 document.getElementById('progress-bar').style.width = `${pct}%`;
+                
+                if (data.repair_round > 0) {
+                    const rTag = document.getElementById('repair-tag');
+                    rTag.innerText = `REPAIR #${data.repair_round}`;
+                    rTag.classList.remove('hidden');
+                } else {
+                    document.getElementById('repair-tag').classList.add('hidden');
+                }
 
-                // Log Sync
+                // Log Sync with Auto-scroll
                 const logBox = document.getElementById('log-container');
-                if (data.logs.length > 0) {
+                if (data.logs && data.logs.length !== lastLogCount) {
+                    lastLogCount = data.logs.length;
                     logBox.innerHTML = data.logs.map(log => `
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 fade-in">
                             <span class="text-blue-500 opacity-50">›</span>
-                            <span class="text-gray-300">${log}</span>
+                            <span class="text-gray-300 font-mono">${log}</span>
                         </div>
                     `).join('');
+                    logBox.scrollTop = logBox.scrollHeight;
                 }
 
                 // Mermaid Sync
                 if (data.mermaid_code && data.mermaid_code !== lastMermaidCode) {
                     lastMermaidCode = data.mermaid_code;
-                    const { svg } = await mermaid.render('mermaid-svg', data.mermaid_code);
+                    // Add "active" class to current node in mermaid
+                    let enhancedCode = data.mermaid_code;
+                    const cleanTask = data.current_task.replace(/[^a-zA-Z0-9]/g, '_');
+                    // (Simple heuristic: find the node with matching text and style it)
+                    
+                    const { svg } = await mermaid.render('mermaid-svg', enhancedCode);
                     document.getElementById('mermaid-container').innerHTML = svg;
                 }
 
@@ -197,7 +249,7 @@
                         sList.innerHTML = data.scheduled_tasks.map(t => {
                             const statusColor = t.last_status === 'success' ? 'text-green-400' : (t.last_status === 'fail' ? 'text-red-400' : 'text-gray-500');
                             return `
-                                <div class="p-3 bg-white/5 rounded-lg border border-white/5 flex justify-between items-center">
+                                <div class="p-3 bg-white/5 rounded-lg border border-white/5 flex justify-between items-center hover:bg-white/10 transition-all cursor-default">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2">
                                             <p class="font-bold text-sm text-white">${t.name}</p>
@@ -206,16 +258,17 @@
                                         <p class="text-[10px] text-gray-500 font-mono mt-1">${t.command}</p>
                                         <div class="flex items-center gap-3 mt-2">
                                             <p class="text-[10px] text-gray-400">Last Run: <span class="text-gray-300">${t.last_run || 'Never'}</span></p>
+                                            <p class="text-[10px] text-blue-400 font-bold">Next Run: <span class="${t.next_run ? 'animate-pulse' : ''}">${t.next_run || 'Calculating...'}</span></p>
                                             <p class="text-[10px] font-bold ${statusColor}">Status: ${t.last_status || 'Idle'}</p>
                                         </div>
                                     </div>
                                     <div class="p-2 bg-gray-800/50 rounded-full">
-                                         <i data-lucide="${t.last_status === 'success' ? 'check-circle' : (t.last_status === 'fail' ? 'x-circle' : 'activity')}" class="w-4 h-4 ${statusColor}"></i>
+                                         <i data-lucide="${t.last_status === 'success' ? 'check-circle' : (t.last_status === 'fail' ? 'x-circle' : 'activity')}" class="w-4 h-4 ${statusColor} ${t.last_status === 'running' ? 'animate-spin' : ''}"></i>
                                     </div>
                                 </div>
                             `;
                         }).join('');
-                        lucide.createIcons(); // Re-render logic for new icons
+                        lucide.createIcons();
                     }
                 }
 
@@ -225,11 +278,14 @@
                     const hookKeys = Object.keys(data.hooks.on);
                     if (hookKeys.length > 0) {
                         hList.innerHTML = hookKeys.map(k => `
-                            <div class="p-3 bg-white/5 rounded-lg border border-white/5 space-y-1">
-                                <p class="text-[10px] uppercase font-bold text-yellow-500">${k}</p>
+                            <div class="p-3 bg-white/5 rounded-lg border border-white/5 space-y-1 hover:border-yellow-500/30 transition-all">
+                                <p class="text-[10px] uppercase font-bold text-yellow-500 flex items-center gap-1">
+                                    <i data-lucide="link" class="w-3 h-3"></i> ${k}
+                                </p>
                                 <p class="text-xs text-gray-400">${data.hooks.on[k].length} actions registered</p>
                             </div>
                         `).join('');
+                        lucide.createIcons();
                     }
                 }
             };
@@ -238,6 +294,9 @@
 
         setInterval(updateStatus, 3000);
         updateStatus();
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>

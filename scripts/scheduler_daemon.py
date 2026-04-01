@@ -172,6 +172,31 @@ class SchedulerDaemon:
         except Exception as e:
             log_message(f"Error reloading tasks: {e}")
 
+    def _update_next_runs(self):
+        """
+        [Phase 5 Expansion] 讀取 APScheduler 的 Job 資訊，更新到 JSON 中供 Dashboard 顯示「下次執行時間」。
+        """
+        if not TASKS_FILE.exists(): return
+        try:
+            with portalocker.Lock(TASKS_FILE, "r+", timeout=5, encoding="utf-8") as f:
+                tasks = json.load(f)
+                jobs = {j.id: j for j in self.scheduler.get_jobs()}
+                
+                changed = False
+                for t in tasks:
+                    jid = t.get("id")
+                    if jid in jobs and jobs[jid].next_run_time:
+                        next_dt = jobs[jid].next_run_time.strftime("%Y-%m-%d %H:%M:%S")
+                        if t.get("next_run") != next_dt:
+                            t["next_run"] = next_dt
+                            changed = True
+                
+                if changed:
+                    f.seek(0)
+                    json.dump(tasks, f, indent=2, ensure_ascii=False)
+                    f.truncate()
+        except: pass
+
     def run(self):
         log_message("AutoAgent-TW Scheduler Daemon starting...")
         self.scheduler.start()
@@ -180,7 +205,8 @@ class SchedulerDaemon:
         try:
             while True:
                 self.sync_tasks()
-                time.sleep(10) # check for config changes every 10s
+                self._update_next_runs() # 每 10 秒計算一次下次執行時間
+                time.sleep(10)
         except (KeyboardInterrupt, SystemExit):
             self.scheduler.shutdown()
             log_message("Daemon stopped.")

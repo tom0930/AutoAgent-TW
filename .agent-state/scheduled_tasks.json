@@ -6,6 +6,55 @@
     "params": {
       "minutes": 1
     },
-    "command": "python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running"
+    "command": "python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running",
+    "last_run": "2026-04-01 08:33:50",
+    "last_status": "success",
+    "next_run": "2026-04-01 08:34:50"
+  },
+  {
+    "id": "fa4f221c-e9c0-48b1-8a3f-480de31f3f38",
+    "name": "系統心跳檢查",
+    "trigger_type": "interval",
+    "params": {
+      "minutes": 2
+    },
+    "command": "aa-progress",
+    "last_run": "2026-04-01 08:33:51",
+    "last_status": "success",
+    "next_run": "2026-04-01 08:35:50"
+  },
+  {
+    "id": "28ef365d-793e-49c6-a630-53c0c96a740a",
+    "name": "Regex Test",
+    "trigger_type": "interval",
+    "params": {
+      "minutes": 2
+    },
+    "command": "aa-progress",
+    "last_run": "2026-04-01 08:33:51",
+    "last_status": "success",
+    "next_run": "2026-04-01 08:35:50"
+  },
+  {
+    "id": "8b062a0b-bd03-499b-9b26-a49f1f46f3ee",
+    "name": "系統心跳檢查",
+    "trigger_type": "interval",
+    "params": {
+      "minutes": 2
+    },
+    "command": "aa-progress",
+    "last_run": "2026-04-01 08:33:50",
+    "last_status": "success",
+    "next_run": "2026-04-01 08:35:50"
+  },
+  {
+    "id": "95ebc1f9-69dc-48fe-8ddf-7da2aa9e5aa1",
+    "name": "Hourly-QA",
+    "trigger_type": "interval",
+    "params": {
+      "hours": 1
+    },
+    "command": "aa-qa",
+    "next_run": "2026-04-01 09:09:50"
   }
 ]

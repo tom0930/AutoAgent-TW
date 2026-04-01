@@ -51,3 +51,43 @@
 
 ---
 *Created by [tom0930](https://github.com/tom0930)*
+
+---
+### [v1.7.x Update] 2026-04-01 08:33:57
+v1.7.0 Resilience Upgrade & aa-gitpush Engine Deployment: Full system robustness implemented with automated context-aware delivery and visual documentation.
+
+[Manifest]
+ .agent-state/budget.json                           |   9 +
+ .agent-state/scheduled_tasks.json                  |  51 +-
+ .agent-state/scheduler.pid                         |   1 +
+ .agent-state/status_state.js                       |  89 ++-
+ .agent-state/status_state.json                     |  90 ++-
+ .agents/logs/events.log                            |  39 +
+ .agents/logs/scheduler.log                         | 834 +++++++++++++++++++++
+ .../skills/status-notifier/templates/status.html   | 105 ++-
+ _agents/workflows/aa-discuss.md                    |  34 +-
+ _agents/workflows/aa-gitpush.md                    |  33 +
+ scripts/aa_git_pusher.py                           | 101 +++
+ .../__pycache__/budget_monitor.cpython-313.pyc     | Bin 0 -> 7283 bytes
+ scripts/resilience/budget_monitor.py               | 114 ++-
+ scripts/scheduler_daemon.py                        |  28 +-
+ 14 files changed, 1455 insertions(+), 73 deletions(-)
+
+[Test Result]: Verified via aa-gitpush-core
+[Visual Doc]: Mermaid logic appended to docs
+
+
+#### Sequence & Logic Flow
+
+```mermaid
+graph LR
+  Start --> aa_git_pusher
+  aa_git_pusher --> Done
+  Start --> budget_monitor.cpython-313
+  budget_monitor.cpython-313 --> Done
+  Start --> budget_monitor
+  budget_monitor --> Done
+  Start --> scheduler_daemon
+  scheduler_daemon --> Done
+```
+

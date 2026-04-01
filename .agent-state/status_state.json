@@ -1,13 +1,87 @@
 {
-    "current_task": "Chain: Finished",
+    "current_task": "Progress Check",
     "next_goal": "None set",
-    "phase_num": 1,
+    "phase_num": 5,
     "total_phases": 5,
-    "status": "done",
-    "mermaid_code": "graph TD\n  P1[\"Phase 1: Scheduler Foundation (`/aa-schedule`)\"]:::done\n  P2[\"Phase 2: Event-Driven Hooks\"]:::done\n  P3[\"Phase 3: Adaptive Repair Loop\"]:::done\n  P4[\"Phase 4: Task Chaining & Pipelines (`/aa-chain`)\"]:::running\n  P5[\"Phase 5: Multi-Project Dashboard & QA\"]:::pending\n  P1 --> P2\n  P2 --> P3\n  P3 --> P4\n  P4 --> P5\n  classDef done fill:#238636,color:white,stroke:none\n  classDef running fill:#4ade80,color:black,stroke-width:3px,stroke:#fff\n  classDef pending fill:#21262d,color:#8b949e,stroke:#30363d\n  classDef fail fill:#f85149,color:white,stroke:none",
-    "logs": [
-        "Execution chain completed."
-    ],
+    "status": "idle",
+    "mermaid_code": "graph TD\n  P1[\"Phase 1: 錯誤分類引擎 (Error Classification System)\"]:::done\n  P2[\"Phase 2: 指數退避重試引擎 (Low-Level Retry Engine)\"]:::done\n  P3[\"Phase 3: 智能降級與熔斷策略 (Fallback & Circuit Breaker)\"]:::done\n  P4[\"Phase 4: Token 與成本監控 (Cost & Token Monitoring)\"]:::done\n  P5[\"Phase 5: 致命錯誤人工介入流程 (Human-in-the-loop for FATAL)\"]:::done\n  P1 --> P2\n  P2 --> P3\n  P3 --> P4\n  P4 --> P5\n  classDef done fill:#238636,color:white,stroke:none\n  classDef running fill:#4ade80,color:black,stroke-width:3px,stroke:#fff\n  classDef pending fill:#21262d,color:#8b949e,stroke:#30363d\n  classDef fail fill:#f85149,color:white,stroke:none",
+    "logs": [],
     "repair_round": 0,
-    "timestamp": "2026-03-31T21:10:51.417799"
+    "scheduled_tasks": [
+        {
+            "id": "478d962a-9708-4f7e-ac9c-95e6030d6061",
+            "name": "QA-Verification",
+            "trigger_type": "interval",
+            "params": {
+                "minutes": 1
+            },
+            "command": "python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running",
+            "last_run": "2026-04-01 08:32:50",
+            "last_status": "success",
+            "next_run": "2026-04-01 08:33:50"
+        },
+        {
+            "id": "fa4f221c-e9c0-48b1-8a3f-480de31f3f38",
+            "name": "系統心跳檢查",
+            "trigger_type": "interval",
+            "params": {
+                "minutes": 2
+            },
+            "command": "aa-progress",
+            "last_run": "2026-04-01 08:31:50",
+            "last_status": "success",
+            "next_run": "2026-04-01 08:33:50"
+        },
+        {
+            "id": "28ef365d-793e-49c6-a630-53c0c96a740a",
+            "name": "Regex Test",
+            "trigger_type": "interval",
+            "params": {
+                "minutes": 2
+            },
+            "command": "aa-progress",
+            "last_run": "2026-04-01 08:31:50",
+            "last_status": "success",
+            "next_run": "2026-04-01 08:33:50"
+        },
+        {
+            "id": "8b062a0b-bd03-499b-9b26-a49f1f46f3ee",
+            "name": "系統心跳檢查",
+            "trigger_type": "interval",
+            "params": {
+                "minutes": 2
+            },
+            "command": "aa-progress",
+            "last_run": "2026-04-01 08:31:51",
+            "last_status": "success",
+            "next_run": "2026-04-01 08:33:50"
+        },
+        {
+            "id": "95ebc1f9-69dc-48fe-8ddf-7da2aa9e5aa1",
+            "name": "Hourly-QA",
+            "trigger_type": "interval",
+            "params": {
+                "hours": 1
+            },
+            "command": "aa-qa",
+            "next_run": "2026-04-01 09:09:50"
+        }
+    ],
+    "hooks": {
+        "on": {
+            "git.post-commit": [
+                "python .agents/skills/status-notifier/scripts/status_updater.py --task 'Git Hook: Post-Commit' --status running",
+                "aa-progress"
+            ],
+            "ci.failure": [
+                "python .agents/skills/status-notifier/scripts/status_updater.py --task 'CI Recovery: Auto-Fixing' --status fail",
+                "aa-fix --auto"
+            ],
+            "daily.scan": [
+                "aa-guard --auto"
+            ]
+        }
+    },
+    "timestamp": "2026-04-01T08:33:50.655750"
+}
 }
