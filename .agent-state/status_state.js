@@ -1,10 +1,10 @@
 window.AA_STATUS = {
     "current_task": "'QA-Triggered'",
     "next_goal": "None set",
-    "phase_num": 5,
-    "total_phases": 5,
+    "phase_num": 6,
+    "total_phases": 112,
     "status": "running",
-    "mermaid_code": "graph TD\n  P1[\"Phase 1: 錯誤分類引擎 (Error Classification System)\"]:::done\n  P2[\"Phase 2: 指數退避重試引擎 (Low-Level Retry Engine)\"]:::done\n  P3[\"Phase 3: 智能降級與熔斷策略 (Fallback & Circuit Breaker)\"]:::done\n  P4[\"Phase 4: Token 與成本監控 (Cost & Token Monitoring)\"]:::done\n  P5[\"Phase 5: 致命錯誤人工介入流程 (Human-in-the-loop for FATAL)\"]:::done\n  P1 --> P2\n  P2 --> P3\n  P3 --> P4\n  P4 --> P5\n  classDef done fill:#238636,color:white,stroke:none\n  classDef running fill:#4ade80,color:black,stroke-width:3px,stroke:#fff\n  classDef pending fill:#21262d,color:#8b949e,stroke:#30363d\n  classDef fail fill:#f85149,color:white,stroke:none",
+    "mermaid_code": "graph TD\n  classDef done fill:#238636,color:white,stroke:none\n  classDef running fill:#4ade80,color:black,stroke-width:3px,stroke:#fff\n  classDef pending fill:#21262d,color:#8b949e,stroke:#30363d\n  classDef fail fill:#f85149,color:white,stroke:none",
     "logs": [],
     "repair_round": 0,
     "scheduled_tasks": [
@@ -16,9 +16,9 @@ window.AA_STATUS = {
                 "minutes": 1
             },
             "command": "python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running",
-            "last_run": "2026-04-01 08:42:50",
+            "last_run": "2026-04-01 08:47:50",
             "last_status": "success",
-            "next_run": "2026-04-01 08:43:50"
+            "next_run": "2026-04-01 08:48:50"
         },
         {
             "id": "fa4f221c-e9c0-48b1-8a3f-480de31f3f38",
@@ -28,9 +28,9 @@ window.AA_STATUS = {
                 "minutes": 2
             },
             "command": "aa-progress",
-            "last_run": "2026-04-01 08:41:50",
+            "last_run": "2026-04-01 08:47:51",
             "last_status": "success",
-            "next_run": "2026-04-01 08:43:50"
+            "next_run": "2026-04-01 08:49:50"
         },
         {
             "id": "28ef365d-793e-49c6-a630-53c0c96a740a",
@@ -40,9 +40,9 @@ window.AA_STATUS = {
                 "minutes": 2
             },
             "command": "aa-progress",
-            "last_run": "2026-04-01 08:41:51",
+            "last_run": "2026-04-01 08:47:50",
             "last_status": "success",
-            "next_run": "2026-04-01 08:43:50"
+            "next_run": "2026-04-01 08:49:50"
         },
         {
             "id": "8b062a0b-bd03-499b-9b26-a49f1f46f3ee",
@@ -52,9 +52,9 @@ window.AA_STATUS = {
                 "minutes": 2
             },
             "command": "aa-progress",
-            "last_run": "2026-04-01 08:41:51",
+            "last_run": "2026-04-01 08:47:50",
             "last_status": "success",
-            "next_run": "2026-04-01 08:43:50"
+            "next_run": "2026-04-01 08:49:50"
         },
         {
             "id": "95ebc1f9-69dc-48fe-8ddf-7da2aa9e5aa1",
@@ -82,5 +82,5 @@ window.AA_STATUS = {
             ]
         }
     },
-    "timestamp": "2026-04-01T08:43:50.647590"
+    "timestamp": "2026-04-01T08:48:50.593379"
 };

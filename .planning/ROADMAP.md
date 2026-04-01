@@ -1,23 +1,17 @@
 # Roadmap: v1.7.0 Resilience Upgrade
 
-## Phase 1: 錯誤分類引擎 (Error Classification System)
-- `error_classifier.py`: 精準分類為 5 個等級 (TRANSIENT, RECOVERABLE, DEPENDENCY, LOGICAL, FATAL)
-- 從 Traceback 識別具體錯誤狀態 (Rate Limit, Timeout, API Down, Context Overflow)
+- [X] Phase 1: 錯誤分類引擎 (Error Classification System) [DONE]
+- [X] Phase 2: 指數退避重試引擎 (Low-Level Retry Engine) [DONE]
+- [X] Phase 3: 智能降級與熔斷策略 (Fallback & Circuit Breaker) [DONE]
+- [X] Phase 4: Token 與成本監控 (Cost & Token Monitoring) [DONE]
+- [X] Phase 5: 致命錯誤人工介入流程 (Human-in-the-loop for FATAL) [DONE]
 
-## Phase 2: 指數退避重試引擎 (Low-Level Retry Engine)
-- `retry_engine.py`: 針對 TRANSIENT 等級錯誤使用「指數退避 (Exponential Backoff) + 隨機抖動 (Jitter)」自動重試
-- 引入 `@with_retry` 裝飾器增強核心方法的抗壓力
+## 🌟 Expansion Phases (Current)
+- [X] Phase 111: aa-gitpush 智慧交付與文檔同步自組引擎 [DONE]
+- [ ] Phase 112: 跨專案資源池預算治理 (Cross-Project Budgeting) [PENDING]
 
-## Phase 3: 智能降級與熔斷策略 (Fallback & Circuit Breaker)
-- `fallback_manager.py`: 當模型或服務達到極限時降級
-- 處理 Model Fallback (轉為 mini 模型) 與 Context Compression (上下文自動摘要縮減)
-- `circuit_breaker.py`: 保護外部 API (若連續失敗，啟動熔斷)
-
-## Phase 4: Token 與成本監控 (Cost & Token Monitoring)
-- 新增 Token 消耗累計計算
-- 引入「預算限制」，當循環浪費大量額度時阻斷執行 (轉為 FATAL)
-- 將消耗推播顯示至 `status.html` 儀表板
-
-## Phase 5: 致命錯誤人工介入流程 (Human-in-the-loop for FATAL)
-- 遇到 FATAL 等級錯誤，主動發送確認請求（經由 CLI 中斷或 LINE 訊息）
-- 系統暫停執行 (Pause)，等待使用者批准 (承認風險、選擇強制執行、或輸入新方向) 後才能解鎖
+## 已完成核心目標
+*   實現 5 級錯誤分類邏輯。
+*   實作 Exponential Backoff + Jitter 重試機制。
+*   達成 Phase-Based 資源追蹤與預算監控。
+*   建立智慧型 Git 交付與 Mermaid 文件同步機制。
