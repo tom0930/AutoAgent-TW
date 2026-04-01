@@ -16,15 +16,20 @@ import roadmap_parser
 import line_notifier
 
 def update_status(task, next_goal, phase, total_phases, status="running", logs=None, repair_round=0):
+    version = "1.0.0"
+    try:
+        config_file = Path(".planning/config.json")
+        if config_file.exists():
+            with open(config_file, "r", encoding="utf-8") as f:
+                config = json.load(f)
+                version = config.get("version", "1.0.0")
+    except:
+        pass
+
     # Auto-detect Phase and Total
     if phase == 1 and total_phases == 5:
         try:
-            # Try mapping from STATE.md or config.json
-            config_file = Path(".planning/config.json")
-            if config_file.exists():
-                with open(config_file, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-                    # We can use total_phases from config if we added it, but let's check roadmap
+            # We can use total_phases from config if we added it, but let's check roadmap
             
             roadmap_file = Path(".planning/ROADMAP.md")
             if roadmap_file.exists():
@@ -89,6 +94,7 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
         except: pass
 
     data = {
+        "version": version,
         "current_task": task,
         "next_goal": next_goal,
         "phase_num": phase,

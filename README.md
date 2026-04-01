@@ -31,6 +31,24 @@
 
 ---
 
+## 🐣 新手安裝導引大補帖 (Beginner Guide)
+
+歡迎來到 AutoAgent-TW！我們為非開發者或第一次使用的朋友準備了「一鍵安裝包」。
+
+### 1. 取得安裝檔
+前往本專案的 **GitHub Releases** 頁面，下載最新的 `AutoAgent-TW_Setup.exe`。
+
+### 2. 驗證安全性 (SHA256)
+由於程式是由 Python 打包而成，Windows SmartScreen 可能會跳出「未知的發行者」警告。您可以透過比對發布頁面上的 **SHA256 校驗碼** （如 `RELEASE_V1.7.0.md` 所列）來確認檔案是否被竄改。若校驗碼一致，請點選「其他資訊」 -> 「仍要執行」。
+
+### 3. 一鍵安裝與執行
+雙擊執行 `.exe` 後，系統會自動為您：
+1. 偵測並建立隔離的 Python 虛擬環境 (`venv`)
+2. 自動下載並安裝所需的 `requirements.txt` 依賴
+3. 提示輸入 API Key，隨後啟動背景排程與視覺化儀表板
+
+---
+
 ## ⚖️ 免責聲明 (Disclaimer)
 
 使用本專案前請務必閱讀以下條款：
@@ -181,5 +199,36 @@ graph LR
   aa_installer_logic --> Done
   Start --> aa_update_manager
   aa_update_manager --> Done
+```
+
+
+---
+### [v1.7.x Update] 2026-04-01 10:39:53
+feat: Phase 113 Completed - Finalize Auto-Bumper, Beginner Guide & Sync IDLE Bug
+
+[Manifest]
+ .agent-state/scheduled_tasks.json                  |  16 +--
+ .agent-state/status_state.js                       |  20 ++--
+ .agent-state/status_state.json                     |  20 ++--
+ .agents/logs/events.log                            |   3 +
+ .agents/logs/scheduler.log                         | 126 +++++++++++++++++++++
+ .../status-notifier/scripts/status_updater.py      |  18 ++-
+ README.md                                          |  18 +++
+ RELEASE_V1.7.0.md                                  |   1 +
+ scripts/aa_version_bumper.py                       |  52 +++++++++
+ 9 files changed, 242 insertions(+), 32 deletions(-)
+
+[Test Result]: Verified via aa-gitpush-core
+[Visual Doc]: Mermaid logic appended to docs
+
+
+#### Sequence & Logic Flow
+
+```mermaid
+graph LR
+  Start --> status_updater
+  status_updater --> Done
+  Start --> aa_version_bumper
+  aa_version_bumper --> Done
 ```
 
