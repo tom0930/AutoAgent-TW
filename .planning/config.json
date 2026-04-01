@@ -1,6 +1,6 @@
 {
-  "project_name": "AA-TW-Autonomous-Scheduling-v1.6.0",
-  "version": "1.6.0",
+  "project_name": "AutoAgent-TW-Resilience-v1.7.0",
+  "version": "1.7.0",
   "mode": "YOLO",
   "granularity": "TASK",
   "notifications": {
