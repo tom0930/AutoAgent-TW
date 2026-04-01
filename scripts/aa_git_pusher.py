@@ -52,13 +52,19 @@ def update_docs(summary_text, mermaid_code):
         print(f"Updated {VERSION_LOG.name}")
 
     # 2. Heuristic: Link scripts to feature docs
-    targets = [PROJECT_ROOT / "README.md"]
+    targets = [
+        PROJECT_ROOT / "README.md",
+        PROJECT_ROOT / "gitpush.md" # 專屬文件
+    ]
     staged_files = run_git(["diff", "--staged", "--name-only"]).splitlines()
     
     if any("scheduler" in f for f in staged_files):
         targets.append(PROJECT_ROOT / "Schedule_readme.md")
     if any("status" in f for f in staged_files):
         targets.append(PROJECT_ROOT / "Dashboard_readme.md")
+    if any("aa_git_pusher" in f for f in staged_files):
+        # Already in targets, but ensures it targets itself correctly
+        pass
         
     for target in targets:
         if target.exists():
