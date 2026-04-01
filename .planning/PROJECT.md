@@ -1,5 +1,5 @@
 # 🎯 AutoAgent-TW
-Version: 1.7.0
+Version: 1.7.2 (Guarded & Resilience)
 Status: ACTIVE
 Type: Python CLI & Autonomous Agent Workspace
 
