@@ -235,3 +235,49 @@ graph LR
   aa_version_bumper --> Done
 ```
 
+
+---
+### [v1.7.x Update] 2026-04-01 14:16:41
+fix: Dashboard Resilience & v1.7.2 Infrastructure Upgrade
+
+### ✨ Key Improvements
+- ✅ Resolved persistence and CORS issues in Dashboard
+
+[Manifest]
+  🛠️ Logic:
+    - .agents/skills/status-notifier/scripts/status_updater.py
+    - scripts/aa_git_pusher.py
+
+  🎨 UI/Dashboard:
+    - .agent-state/scheduled_tasks.json
+    - .agent-state/status_state.js
+    - .agent-state/status_state.json
+    - .agents/skills/status-notifier/templates/status.html
+    - .planning/config.json
+
+  🧪 Tests/Diag:
+    - scripts/debug/test_dashboard.py
+
+  📝 Docs:
+    - .planning/ROADMAP.md
+
+  📦 Other:
+    - .agents/logs/events.log
+    - .agents/logs/scheduler.log
+
+
+[Visual Doc]: Mermaid logic appended to docs
+
+
+#### Sequence & Logic Flow
+
+```mermaid
+graph LR
+  Start --> status_updater
+  status_updater --> Done
+  Start --> aa_git_pusher
+  aa_git_pusher --> Done
+  Start --> test_dashboard
+  test_dashboard --> Done
+```
+

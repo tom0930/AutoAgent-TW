@@ -1,6 +1,6 @@
 {
-  "project_name": "AutoAgent-TW-Resilience-v1.7.0",
-  "version": "1.7.0",
+  "project_name": "AutoAgent-TW-Resilience-v1.7.2",
+  "version": "1.7.2",
   "mode": "YOLO",
   "granularity": "TASK",
   "notifications": {
