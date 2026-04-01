@@ -204,3 +204,34 @@ graph LR
   aa_update_manager --> Done
 ```
 
+
+---
+### [v1.7.x Update] 2026-04-01 10:39:53
+feat: Phase 113 Completed - Finalize Auto-Bumper, Beginner Guide & Sync IDLE Bug
+
+[Manifest]
+ .agent-state/scheduled_tasks.json                  |  16 +--
+ .agent-state/status_state.js                       |  20 ++--
+ .agent-state/status_state.json                     |  20 ++--
+ .agents/logs/events.log                            |   3 +
+ .agents/logs/scheduler.log                         | 126 +++++++++++++++++++++
+ .../status-notifier/scripts/status_updater.py      |  18 ++-
+ README.md                                          |  18 +++
+ RELEASE_V1.7.0.md                                  |   1 +
+ scripts/aa_version_bumper.py                       |  52 +++++++++
+ 9 files changed, 242 insertions(+), 32 deletions(-)
+
+[Test Result]: Verified via aa-gitpush-core
+[Visual Doc]: Mermaid logic appended to docs
+
+
+#### Sequence & Logic Flow
+
+```mermaid
+graph LR
+  Start --> status_updater
+  status_updater --> Done
+  Start --> aa_version_bumper
+  aa_version_bumper --> Done
+```
+

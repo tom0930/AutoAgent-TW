@@ -10,6 +10,7 @@
 
 ### 📦 包含資產 (Assets)
 - **`AutoAgent-TW_Setup.exe`**: 適用於 Windows 的一鍵部署安裝程式。
+  - **SHA256**: `770e7d7e139454d86f9fc8b7379bba787d398f73096c0111a6df9db3b92b12ed`
 - **`Source code`**: 供開發者自行編譯與擴展。
 
 ### 🛠️ 快速安裝指引
