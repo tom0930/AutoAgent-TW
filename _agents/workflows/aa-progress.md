@@ -15,6 +15,8 @@ description: Check Project Progress / 查看目前的專案進度。
 1. 讀取 `.planning/PROJECT.md`。
 2. 讀取 `.planning/ROADMAP.md`。
 3. 讀取 `.planning/STATE.md` 與 `.agent-state/current-phase`。
+4. // turbo
+   - 執行 `python .agents/skills/status-notifier/scripts/cc_manager.py --check-audit` 以預檢架構審核狀態。
 
 ### Step 2: 狀態概況生成
 1. 提取所有已完成、正在進行中、待辦的 Phases。
@@ -36,7 +38,9 @@ description: Check Project Progress / 查看目前的專案進度。
 
 ### Step 5: 自動推薦下一步
 1. 基於當前進度狀態，自動顯示推薦執行的下一個命令（如 `/aa-discuss N`）。
-2. 更新並提醒任何逾期或高優先級的任務。
+2. // turbo
+   - 執行 `python .agents/skills/status-notifier/scripts/cc_manager.py --check-audit` 以檢查架構師審計狀態。
+3. 更新並提醒任何逾期或高優先級的任務。
 
 ### Step 6: 顯示視覺化儀表板
 1. 顯示儀表板本地連結：`http://localhost:9999/.agents/skills/status-notifier/templates/status.html` (請確保已啟動本地伺服器)。
