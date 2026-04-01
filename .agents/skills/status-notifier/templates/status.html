@@ -175,16 +175,19 @@
         }
 
         async function updateStatus() {
-            const oldScript = document.getElementById('status-script');
-            const newScript = document.createElement('script');
-            newScript.id = 'status-script';
-            newScript.src = '../../../../.agent-state/status_state.js?v=' + Date.now();
-            
-            newScript.onload = async () => {
-                const data = window.AA_STATUS;
-                if (!data) return;
+                const script = document.createElement('script');
+                script.id = 'status-script';
+                // [v1.7.0 Fix] 強制隨機數破解瀏覽器緩存
+                script.src = '../../../../.agent-state/status_state.js?v=' + Date.now();
+                
+                script.onload = async () => {
+                    const data = window.AA_STATUS;
+                    if (!data) return;
 
-                lastTimestamp = new Date(data.timestamp).getTime();
+                    // [v1.7.0 Fix] 動態更新版本號
+                    document.getElementById('v-tag').innerText = data.version || 'v1.7.0';
+                    
+                    lastTimestamp = new Date(data.timestamp).getTime();
                 
                 // Color mapping
                 const statusColors = {
