@@ -74,179 +74,19 @@ python scripts/aa_schedule_cli.py add --name "Daily-Cleanup" --trigger "cron" --
 3. **路徑問題**：若要執行您自訂的腳本，建議使用專案根目錄的相對路徑 (例如 `python scripts/my_test.py`)。
 
 ---
-### [v1.7.x Update] 2026-04-01 08:33:57
-v1.7.0 Resilience Upgrade & aa-gitpush Engine Deployment: Full system robustness implemented with automated context-aware delivery and visual documentation.
-
-[Manifest]
- .agent-state/budget.json                           |   9 +
- .agent-state/scheduled_tasks.json                  |  51 +-
- .agent-state/scheduler.pid                         |   1 +
- .agent-state/status_state.js                       |  89 ++-
- .agent-state/status_state.json                     |  90 ++-
- .agents/logs/events.log                            |  39 +
- .agents/logs/scheduler.log                         | 834 +++++++++++++++++++++
- .../skills/status-notifier/templates/status.html   | 105 ++-
- _agents/workflows/aa-discuss.md                    |  34 +-
- _agents/workflows/aa-gitpush.md                    |  33 +
- scripts/aa_git_pusher.py                           | 101 +++
- .../__pycache__/budget_monitor.cpython-313.pyc     | Bin 0 -> 7283 bytes
- scripts/resilience/budget_monitor.py               | 114 ++-
- scripts/scheduler_daemon.py                        |  28 +-
- 14 files changed, 1455 insertions(+), 73 deletions(-)
-
-[Test Result]: Verified via aa-gitpush-core
-[Visual Doc]: Mermaid logic appended to docs
-
-
-#### Sequence & Logic Flow
-
-```mermaid
-graph LR
-  Start --> aa_git_pusher
-  aa_git_pusher --> Done
-  Start --> budget_monitor.cpython-313
-  budget_monitor.cpython-313 --> Done
-  Start --> budget_monitor
-  budget_monitor --> Done
-  Start --> scheduler_daemon
-  scheduler_daemon --> Done
-```
-
-
----
-### [v1.7.x Update] 2026-04-01 08:44:29
-docs: initialize gitpush.md and integrate it into the aa-gitpush documentation sync engine.
-
-[Manifest]
- .agent-state/scheduled_tasks.json | 16 +++++++--------
- .agent-state/status_state.js      | 22 ++++++++++-----------
- .agent-state/status_state.json    | 18 ++++++++---------
- .agents/logs/events.log           |  3 +++
- .agents/logs/scheduler.log        | 41 +++++++++++++++++++++++++++++++++++++++
- gitpush.md                        | 27 ++++++++++++++++++++++++++
- scripts/aa_git_pusher.py          |  8 +++++++-
- 7 files changed, 106 insertions(+), 29 deletions(-)
-
-[Test Result]: Verified via aa-gitpush-core
-[Visual Doc]: Mermaid logic appended to docs
-
-
-#### Sequence & Logic Flow
-
-```mermaid
-graph LR
-  Start --> aa_git_pusher
-  aa_git_pusher --> Done
-```
-
-
----
-### [v1.7.x Update] 2026-04-01 08:49:24
-feat: Official v1.7.0 Release - Mark all Resilience phases DONE and finalize management docs.
-
-[Manifest]
- .agent-state/scheduled_tasks.json | 16 ++++++++--------
- .agent-state/status_state.js      | 24 ++++++++++++------------
- .agent-state/status_state.json    | 29 ++++++++++++++---------------
- .agents/logs/events.log           |  3 +++
- .agents/logs/scheduler.log        | 19 +++++++++++++++++++
- .planning/ROADMAP.md              | 32 +++++++++++++-------------------
- .planning/config.json             |  4 ++--
- 7 files changed, 71 insertions(+), 56 deletions(-)
-
-[Test Result]: Verified via aa-gitpush-core
-[Visual Doc]: Mermaid logic appended to docs
-
-
----
-### [v1.7.x Update] 2026-04-01 10:12:03
-feat: Official v1.7.0 Release - Milestone Complete! Add EXE Installer, Selective Update Manager, and Fixed Dashboard Observability.
-
-[Manifest]
- .agent-state/scheduled_tasks.json                  |   20 +-
- .agent-state/status_state.js                       |   26 +-
- .agent-state/status_state.json                     |   26 +-
- .agents/logs/events.log                            |    3 +
- .agents/logs/scheduler.log                         |  362 +
- .../skills/status-notifier/templates/status.html   |   21 +-
- AutoAgent-TW_Setup.spec                            |   38 +
- RELEASE_V1.7.0.md                                  |   21 +
- build/AutoAgent-TW_Setup/Analysis-00.toc           |  633 ++
- build/AutoAgent-TW_Setup/AutoAgent-TW_Setup.pkg    |  Bin 0 -> 7696844 bytes
- build/AutoAgent-TW_Setup/EXE-00.toc                |  237 +
- build/AutoAgent-TW_Setup/PKG-00.toc                |  215 +
- build/AutoAgent-TW_Setup/PYZ-00.pyz                |  Bin 0 -> 1366233 bytes
- build/AutoAgent-TW_Setup/PYZ-00.toc                |  163 +
- build/AutoAgent-TW_Setup/base_library.zip          |  Bin 0 -> 1401781 bytes
- .../localpycs/pyimod01_archive.pyc                 |  Bin 0 -> 4930 bytes
- .../localpycs/pyimod02_importers.pyc               |  Bin 0 -> 31802 bytes
- .../localpycs/pyimod03_ctypes.pyc                  |  Bin 0 -> 6450 bytes
- .../localpycs/pyimod04_pywin32.pyc                 |  Bin 0 -> 1679 bytes
- build/AutoAgent-TW_Setup/localpycs/struct.pyc      |  Bin 0 -> 305 bytes
- .../AutoAgent-TW_Setup/warn-AutoAgent-TW_Setup.txt |   25 +
- .../xref-AutoAgent-TW_Setup.html                   | 7455 ++++++++++++++++++++
- dist/AutoAgent-TW_Setup.exe                        |  Bin 0 -> 8042444 bytes
- scripts/aa_installer_logic.py                      |   40 +
- scripts/aa_update_manager.py                       |   53 +
- 25 files changed, 9296 insertions(+), 42 deletions(-)
-
-[Test Result]: Verified via aa-gitpush-core
-[Visual Doc]: Mermaid logic appended to docs
-
-
-#### Sequence & Logic Flow
-
-```mermaid
-graph LR
-  Start --> aa_installer_logic
-  aa_installer_logic --> Done
-  Start --> aa_update_manager
-  aa_update_manager --> Done
-```
-
-
----
-### [v1.7.x Update] 2026-04-01 10:39:53
-feat: Phase 113 Completed - Finalize Auto-Bumper, Beginner Guide & Sync IDLE Bug
-
-[Manifest]
- .agent-state/scheduled_tasks.json                  |  16 +--
- .agent-state/status_state.js                       |  20 ++--
- .agent-state/status_state.json                     |  20 ++--
- .agents/logs/events.log                            |   3 +
- .agents/logs/scheduler.log                         | 126 +++++++++++++++++++++
- .../status-notifier/scripts/status_updater.py      |  18 ++-
- README.md                                          |  18 +++
- RELEASE_V1.7.0.md                                  |   1 +
- scripts/aa_version_bumper.py                       |  52 +++++++++
- 9 files changed, 242 insertions(+), 32 deletions(-)
-
-[Test Result]: Verified via aa-gitpush-core
-[Visual Doc]: Mermaid logic appended to docs
-
-
-#### Sequence & Logic Flow
-
-```mermaid
-graph LR
-  Start --> status_updater
-  status_updater --> Done
-  Start --> aa_version_bumper
-  aa_version_bumper --> Done
-```
-
-
----
-### [v1.7.x Update] 2026-04-01 14:16:41
-fix: Dashboard Resilience & v1.7.2 Infrastructure Upgrade
+### [v1.7.x Update] 2026-04-01 16:12:52
+feat: v1.8.0 Coordination Upgrade - LSP Probing, Git Hook Manifest, Guardian Pro & Dashboard Automation
 
 ### ✨ Key Improvements
-- ✅ Resolved persistence and CORS issues in Dashboard
 
 [Manifest]
   🛠️ Logic:
-    - .agents/skills/status-notifier/scripts/status_updater.py
-    - scripts/aa_git_pusher.py
+    - scripts/aa_dashboard.py
+    - scripts/git_precommit_hook.py
+    - scripts/resilience/AA_Guardian.py
+    - scripts/resilience/guardian_task.py
+    - scripts/tools/lsp_probe.py
+    - scripts/tools/verify_lsp.py
 
   🎨 UI/Dashboard:
     - .agent-state/scheduled_tasks.json
@@ -255,15 +95,21 @@ fix: Dashboard Resilience & v1.7.2 Infrastructure Upgrade
     - .agents/skills/status-notifier/templates/status.html
     - .planning/config.json
 
-  🧪 Tests/Diag:
-    - scripts/debug/test_dashboard.py
-
   📝 Docs:
+    - .planning/PROJECT.md
     - .planning/ROADMAP.md
+    - .planning/STATE.md
+    - .planning/phases/116-dashboard-automation/CONTEXT.md
+    - .planning/phases/116-dashboard-automation/PLAN.md
+    - Schedule_readme.md
+    - memo.md
+    - version_list.md
+    - workers.md
 
   📦 Other:
     - .agents/logs/events.log
     - .agents/logs/scheduler.log
+    - idea_claueloop.mf
 
 
 [Visual Doc]: Mermaid logic appended to docs
@@ -273,11 +119,17 @@ fix: Dashboard Resilience & v1.7.2 Infrastructure Upgrade
 
 ```mermaid
 graph LR
-  Start --> status_updater
-  status_updater --> Done
-  Start --> aa_git_pusher
-  aa_git_pusher --> Done
-  Start --> test_dashboard
-  test_dashboard --> Done
+  Start --> aa_dashboard
+  aa_dashboard --> Done
+  Start --> git_precommit_hook
+  git_precommit_hook --> Done
+  Start --> AA_Guardian
+  AA_Guardian --> Done
+  Start --> guardian_task
+  guardian_task --> Done
+  Start --> lsp_probe
+  lsp_probe --> Done
+  Start --> verify_lsp
+  verify_lsp --> Done
 ```
 

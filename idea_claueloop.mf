@@ -1,0 +1,258 @@
+# AutoAgent-TW 需要優化的地方
+
+基於對兩者功能的比較分析，以下是 AutoAgent-TW 目前在自動化持續執行層面的 **具體差距與優化方向**：
+
+---
+
+## 一、最核心的差距：缺少「排程觸發」機制
+
+### 現狀
+
+```
+AutoAgent-TW 的啟動方式：
+
+  使用者手動輸入指令 → /aa-auto-build → 開始執行
+       ▲
+       │
+  必須有人在螢幕前按下按鈕
+```
+
+### 問題
+
+即使 AutoAgent-TW 內部的自動化程度很高（自我修復、多代理協作），但**啟動這個動作本身仍完全依賴人類**。
+
+```
+凌晨 2:00  CI 失敗了
+凌晨 2:01  沒人發現
+凌晨 3:00  沒人發現
+早上 9:00  開發者打開電腦 → 手動啟動 AutoAgent-TW → 才開始修復
+           ▲
+           浪費了 7 小時
+```
+
+### 優化方向：加入 `/aa-schedule` 指令
+
+```bash
+# 概念設計
+/aa-schedule "每天 02:00" "自動拉取最新程式碼，執行完整測試，修復失敗項目"
+/aa-schedule "每 30 分鐘" "檢查 CI 狀態，失敗時自動啟動修復流程"
+/aa-schedule "每次 push 到 main" "執行完整回歸測試 + Guardian 安全掃描"
+```
+
+這需要在 AutoAgent-TW 中加入一個 **輕量級排程守護行程 (Scheduler Daemon)**：
+
+```
+┌─────────────────────────────────────┐
+│         排程守護行程                  │
+│                                     │
+│  ┌─────────┐    ┌────────────────┐  │
+│  │ 時間觸發  │    │ 事件觸發        │  │
+│  │ cron 式  │    │ git hook /     │  │
+│  │          │    │ CI webhook     │  │
+│  └────┬─────┘    └───────┬────────┘  │
+│       │                  │           │
+│       └────────┬─────────┘           │
+│                ▼                     │
+│       啟動 AutoAgent-TW 會話          │
+│       (Builder → QA → Guardian)      │
+└─────────────────────────────────────┘
+```
+
+---
+
+## 二、缺少「事件驅動」的自動啟動能力
+
+### 現狀
+
+AutoAgent-TW 的觸發是 **手動的、被動的**。
+
+### 優化方向：事件鉤子 (Event Hooks)
+
+```
+觸發事件                    自動動作
+─────────                  ─────────
+git push to feature/*  →   自動啟動 Builder + QA
+PR 被建立               →   自動執行 Guardian 安全掃描
+CI pipeline 失敗        →   自動啟動 /loop 修復
+main 分支有新 commit    →   自動執行回歸測試
+每天固定時間             →   自動檢查依賴安全更新
+```
+
+概念設計：
+
+```javascript
+// .autoagent/hooks.json
+{
+  "on": {
+    "git.push": {
+      "branch": "feature/*",
+      "run": ["builder", "qa"]
+    },
+    "ci.failure": {
+      "run": ["builder:repair", "qa:verify"]
+    },
+    "schedule.daily": {
+      "time": "02:00",
+      "run": ["builder:pull", "qa:full", "guardian:scan"]
+    }
+  }
+}
+```
+
+---
+
+## 三、自我修復的「硬上限」問題
+
+### 現狀
+
+```
+AutoAgent-TW：最多 3 輪修復 → 超過就停止
+
+第 1 輪：修復 → 失敗
+第 2 輪：修復 → 失敗  
+第 3 輪：修復 → 失敗 → 停止，通知人類
+```
+
+### 問題
+
+3 輪是硬編碼的。有些複雜問題可能需要 5-6 輪迭代才能找到根本原因。
+
+### 優化方向：動態終止條件
+
+```python
+# 不要硬編碼 3 輪，改用智能判斷
+class RepairStrategy:
+    def should_continue(self, history):
+        # 情況 1：有持續進步 → 繼續
+        if self.progress_trend(history) > 0:
+            return True
+        
+        # 情況 2：錯誤在循環（同一個錯誤反覆出現）→ 停止
+        if self.detect_loop(history, window=3):
+            return False
+        
+        # 情況 3：嘗試了完全不同的策略但都失敗 → 停止
+        if self.strategy_diversity(history) > threshold and all_failed(history):
+            return False
+        
+        # 情況 4：達到安全上限 → 停止
+        if len(history) >= self.max_iterations:  # 可配置，預設 5
+            return False
+        
+        return True
+```
+
+```
+優化後：
+
+第 1 輪：修復 → 失敗 (錯誤類型 A)
+第 2 輪：換策略修復 → 失敗 (錯誤類型 B，有進步！)
+第 3 輪：再換策略 → 失敗 (錯誤類型 B，同類錯誤)
+第 4 輪：深入診斷根本原因 → 修復 → 成功
+
+vs 硬編碼 3 輪：第 3 輪失敗就放棄了
+```
+
+---
+
+## 四、缺少「跨專案 / 跨工作區」的持續監控
+
+### 現狀
+
+```
+AutoAgent-TW 監控範圍：
+
+  ┌──────────────────┐
+  │  Antigravity IDE  │
+  │  ┌────────────┐  │
+  │  │ 當前專案    │  │  ← 只看得到這個
+  │  └────────────┘  │
+  └──────────────────┘
+```
+
+### 優化方向：多專案同時監控
+
+```
+AutoAgent-TW 優化後：
+
+  ┌──────────────────────────────────────┐
+  │  排程守護行程                          │
+  │                                      │
+  │  ┌──────────┐ ┌──────────┐ ┌──────┐ │
+  │  │ 專案 A    │ │ 專案 B    │ │專案 C │ │
+  │  │ 每 30min  │ │ 每天 2:00 │ │每 push│ │
+  │  │ 測試+修復  │ │ 安全掃描  │ │回歸測 │ │
+  │  └──────────┘ └──────────┘ └──────┘ │
+  │                                      │
+  │  統一儀表板：所有專案狀態一覽           │
+  └──────────────────────────────────────┘
+```
+
+---
+
+## 五、缺少「任務鏈」的組合彈性
+
+### 現狀
+
+AutoAgent-TW 的流程是固定的線性 pipeline：
+
+```
+Builder → QA → Guardian → 結束
+```
+
+### 優化方向：可組合的任務鏈
+
+```bash
+# 概念設計：像管線一樣組合任務
+/aa-chain "pull → test → repair → test → security-scan → report"
+
+# 條件分支
+/aa-chain "test → if fail: repair → test → if still fail: alert human"
+
+# 並行執行
+/aa-parallel {
+  "qa: full regression test",
+  "guardian: dependency audit",
+  "builder: build optimization check"
+}
+```
+
+```
+優化後的流程不再是固定的：
+
+  線性：    Builder → QA → Guardian
+
+  可組合：
+  ┌─────────┐     ┌─────────┐
+  │ Builder  │────▶│   QA    │───▶ 成功 → Guardian
+  └─────────┘     └────┬────┘
+                       │
+                       ▼ 失敗
+                 ┌──────────┐
+                 │ Builder   │────▶ QA ───▶ ...
+                 │ (修復模式) │
+                 └──────────┘
+```
+
+---
+
+## 六、總結優化優先級
+
+| 優先級 | 優化項目 | 影響程度 | 實現難度 |
+|:---:|:---|:---:|:---:|
+| **P0** | 排程觸發 (`/aa-schedule`) | ★★★★★ | 中 |
+| **P0** | 事件驅動 (git hook / CI webhook) | ★★★★★ | 中 |
+| **P1** | 動態修復終止條件 (取代硬編碼 3 輪) | ★★★★☆ | 低 |
+| **P1** | 任務鏈組合 (`/aa-chain`) | ★★★★☆ | 同時監控 | ★★★☆☆ | 高 |
+| **P2** | 並行任務執行 (`/aa-parallel`) | ★★★☆☆ | 高 |
+
+### 核心觀點
+
+AutoAgent-TW 在**「執行時的自動化」**已經高 |
+| **P2** | 多專案做得很好（多代理、自我修復、視覺化監控），但在**「什麼時候啟動執行」**這個層面仍然完全依賴人工。
+
+Claude Code 的 `/loop` + `/schedule` 解決的正是這個問題：
+
+> **不只是「執行時夠自動」，而是「連啟動本身都自動」。**
+
+這正是 AutoAgent-TW 從「強大的自動化工具」進化為「真正的自主開發代理」所缺少的最後一塊拼圖。

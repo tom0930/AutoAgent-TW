@@ -2328,3 +2328,550 @@ k "Progress Check" --status idle
 [2026-04-01 14:15:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
 [2026-04-01 14:15:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
 [2026-04-01 14:15:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:16:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:16:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:17:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:17:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:17:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:17:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:17:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:17:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:17:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:18:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:18:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:19:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:19:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:19:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+k "Progress Check" --status idle
+[2026-04-01 14:19:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:19:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:19:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:20:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:20:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:21:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:21:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:21:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:21:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:21:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:21:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:21:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:22:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:22:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:23:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --tas[2026-04-01 14:23:50] Starting sch[2026-04-01 14:23:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:23:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:23:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:23:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:24:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:24:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:25:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:25:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:25:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+k "Progress Check" --status idle
+[2026-04-01 14:25:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:25:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:25:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:25:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:26:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:26:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:27:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+k "Progress Check" --status idle
+[2026-04-01 14:27:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:27:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:27:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:27:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:27:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:27:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:28:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:28:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:29:14] Detected task definition changes, reloading scheduler...
+[2026-04-01 14:29:14] Error reloading tasks: 'cp950' codec can't encode character '\U0001f6e1' in position 60: illegal multibyte sequence
+[2026-04-01 14:29:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:29:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:29:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:29:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:29:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:29:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:29:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:30:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:30:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:31:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:31:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:31:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:31:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:31:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:31:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:31:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:31:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:32:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:32:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:33:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:33:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:33:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:33:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:33:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:33:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:33:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:33:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:34:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:34:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:35:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:35:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:35:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --tas[2026-04-01 14:35:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:35:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:35:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:35:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:36:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:36:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:37:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:37:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:37:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:37:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:37:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:37:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:37:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:37:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:38:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:38:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:39:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:39:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:39:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:39:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:39:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+k "Progress Check" --status idle
+[2026-04-01 14:39:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:39:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:39:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:40:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:40:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:41:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:41:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:41:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:41:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:41:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:41:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:41:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:41:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:42:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:42:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:43:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:43:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:43:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:43:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:43:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:43:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:43:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:43:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:43:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:44:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:44:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:45:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:45:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:45:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:45:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:45:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:45:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:45:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:45:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:45:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:45:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:46:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:46:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:47:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:47:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:47:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:47:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:47:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:47:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:47:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:47:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:47:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:48:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:48:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:49:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:49:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:49:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:49:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:49:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:49:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:49:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:49:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:49:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:49:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:50:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:50:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:51:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:51:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:51:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --tas[2026-04-01 14:51:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:51:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:51:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:51:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:51:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:51:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:52:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:52:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:53:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:53:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:53:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:53:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:53:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:53:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:53:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:54:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:54:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:55:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:55:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:55:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:55:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:55:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:55:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:55:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:55:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:56:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:56:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:57:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:57:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:57:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+k "Progress Check" --status idle
+[2026-04-01 14:57:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:57:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:57:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:57:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:57:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 14:58:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 14:58:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 14:59:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 14:59:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 14:59:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+k "Progress Check" --status idle
+[2026-04-01 14:59:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:59:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 14:59:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 14:59:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 14:59:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:00:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:00:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:01:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:01:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:01:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:01:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:01:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:01:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:01:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:01:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:01:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:02:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:02:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:03:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:03:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:03:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:03:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:03:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:03:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:03:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:03:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:03:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:03:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:04:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:04:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:05:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:05:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:05:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:05:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:05:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:05:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:05:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:05:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:05:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:06:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:06:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:07:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:07:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:07:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:07:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:07:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:07:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:07:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:08:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:08:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:09:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:09:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:09:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:09:50] Starting scheduled task: 95ebc1f9-69dc-48fe-8ddf-7da2aa9e5aa1 :: CMD: aa-qa
+[2026-04-01 15:09:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:09:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:09:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:09:50] Task 95ebc1f9-69dc-48fe-8ddf-7da2aa9e5aa1 failed with exit code 1. Error: 'aa-qa' 不是內部或外部命令、可執行的程式或批次檔。
+
+[2026-04-01 15:09:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:09:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:09:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:09:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:10:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:10:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:11:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:11:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:11:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:11:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:11:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:11:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:11:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:11:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:12:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:12:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:13:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:13:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:13:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:13:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:13:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:13:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:13:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:13:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:14:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:14:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:15:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:15:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:15:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:15:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:15:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:15:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:15:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:15:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:15:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:16:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:16:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:17:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:17:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:17:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+k "Progress Check" --status idle
+[2026-04-01 15:17:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:17:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:17:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:17:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:17:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:18:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:18:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:19:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:19:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:19:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:19:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:19:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:19:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:19:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:19:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:19:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:19:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:20:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:20:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:21:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:21:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:21:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:21:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:21:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:21:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:21:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:21:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:21:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:21:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:22:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:22:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:23:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:23:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:23:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:23:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:23:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:23:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:23:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:24:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:24:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:25:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:25:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:25:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:25:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:25:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:25:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:25:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:25:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:25:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:25:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:26:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:26:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:27:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:27:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:27:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:27:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:27:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:27:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:27:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:27:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:27:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:28:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:28:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:29:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:29:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:29:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:29:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:29:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:29:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:29:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:29:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:29:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:29:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:30:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:30:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:31:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:31:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:31:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:31:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:31:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:31:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:31:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:31:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:32:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:32:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:33:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:33:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:33:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:33:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:33:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:33:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:33:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:33:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:33:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:34:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:34:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:35:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:35:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:35:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:35:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:35:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:35:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:35:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:35:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:35:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:35:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:36:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:36:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:37:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:37:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:37:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:37:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:37:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:37:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:37:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:37:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:38:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:38:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:39:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:39:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:39:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:39:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:39:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:39:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:39:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:40:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:40:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:41:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:41:18] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:41:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:41:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:41:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:41:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:41:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:41:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:41:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:42:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:42:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:43:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:43:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:43:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:43:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:43:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:43:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:43:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:43:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:43:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:44:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:44:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:45:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:45:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:45:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:45:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:45:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:45:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:45:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:45:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:46:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:46:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:47:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:47:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:47:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:47:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:47:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:47:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:47:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:47:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:48:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:48:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:49:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:49:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:49:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:49:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:49:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:49:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:49:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:49:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:49:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:49:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:50:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:50:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:51:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:51:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:51:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:51:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:51:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:51:50] Starting scheduled task: 28ef365d-793e-49c6-a630-53c0c96a740a :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:51:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:51:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:51:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:52:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:52:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:53:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:53:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 15:53:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:53:50] Starting scheduled task: fa4f221c-e9c0-48b1-8a3f-480de31f3f38 :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:53:50] Starting scheduled task: 8b062a0b-bd03-499b-9b26-a49f1f46f3ee :: CMD: C:\Python313\python.exe "Z:\AutoAgent-TW\.agents\skills\status-notifier\scripts\status_updater.py" --task "Progress Check" --status idle
+[2026-04-01 15:53:50] Task 8b062a0b-bd03-499b-9b26-a49f1f46f3ee completed successfully.
+[2026-04-01 15:53:50] Task fa4f221c-e9c0-48b1-8a3f-480de31f3f38 completed successfully.
+[2026-04-01 15:53:50] Task 28ef365d-793e-49c6-a630-53c0c96a740a completed successfully.
+[2026-04-01 15:54:50] Starting scheduled task: 478d962a-9708-4f7e-ac9c-95e6030d6061 :: CMD: python .agents/skills/status-notifier/scripts/status_updater.py --task 'QA-Triggered' --status running
+[2026-04-01 15:54:50] Task 478d962a-9708-4f7e-ac9c-95e6030d6061 completed successfully.
+[2026-04-01 15:55:14] Starting scheduled task: guardian-shield-1.7.2 :: CMD: python scripts/resilience/guardian_task.py
+[2026-04-01 15:55:14] Task guardian-shield-1.7.2 completed successfully.
+[2026-04-01 16:00:26] AutoAgent-TW Scheduler Daemon starting...
+[2026-04-01 16:00:26] Daemon is active. Press CTRL+C to terminate.
+[2026-04-01 16:00:26] Detected task definition changes, reloading scheduler...
+[2026-04-01 16:00:26] Error reloading tasks: 'cp950' codec can't encode character '\U0001f6e1' in position 60: illegal multibyte sequence
+[2026-04-01 16:01:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:01:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:02:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:02:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:03:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:03:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:04:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:04:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:05:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:05:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:06:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:06:28] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:07:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:07:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:08:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:08:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:09:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:09:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:10:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:10:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:11:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:11:27] Task guardian-shield-1.8.0 completed successfully.
+[2026-04-01 16:12:26] Starting scheduled task: guardian-shield-1.8.0 :: CMD: python scripts/resilience/AA_Guardian.py
+[2026-04-01 16:12:27] Task guardian-shield-1.8.0 completed successfully.

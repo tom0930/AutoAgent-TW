@@ -290,3 +290,71 @@ graph LR
   test_dashboard --> Done
 ```
 
+
+
+## [v1.8.0] - 2026-04-01
+### Added
+- 
+### Fixed
+- 
+
+---
+### [v1.7.x Update] 2026-04-01 16:12:52
+feat: v1.8.0 Coordination Upgrade - LSP Probing, Git Hook Manifest, Guardian Pro & Dashboard Automation
+
+### ✨ Key Improvements
+
+[Manifest]
+  🛠️ Logic:
+    - scripts/aa_dashboard.py
+    - scripts/git_precommit_hook.py
+    - scripts/resilience/AA_Guardian.py
+    - scripts/resilience/guardian_task.py
+    - scripts/tools/lsp_probe.py
+    - scripts/tools/verify_lsp.py
+
+  🎨 UI/Dashboard:
+    - .agent-state/scheduled_tasks.json
+    - .agent-state/status_state.js
+    - .agent-state/status_state.json
+    - .agents/skills/status-notifier/templates/status.html
+    - .planning/config.json
+
+  📝 Docs:
+    - .planning/PROJECT.md
+    - .planning/ROADMAP.md
+    - .planning/STATE.md
+    - .planning/phases/116-dashboard-automation/CONTEXT.md
+    - .planning/phases/116-dashboard-automation/PLAN.md
+    - Schedule_readme.md
+    - memo.md
+    - version_list.md
+    - workers.md
+
+  📦 Other:
+    - .agents/logs/events.log
+    - .agents/logs/scheduler.log
+    - idea_claueloop.mf
+
+
+[Visual Doc]: Mermaid logic appended to docs
+
+
+#### Sequence & Logic Flow
+
+```mermaid
+graph LR
+  Start --> aa_dashboard
+  aa_dashboard --> Done
+  Start --> git_precommit_hook
+  git_precommit_hook --> Done
+  Start --> AA_Guardian
+  AA_Guardian --> Done
+  Start --> guardian_task
+  guardian_task --> Done
+  Start --> lsp_probe
+  lsp_probe --> Done
+  Start --> verify_lsp
+  verify_lsp --> Done
+```
+
