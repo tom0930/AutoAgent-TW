@@ -8,7 +8,10 @@
 
 ## 🌟 Expansion Phases (Current)
 - [X] Phase 111: aa-gitpush 智慧交付與文檔同步自組引擎 [DONE]
-- [ ] Phase 112: 跨專案資源池預算治理 (Cross-Project Budgeting) [PENDING]
+- [X] Phase 112: EXE Installer & Modular Update Engine [DONE]
+- [X] Phase 113: GitHub Release (v1.7.0) 官方正式發布 [DONE]
+- [X] Phase 114: AutoFix 雙核引擎 (Innovation & Self-Healing) [DONE]
+- [ ] Phase 115: 智慧排程與 Git Hooks 整合優化 [PENDING]
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。

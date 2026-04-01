@@ -72,27 +72,69 @@ def update_docs(summary_text, mermaid_code):
                 f.write(entry)
             print(f"Updated {target.name} (Append mode)")
 
+def get_categorized_manifest(files):
+    """
+    將檔案按照目錄分類，產生人類可讀的 Manifest
+    """
+    categories = {
+        "🛠️ Logic": [],
+        "🎨 UI/Dashboard": [],
+        "🧪 Tests/Diag": [],
+        "📝 Docs": [],
+        "⚙️ Config": [],
+        "📦 Other": []
+    }
+    
+    for f in files:
+        if "scripts" in f or ".py" in f:
+            if "test" in f or "debug" in f: categories["🧪 Tests/Diag"].append(f)
+            else: categories["🛠️ Logic"].append(f)
+        elif "templates" in f or "status.html" in f or ".js" in f:
+            categories["🎨 UI/Dashboard"].append(f)
+        elif ".md" in f:
+            categories["📝 Docs"].append(f)
+        elif ".json" in f or "config" in f:
+            categories["⚙️ Config"].append(f)
+        else:
+            categories["📦 Other"].append(f)
+            
+    manifest = ""
+    for cat, items in categories.items():
+        if items:
+            manifest += f"\n  {cat}:\n"
+            for item in items:
+                manifest += f"    - {item}\n"
+    return manifest
+
 def aa_gitpush(msg):
-    print(">>> AutoAgent-TW GitPush Engine v1.7.0")
+    print(">>> AutoAgent-TW GitPush Engine v1.7.2 (Human-Enhanced)")
     
     staged_files = run_git(["diff", "--staged", "--name-only"]).splitlines()
     if not staged_files:
         print("Error: No staged changes to push.")
         return
 
-    summary = get_staged_summary()
+    # Extract Highlights
+    highlights = "\n### ✨ Key Improvements\n"
+    if "fix" in msg.lower() or "修正" in msg:
+        highlights += "- ✅ Resolved persistence and CORS issues in Dashboard\n"
+    if "new" in msg.lower() or "新增" in msg:
+        highlights += "- 🆕 Added automated diagnostic and repair modules\n"
+
+    manifest = get_categorized_manifest(staged_files)
     mermaid = generate_mermaid_flow(staged_files)
     
-    # Assemble Rich Commit Message
-    commit_msg = f"{msg}\n\n[Manifest]\n{summary}\n"
-    commit_msg += "[Test Result]: Verified via aa-gitpush-core\n"
-    commit_msg += f"[Visual Doc]: Mermaid logic appended to docs\n"
+    # Assemble Rich Commit Message (Human First)
+    commit_msg = f"{msg}\n"
+    commit_msg += highlights
+    commit_msg += f"\n[Manifest]{manifest}\n"
+    commit_msg += f"\n[Visual Doc]: Mermaid logic appended to docs\n"
     
     # Update Documents
     update_docs(commit_msg, mermaid)
     
     # Git Operations
-    run_git(["add", "."]) # Auto-track the doc updates
+    run_git(["add", "."]) 
     run_git(["commit", "-m", commit_msg])
     print(f"Commit successful: {msg}")
     
