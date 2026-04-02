@@ -97,6 +97,15 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
                 hooks_config = json.load(f)
         except: pass
 
+    # Load Predictions (Phase 5)
+    predictions_file = state_dir / "predictions.json"
+    predictions_data = []
+    if predictions_file.exists():
+        try:
+            with open(predictions_file, "r", encoding="utf-8") as f:
+                predictions_data = json.load(f)
+        except: pass
+
     data = {
         "version": version,
         "current_task": task,
@@ -109,6 +118,7 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
         "repair_round": repair_round,
         "scheduled_tasks": scheduled_tasks,
         "hooks": hooks_config,
+        "predictions": predictions_data,
         "timestamp": datetime.now().isoformat()
     }
     
