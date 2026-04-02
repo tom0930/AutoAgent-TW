@@ -10,6 +10,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
+# Phase 5 Prediction 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from scripts.hooks.hook_manager import HookManager
+
 # Path setup
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 STATE_DIR = PROJECT_ROOT / ".agent-state"
@@ -96,6 +101,8 @@ class SchedulerDaemon:
         self.scheduler = BackgroundScheduler()
         self.last_mtime = 0
         self.jobs = {} # task_id -> apscheduler job object
+        # Phase 5: Hook / Predictor Initialization
+        self.hook_manager = HookManager(str(PROJECT_ROOT))
 
     def sync_tasks(self):
         if not TASKS_FILE.exists():
@@ -206,6 +213,10 @@ class SchedulerDaemon:
             while True:
                 self.sync_tasks()
                 self._update_next_runs() # 每 10 秒計算一次下次執行時間
+                
+                # Phase 5: Ensure predictions are continuously updated
+                self.hook_manager.run_prediction_cycle()
+                
                 time.sleep(10)
         except (KeyboardInterrupt, SystemExit):
             self.scheduler.shutdown()
