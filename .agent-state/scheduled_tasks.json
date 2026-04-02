@@ -7,9 +7,9 @@
       "minutes": 1
     },
     "command": "python scripts/resilience/AA_Guardian.py",
-    "last_run": "2026-04-01 16:12:27",
+    "last_run": "2026-04-01 16:19:27",
     "last_status": "success",
-    "next_run": "2026-04-01 16:13:26"
+    "next_run": "2026-04-01 16:20:26"
   },
   {
     "id": "478d962a-9708-4f7e-ac9c-95e6030d6061",

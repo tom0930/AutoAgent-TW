@@ -1,0 +1,8 @@
+[
+  {
+    "suggestion": "Start planning the next phase",
+    "command": "/aa-plan",
+    "confidence": 0.8,
+    "reason": "Project is idle or just initialized."
+  }
+]

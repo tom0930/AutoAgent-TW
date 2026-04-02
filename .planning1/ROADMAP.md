@@ -1,11 +1,11 @@
 # 發展路線圖 (ROADMAP)
 
 ## Phase 1: 子代理系統與平行任務調度 (v1.9.0)
-- [>] 實作 SubagentSpawnManager (In Progress)
-- [ ] 實作 Coordinator 任務拆解引擎
-- [ ] 新增 `/aa-orchestrate` 指令支援
-- [ ] 更新 Dashboard 顯示子代理進度
-- **狀態**: In Progress (v1.9.0)
+- [X] 實作 SubagentSpawnManager (Asyncio based)
+- [X] 實作 Coordinator 任務拆解引擎
+- [X] 新增 `/aa-orchestrate` 指令支援
+- [X] 更新 Dashboard 顯示子代理進度
+- **狀態**: Completed (v1.9.0)
 
 ## Phase 2: MCP 協議整合層 (v2.0.0)
 - [ ] 實作 MCPClient (stdio/sse)
