@@ -1,5 +1,19 @@
 # AutoAgent-TW Version Log
 
+## [v2.2.0-pisrc-resilience] - 2026-04-03
+
+### 🚀 新增功能 (Key Features)
+1. **PISRC 自我修復框架 (Persistent Issue Self-Review & Correction)**: 基於 LangGraph 的有狀態圖架構，取代傳統靜態迴圈。支援多層級反思與 5-Whys 根因分析。
+2. **Installer 安全性加固 (Installer Hardening)**: 徹底解決 Windows 下 `setx` 環境變數長度上限、PID 爆炸以及跨項目狀態污染等關鍵部署漏洞。
+3. **異步持久化中斷 (Human-in-the-Loop)**: 圖狀態自動持久化，失敗時掛起並等待人工介入，支援斷點續傳。
+
+### 📁 新增/修改文件 (@file:)
+- `scripts/resilience/pisrc_graph.py`: PISRC 核心圖結構與節點實作。
+- `scripts/aa_installer_logic.py`: 安裝與環境設置邏輯修復。
+- `_agents/workflows/aa-fix.md`: 全面改接 LangGraph PISRC 診斷邏輯。
+- `requirements.txt` & `build_requirements.txt`: 引入 `langgraph`, `langchain-core` 並解耦打包工具。
+- `.planning/phases/119-pisrc-installer-integration/`: 完整研發週期文檔。
+
 ## [v2.1.0-custom-workflow] - 2026-04-02
 
 ### 🚀 新增功能 (Key Features)
