@@ -46,9 +46,17 @@ def main():
     if args.command == "list":
         memories = store.list_memories(args.level)
         print(f"--- {args.level} Memories ({len(memories)} items) ---")
+        if not memories:
+            print("  (Empty) - Use 'add' to create memories.")
         for m in memories:
             status = "[FOCUSED]" if m.get("focus") else ""
-            print(f"- {m['id']} {status}: {m['content']} (Tags: {','.join(m.get('tags', []))})")
+            print(f"- {m['id']} {status}:")
+            print(f"  Content: {m['content']}")
+            print(f"  Tags: {','.join(m.get('tags', [])) or 'None'} | Created: {m.get('timestamp', 'Unknown')}")
+            print("-" * 20)
+        
+        print("\n[HINT] Use 'focus <ID>' to isolate a decision, or 'delete <ID>' to purge outdated context.")
+        print("       Use 'focus clear' to restore full context awareness.")
     
     elif args.command == "add":
         tags = args.tags.split(",") if args.tags else []
@@ -58,17 +66,22 @@ def main():
     elif args.command == "delete":
         if store.delete_memory(args.id, args.level):
             print(f"[OK] Deleted memory {args.id} from {args.level}")
+            print(f"[HINT] This context is now permanently removed and will won't affect future AI reasoning.")
         else:
             print(f"[ERROR] Memory {args.id} not found in {args.level}")
+            print(f"[HINT] Check 'list' for valid short-IDs (first 8 characters).")
 
     elif args.command == "focus":
         if store.set_focus(args.id, args.level):
             if args.id.lower() == 'clear':
                 print(f"[OK] Cleared all focuses in {args.level}")
+                print(f"[HINT] AI will now see ALL memories in this level.")
             else:
-                print(f"[OK] Focused on memory {args.id} in {args.level}. Other memories will be ignored in export.")
+                print(f"[OK] Focused on memory {args.id} in {args.level}.")
+                print(f"[HINT] AI will ignore other memories to prevent context noise/distraction.")
         else:
             print(f"[ERROR] Memory {args.id} not found in {args.level}")
+            print(f"[HINT] Use 'list' to verify the memory ID before focusing.")
 
     elif args.command == "export":
         print(store.export_context(args.level))
