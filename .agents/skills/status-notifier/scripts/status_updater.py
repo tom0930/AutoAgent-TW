@@ -106,6 +106,16 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
                 predictions_data = json.load(f)
         except: pass
 
+    # Load Subagents (Phase 1)
+    subagents_dir = state_dir / "subagents"
+    subagents_data = []
+    if subagents_dir.exists():
+        try:
+            for f_path in subagents_dir.glob("*.json"):
+                with open(f_path, "r", encoding="utf-8") as f:
+                    subagents_data.append(json.load(f))
+        except: pass
+
     data = {
         "version": version,
         "current_task": task,
@@ -119,6 +129,7 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
         "scheduled_tasks": scheduled_tasks,
         "hooks": hooks_config,
         "predictions": predictions_data,
+        "subagents": subagents_data,
         "timestamp": datetime.now().isoformat()
     }
     

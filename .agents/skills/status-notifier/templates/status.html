@@ -107,6 +107,9 @@
         <!-- Tabs Navigation -->
         <div class="flex border-b border-gray-800 gap-2 overflow-x-auto no-scrollbar">
             <button onclick="showTab('flow')" class="tab-btn px-4 py-2 text-sm font-semibold transition-all active" id="tab-flow">Execution Flow</button>
+            <button onclick="showTab('subagents')" class="tab-btn px-4 py-2 text-sm font-semibold transition-all" id="tab-subagents">
+                Subagents <span id="subagent-count" class="ml-1 text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">0</span>
+            </button>
             <button onclick="showTab('logs')" class="tab-btn px-4 py-2 text-sm font-semibold transition-all" id="tab-logs">Live Logs</button>
             <button onclick="showTab('scheduler')" class="tab-btn px-4 py-2 text-sm font-semibold transition-all" id="tab-scheduler">Scheduler & Hooks</button>
         </div>
@@ -115,6 +118,17 @@
         <div id="content-flow" class="tab-content fade-in">
             <div class="glass rounded-xl p-6 min-h-[350px]">
                 <div id="mermaid-container" class="mermaid">Loading execution map...</div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Subagents -->
+        <div id="content-subagents" class="tab-content hidden fade-in space-y-4">
+            <div id="subagents-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Subagent Cards will be injected here -->
+            </div>
+            <div id="no-subagents" class="text-center py-10 text-gray-500">
+                <i data-lucide="users" class="w-12 h-12 mx-auto mb-2 opacity-20"></i>
+                <p>No active subagents</p>
             </div>
         </div>
 
@@ -315,6 +329,40 @@
                 } else {
                     document.getElementById('predictions-panel').classList.add('hidden');
                 }
+
+                // Subagents Sync (Phase 1)
+                const subagents = data.subagents || [];
+                document.getElementById('subagent-count').innerText = subagents.length;
+                const grid = document.getElementById('subagents-grid');
+                const empty = document.getElementById('no-subagents');
+                
+                if (subagents.length > 0) {
+                    empty.classList.add('hidden');
+                    grid.innerHTML = subagents.map(s => `
+                        <div class="glass p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h4 class="text-xs font-bold text-blue-400 uppercase tracking-widest">${s.role}</h4>
+                                    <p class="text-[10px] text-gray-400 font-mono">ID: ${s.id}</p>
+                                </div>
+                                <span class="status-badge ${s.status}">${s.status}</span>
+                            </div>
+                            <p class="text-xs text-gray-200 mb-4 line-clamp-2">${s.task}</p>
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[10px] text-gray-400">
+                                    <span>Progress</span>
+                                    <span>${s.progress}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-blue-500 transition-all duration-500" style="width: ${s.progress}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    empty.classList.remove('hidden');
+                    grid.innerHTML = '';
+                }
             };
             oldScript.parentNode.replaceChild(newScript, oldScript);
         }
@@ -324,7 +372,7 @@
     </script>
 <script id="status-data-payload">window.AA_STATUS = {
     "version": "1.8.0",
-    "current_task": "🛡️ AA_Guardian: ✅ Git: Up to date, Fresh",
+    "current_task": "Step 2: 產出摘要與更新文檔...",
     "next_goal": "None set",
     "phase_num": 115,
     "total_phases": 115,
@@ -334,11 +382,7 @@
   classDef running fill:#4ade80,color:black,stroke-width:3px,stroke:#fff
   classDef pending fill:#21262d,color:#8b949e,stroke:#30363d
   classDef fail fill:#f85149,color:white,stroke:none",
-    "logs": [
-        "Audit: Fresh",
-        " ✅ Git: Up to date",
-        " Integrity Verified via v1.7.2 Engine"
-    ],
+    "logs": [],
     "repair_round": 0,
     "scheduled_tasks": [
         {
@@ -349,7 +393,7 @@
                 "minutes": 1
             },
             "command": "python scripts/resilience/AA_Guardian.py",
-            "last_run": "2026-04-01 16:18:27",
+            "last_run": "2026-04-01 16:19:27",
             "last_status": "success",
             "next_run": "2026-04-01 16:20:26"
         },
@@ -393,7 +437,53 @@
             ]
         }
     },
-    "timestamp": "2026-04-01T16:19:27.750300"
+    "predictions": [
+        {
+            "suggestion": "Start planning the next phase",
+            "command": "/aa-plan",
+            "confidence": 0.8,
+            "reason": "Project is idle or just initialized."
+        }
+    ],
+    "subagents": [
+        {
+            "id": "3cbcff08",
+            "role": "planner",
+            "status": "done",
+            "start_time": "2026-04-02T09:00:20.278951",
+            "task": "Breakdown implementation steps for Implement parallel testing logic",
+            "progress": 100,
+            "logs": [
+                "Task started at 2026-04-02T09:00:20.279567",
+                "Work in progress: 1%",
+                "Work in progress: 21%",
+                "Work in progress: 41%",
+                "Work in progress: 61%",
+                "Work in progress: 81%"
+            ],
+            "end_time": "2026-04-02T09:00:30.327925",
+            "result": "Result of planner task: Completed successfully."
+        },
+        {
+            "id": "c765291b",
+            "role": "implementer",
+            "status": "done",
+            "start_time": "2026-04-02T09:00:20.279266",
+            "task": "Write initial draft for Implement parallel testing logic",
+            "progress": 100,
+            "logs": [
+                "Task started at 2026-04-02T09:00:20.279765",
+                "Work in progress: 1%",
+                "Work in progress: 21%",
+                "Work in progress: 41%",
+                "Work in progress: 61%",
+                "Work in progress: 81%"
+            ],
+            "end_time": "2026-04-02T09:00:30.328367",
+            "result": "Result of implementer task: Completed successfully."
+        }
+    ],
+    "timestamp": "2026-04-02T09:03:37.850041"
 };</script>
 </body>
 </html>
