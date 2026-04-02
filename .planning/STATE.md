@@ -9,6 +9,7 @@
 - Phase 115: 智慧排程與 Git Hooks 整合優化 [DONE]
 - Phase 116: aa-Dashboard 一鍵自動化命令 [DONE]
 - Phase 117: aa-cc-link 智慧架構鏈結工具 [DONE]
+- Phase 119: PISRC LangGraph Integration & Installer Fixes [PENDING]
 
 ## Phase 0 summary
 - Analyzed `plus.md` and translated into v1.7.0 project definition and roadmap.
