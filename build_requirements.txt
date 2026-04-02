@@ -1,0 +1,2 @@
+# AutoAgent-TW Build Dependencies
+pyinstaller>=6.5.0
