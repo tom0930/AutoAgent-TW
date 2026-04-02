@@ -462,3 +462,22 @@ graph LR
   aa_memory --> Done
 ```
 
+
+---
+### [v1.7.x Update] 2026-04-02 09:26:07
+build: update distribution binaries (v1.9.0-v2.3.0)
+
+### ✨ Key Improvements
+
+[Manifest]
+  📦 Other:
+    - build/AutoAgent-TW_Setup/Analysis-00.toc
+    - build/AutoAgent-TW_Setup/AutoAgent-TW_Setup.pkg
+    - build/AutoAgent-TW_Setup/EXE-00.toc
+    - build/AutoAgent-TW_Setup/PKG-00.toc
+    - build/AutoAgent-TW_Setup/base_library.zip
+    - dist/AutoAgent-TW_Setup.exe
+
+
+[Visual Doc]: Mermaid logic appended to docs
+
