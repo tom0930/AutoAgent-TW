@@ -22,11 +22,10 @@
 - **狀態**: Not Started
 
 ## Phase 4: 專案記憶與上下文管理 (v2.2.0)
-- [ ] 實作 MemoryStore (L1/L2/L3分層)
-- [ ] 實作 ContextCompressor 動態壓縮對話與存儲
-- [ ] 整合 faiss-cpu 進行記憶檢索
-- [ ] 新增 `/aa-memory` 指令
-- **狀態**: Not Started
+- [X] 實作 MemoryStore (L1/L2/L3分層)
+- [X] 新增 `/aa-memory` 指令提供 list, add, delete 操作
+- [X] 實作 Focus 專注模式以隔離上下文
+- **狀態**: Completed (v2.2.0)
 
 ## Phase 5: 智慧指令預測引擎 (v2.3.0)
 - [X] 實作 ContextTracker 用於上下文追蹤
