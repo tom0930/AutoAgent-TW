@@ -16,27 +16,21 @@ description: Self-Repair Cycle / 自我修復循環。
 2. 提取所有 FAIL 標籤對應的 Issues。
 3. 按照優先順序排列 Issues。
 
-### Step 2: 自動診斷
-對於每個失敗的 Issue：
-1. 讀取發生錯誤的代碼片段。
-2. 使用 `run_command` 重新執行測試並捕捉錯誤日誌。
-3. 如果需要，使用 `search_web` 或查閱相關庫文檔。
-4. 針對 Issue 產出具體修復方案。
+### Step 2: 啟動 PISRC LangGraph 循環
+針對每一個 FAIL 的 Issue：
+1. 將失敗的日誌與問題分類導入 PISRC (Persistent Issue Self-Review & Correction) 狀態機。
+2. 透過執行 `python scripts/resilience/pisrc_graph.py` 或呼叫對應 PISRC API 初始化檢測。
+3. 若連續失敗超過 3 輪，PISRC 將自動觸發 `level1_reviewer` 與 `level2_analyzer` 並產出 Root Cause Analysis (RCA)。
 
-### Step 3: 自動修復與 Commit
-1. 依次修復所有 Issues。
-2. 套用修正代碼、增加必要的測試或更新配置。
-3. 為每個修復產出獨立的 Commit：
+### Step 3: 套用 PISRC Corrector 修正與 Commit
+1. 根據 PISRC 產出的 `proposed_fix`，自動調整代碼或工具 prompt。
+2. 為每個修復產出獨立的 Commit：
 ```bash
 git add [changed-files]
-git commit -m "fix(phase-${N}): [issue-description]"
+git commit -m "fix(phase-${N}): [RCA-based issue description]"
 ```
 
-### Step 4: 重新驗證
-1. 重新執行 `/aa-qa N` 以確信問題已修復。
-2. 如果仍存在 FAIL，重複 Step 2-3 (最多 3 輪)。
-
-### Step 5: 結案報告
-1. 記錄所有修復詳情於 `.agent-state/fix-log`。
-2. 告知使用者哪些部分已被自動修復。
-3. 若修復失敗（超過 3 輪），請求使用者介入人工排除。
+### Step 4: 系統驗證 (Validator) 與人工介入
+1. PISRC 執行 `validator` 節點：模擬或真實重新執行測試。
+2. 若 `success_rate` 大於定值，視為修復成功，結案寫入 `.agent-state/fix-log`。
+3. 若 PISRC 落入 `human_interrupt` 節點，凍結當前圖狀態 (StateGraph) 並發出人類介入通知，等待使用者排除後再接續 (Resume) 執行。
