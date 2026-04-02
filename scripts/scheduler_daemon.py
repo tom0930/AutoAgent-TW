@@ -14,6 +14,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from scripts.hooks.hook_manager import HookManager
+from scripts.skills.skill_loader import SkillLoader
 
 # Path setup
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -101,8 +102,10 @@ class SchedulerDaemon:
         self.scheduler = BackgroundScheduler()
         self.last_mtime = 0
         self.jobs = {} # task_id -> apscheduler job object
-        # Phase 5: Hook / Predictor Initialization
+        # Phase 3 Expansion: Hook / Skill / Predictor Initialization
         self.hook_manager = HookManager(str(PROJECT_ROOT))
+        self.skill_loader = SkillLoader(str(PROJECT_ROOT))
+        self.skill_loader.discover()
 
     def sync_tasks(self):
         if not TASKS_FILE.exists():
