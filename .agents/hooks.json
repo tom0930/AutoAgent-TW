@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "id": "python-auto-format",
+        "description": "自動執行 ruff 修復 Python 檔案",
+        "condition": "tool_name == 'write_file' && file_path.endswith('.py')",
+        "type": "command",
+        "target": "ruff check --fix {file_path}",
+        "enabled": true
+      }
+    ],
+    "git.post-commit": [
+      {
+        "id": "sync-roadmap",
+        "description": "Commit 後自動更新進度狀態",
+        "type": "command",
+        "target": "python scripts/aa_schedule_cli.py --sync",
+        "enabled": true
+      }
+    ]
+  }
+}
