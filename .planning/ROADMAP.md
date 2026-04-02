@@ -14,7 +14,7 @@
 - [X] Phase 115: 智慧排程與 Git Hooks 整合優化 [DONE]
 - [X] Phase 116: aa-Dashboard 一鍵自動化命令 [DONE]
 - [X] Phase 117: aa-cc-link 智慧架構鏈結工具 [DONE]
-- [ ] Phase 119: PISRC LangGraph Integration & Installer Fixes [PENDING]
+- [X] Phase 119: PISRC LangGraph Integration & Installer Fixes [DONE]
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。
