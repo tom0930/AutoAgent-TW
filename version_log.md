@@ -1,5 +1,25 @@
 # AutoAgent-TW Version Log
 
+## [v2.1.0-custom-workflow] - 2026-04-02
+
+### 🚀 新增功能 (Key Features)
+1. **工作流客製化系統 (Workflow Customization)**: 透過 `CLAUDE.md` 自動注入項目約束規約。
+2. **動態生命週期鉤子 (Lifecycle Hooks)**: 支援 `.agents/hooks.json` 配置，自動執行 Lint、Ruff 與自動修復。
+3. **Markdown 技能掛載 (Skill Loader)**: 掃描 `.agents/skills/*.md` 動態擴展示系統指令，無需修改核心。
+4. **重入保護鎖 (Re-entry Guard)**: 異步事件執行安全性加固，防止 Hook 無限循環。
+5. **管理指令集 (CLI)**: 新增 `/aa-skill` (技能查看) 與 `/aa-hook` (鉤子管理) 指令。
+
+### 📁 新增/修改文件 (@file:)
+- `scripts/hooks/hook_manager.py`: 重構 Hook 核心以支援 JSON 配置。
+- `scripts/skills/skill_loader.py`: 實作 MD 技能解析與自動發現。
+- `scripts/config/claude_loader.py`: 實作 CLAUDE.md 規約載入。
+- `scripts/aa_skill_cli.py` & `scripts/aa_hook_cli.py`: 管理 CLI 工具。
+- `.agents/hooks.json`: 初始 Hook 配置文件。
+- `CLAUDE.md`: 項目規約範本。
+- `.planning1/phases/003-workflow-customization/`: 完整的研發文檔 (CONTEXT/RESEARCH/PLAN/QA/SUMMARY)。
+
+---
+
 ## [v1.5.0-v0.3-transparency] - 2026-03-31
 
 ### 🚀 新增功能 (Key Features)
