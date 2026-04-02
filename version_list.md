@@ -481,3 +481,23 @@ build: update distribution binaries (v1.9.0-v2.3.0)
 
 [Visual Doc]: Mermaid logic appended to docs
 
+
+---
+### [v1.7.x Update] 2026-04-02 09:30:57
+build: final distribution update with removed default remote
+
+### ✨ Key Improvements
+
+[Manifest]
+  📦 Other:
+    - build/AutoAgent-TW_Setup/Analysis-00.toc
+    - build/AutoAgent-TW_Setup/AutoAgent-TW_Setup.pkg
+    - build/AutoAgent-TW_Setup/EXE-00.toc
+    - build/AutoAgent-TW_Setup/PKG-00.toc
+    - build/AutoAgent-TW_Setup/base_library.zip
+    - build/AutoAgent-TW_Setup/warn-AutoAgent-TW_Setup.txt
+    - dist/AutoAgent-TW_Setup.exe
+
+
+[Visual Doc]: Mermaid logic appended to docs
+
