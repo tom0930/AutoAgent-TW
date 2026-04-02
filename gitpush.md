@@ -398,3 +398,19 @@ build: final distribution update with removed default remote
 
 [Visual Doc]: Mermaid logic appended to docs
 
+
+---
+### [v1.7.x Update] 2026-04-02 14:18:34
+deliver phase 003: workflow customization system v2.1.0
+
+### ✨ Key Improvements
+
+[Manifest]
+  📝 Docs:
+    - .planning1/ROADMAP.md
+    - .planning1/phases/003-workflow-customization/PHASE-SUMMARY.md
+    - version_log.md
+
+
+[Visual Doc]: Mermaid logic appended to docs
+

@@ -15,11 +15,11 @@
 - **狀態**: Not Started
 
 ## Phase 3: 工作流客製化系統 (v2.1.0)
-- [ ] 加入 `CLAUDE.md` 專案規範自動載入
-- [ ] 實作 SkillLoader 動態掛載 MD 技能
-- [ ] 實作 HookManager 與生命週期事件綁定
-- [ ] 新增 `/aa-skill`, `/aa-hook` 指令
-- **狀態**: Not Started
+- [X] 加入 `CLAUDE.md` 專案規範自動載入
+- [X] 實作 SkillLoader 動態掛載 MD 技能
+- [X] 實作 HookManager 與生命週期事件綁定
+- [X] 新增 `/aa-skill`, `/aa-hook` 指令
+- **狀態**: Completed (v2.1.0)
 
 ## Phase 4: 專案記憶與上下文管理 (v2.2.0)
 - [X] 實作 MemoryStore (L1/L2/L3分層)
