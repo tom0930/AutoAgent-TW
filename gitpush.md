@@ -336,3 +336,26 @@ graph LR
   memory_store --> Done
 ```
 
+
+---
+### [v1.7.x Update] 2026-04-02 09:23:28
+feat: enhance aa-memory CLI with human-centric hints and detailed formatting
+
+### ✨ Key Improvements
+
+[Manifest]
+  🛠️ Logic:
+    - scripts/aa_memory.py
+
+
+[Visual Doc]: Mermaid logic appended to docs
+
+
+#### Sequence & Logic Flow
+
+```mermaid
+graph LR
+  Start --> aa_memory
+  aa_memory --> Done
+```
+
