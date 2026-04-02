@@ -38,7 +38,11 @@ def issue_detector(state: AgentState):
     return "__end__"
 
 def level1_reviewer(state: AgentState):
-    """Level 1: Quick Heuristic Check."""
+    """
+    Level 1 Reviewer Node:
+    Performs a shallow heuristic evaluation of the accumulated errors.
+    It identifies superficial patterns and suggests immediate, easy-to-apply fixes (e.g., prompt tweaks).
+    """
     report = {
         "level": 1,
         "content": f"Heuristic Analysis of errors: {state.get('last_errors', [])[-3:]}. Recommend simple prompt tweak."
@@ -49,7 +53,11 @@ def level1_reviewer(state: AgentState):
     }
 
 def level2_analyzer(state: AgentState):
-    """Level 2: Deep Root Cause Analysis (5 Whys)."""
+    """
+    Level 2 Analyzer Node (RCA):
+    Performs a deep Root Cause Analysis using a '5 Whys' approach.
+    It looks beyond symptoms to identify underlying logic or architectural fails.
+    """
     report = {
         "level": 2,
         "content": f"5 Whys RCA on errors. Root cause identified: State pollution."
@@ -60,7 +68,11 @@ def level2_analyzer(state: AgentState):
     }
 
 def corrector(state: AgentState):
-    """Applies the fix proposed by Reviewers."""
+    """
+    Corrector Node:
+    Actualizes the proposed fixes from the review phase. 
+    It increments the versioning and clears the failure counter to restart the task loop.
+    """
     fix = state.get("proposed_fix")
     content = fix["content"] if fix else "No fix applied"
     new_version = f"v{state.get('failure_count', 0)}.1"
@@ -72,7 +84,11 @@ def corrector(state: AgentState):
     }
 
 def validator(state: AgentState):
-    """Validates the fix with a simulated run."""
+    """
+    Validator Node:
+    Assesses the stability of the new 'corrected' version.
+    In a real scenario, this would run a suite of regression tests.
+    """
     simulated_success = 0.90 # Simulate a 90% success rate on the new version
     return {
         "success_rate": simulated_success
