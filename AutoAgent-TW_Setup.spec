@@ -5,7 +5,14 @@ a = Analysis(
     ['scripts\\aa_installer_logic.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ('scripts', 'scripts'),
+        ('.agents', '.agents'),
+        ('_agents', '_agents'),
+        ('requirements.txt', '.'),
+        ('README.md', '.'),
+        ('version_list.md', '.')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

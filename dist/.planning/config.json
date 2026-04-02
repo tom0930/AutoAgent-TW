@@ -1,0 +1,16 @@
+{
+  "project_name": "FPGA",
+  "version": "2.0.0",
+  "mode": "PRO",
+  "granularity": "TASK",
+  "language": "zh-TW",
+  "notifications": {
+    "browser_panel": true,
+    "line_notify": false,
+    "voice_announcement": false
+  },
+  "locales": [
+    "en-US",
+    "zh-TW"
+  ]
+}
