@@ -1,11 +1,11 @@
 # 發展路線圖 (ROADMAP)
 
 ## Phase 1: 子代理系統與平行任務調度 (v1.9.0)
-- [ ] 實作 SubagentSpawnManager
+- [>] 實作 SubagentSpawnManager (In Progress)
 - [ ] 實作 Coordinator 任務拆解引擎
 - [ ] 新增 `/aa-orchestrate` 指令支援
 - [ ] 更新 Dashboard 顯示子代理進度
-- **狀態**: Not Started
+- **狀態**: In Progress (v1.9.0)
 
 ## Phase 2: MCP 協議整合層 (v2.0.0)
 - [ ] 實作 MCPClient (stdio/sse)
@@ -29,11 +29,11 @@
 - **狀態**: Not Started
 
 ## Phase 5: 智慧指令預測引擎 (v2.3.0)
-- [ ] 實作 ContextTracker 用於上下文追蹤
-- [ ] 實作 CommandPredictor 根據上下文提供建議
-- [ ] 更新 Dashboard 顯示推薦腳步
-- [ ] 新增 `/aa-predict` 指令
-- **狀態**: Not Started
+- [X] 實作 ContextTracker 用於上下文追蹤
+- [X] 實作 CommandPredictor 根據上下文提供建議
+- [X] 更新 Dashboard 顯示推薦腳步
+- [X] 新增 `/aa-predict` 指令
+- **狀態**: Completed (v2.3.0)
 
 ## Phase 6: 無頭模式與 CI/CD 整合 (v2.4.0)
 - [ ] 實作 HeadlessRunner
