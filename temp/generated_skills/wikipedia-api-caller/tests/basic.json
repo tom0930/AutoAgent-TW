@@ -1,0 +1,12 @@
+[
+  {
+    "id": "test-wikipedia-api-caller-001",
+    "tool_call": {
+      "name": "default",
+      "args": {
+        "input": "wikipedia-api-caller"
+      }
+    },
+    "expected": "*"
+  }
+]
