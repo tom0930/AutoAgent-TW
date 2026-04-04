@@ -15,6 +15,7 @@
 - [X] Phase 116: aa-Dashboard 一鍵自動化命令 [DONE]
 - [X] Phase 117: aa-cc-link 智慧架構鏈結工具 [DONE]
 - [X] Phase 119: PISRC LangGraph Integration & Installer Fixes [DONE]
+- [X] Phase 120: IRA 5-Level Permission System & AutoSkills Core [DONE]
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。

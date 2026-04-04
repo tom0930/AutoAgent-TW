@@ -1,5 +1,22 @@
 # AutoAgent-TW Version Log
 
+## [v2.3.0-autoskills-security] - 2026-04-04
+
+### 🚀 新增功能 (Key Features)
+1. **IRA 5 級權限系統 (Interactive Requirement Analysis)**: 建立動態工具風險管制閘道。支援 5 級風險分級 (Fatal, High, Medium, Low, Read)，針對高風險操作自動觸發 LangGraph 中斷與人工審核。
+2. **AutoSkills 自動技能引擎 (Skill Orchestration)**: 實施 Skill Package v2 規範。支援基於 `manifest.json` 的權限宣告與 Zod-like (Pydantic) 靜態驗證。
+3. **動態技能生成與搜尋 (Discovery & Generation)**: 提供 `skills.discover` 與 `skills.generate` 工具，能根據任務意圖自動搜尋本地/遠端技能或動態產生符合規範的技能包。
+4. **安全沙盒驗證 (Sandbox Tester)**: 在安裝前自動化驗證技能行為，確保腳本執行不超出宣告權限範圍。
+
+### 📁 新增/修改文件 (@file:)
+- `src/core/state.py` & `src/core/graph.py`: IRA 核心狀態機與 LangGraph 守衛節點。
+- `src/core/permission_engine.py`: 工具風險等級註冊與中斷邏輯。
+- `src/core/skill_manifest.py`: Skill Package v2 Pydantic Schema 定義。
+- `src/agents/tools/skills_discover.py` & `src/agents/tools/skills_generate.py`: 技能發現與生成引擎。
+- `src/agents/skills/skill_sandbox_test.py`: 技能安全性與行為動態驗證器。
+- `src/cli/openclaw_skills.py`: 統一的 AutoSkills 管理命令集 (Discover/Generate/Test)。
+- `.planning/phases/120-ira-permission-system/`: 完整的研發文檔 (PLAN/RESEARCH/QA)。
+
 ## [v2.2.0-pisrc-resilience] - 2026-04-03
 
 ### 🚀 新增功能 (Key Features)

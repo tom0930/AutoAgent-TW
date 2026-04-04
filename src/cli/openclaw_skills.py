@@ -9,6 +9,9 @@ sys.path.append(os.getcwd())
 from src.agents.tools.skills_discover import SkillDiscoveryEngine
 from src.agents.tools.skills_generate import SkillGeneratorEngine
 from src.agents.skills.skill_sandbox_test import SkillSandboxTester
+from src.agents.skills.skill_metrics import SkillMetricsManager
+from src.cron.skill_evolution import SkillEvolutionEngine
+from src.agents.skills.skill_rollback import SkillRollbackManager
 
 def main():
     parser = argparse.ArgumentParser(description="OpenClaw AutoSkills CLI (Phase 2 - Task 2.1/4.2)")
@@ -26,6 +29,20 @@ def main():
     # 3. Test
     test_parser = subparsers.add_parser("test", help="Run a skill in the sandbox to verify permissions")
     test_parser.add_argument("path", help="Path to the skill directory")
+
+    # 4. Health
+    health_parser = subparsers.add_parser("health", help="Check skill health metrics (success rate, latency)")
+    health_parser.add_argument("name", help="Name of the skill")
+
+    # 5. Evolve
+    evolve_parser = subparsers.add_parser("evolve", help="Run the evolution cycle for all skills")
+
+    # 6. Rollback
+    rollback_parser = subparsers.add_parser("rollback", help="Restore a skill to an earlier version")
+    rollback_parser.add_argument("name", help="Name of the skill")
+
+    # 7. List
+    list_parser = subparsers.add_parser("list", help="List all installed skills with health status")
 
     args = parser.parse_args()
 
@@ -66,6 +83,51 @@ def main():
             for r in result.get("reports", []):
                 if not r['report']['success']:
                     print(f"  - [{r['id']}]: FAIL ({r['report']['error']})")
+
+    elif args.command == "health":
+        mgr = SkillMetricsManager()
+        summary = mgr.get_health_summary(args.name)
+        print(f"\n[Health Summary for '{args.name}']")
+        if summary.get("status") == "unknown":
+            print(f"Status: {summary['message']}")
+        else:
+            print(f"Status: {summary['status'].upper()}")
+            print(f"Success Rate: {summary['success_rate']}")
+            print(f"Avg Latency: {summary['avg_latency']}")
+            print(f"Total Runs: {summary['total_runs']}")
+            print(f"Suggestion: {summary['suggestion']}")
+
+    elif args.command == "evolve":
+        engine = SkillEvolutionEngine()
+        print("\n[Running Evolution Cycle...]")
+        reports = engine.run_evolution_cycle()
+        if not reports:
+            print("No skills required evolution at this time.")
+        for r in reports:
+            print(f"- Skill '{r['skill']}': Old SR {r['old_success_rate']} -> Evolution {r['evolution_result']}")
+
+    elif args.command == "rollback":
+        mgr = SkillRollbackManager()
+        success, msg = mgr.rollback(args.name)
+        if success:
+            print(f"\n✅ {msg}")
+        else:
+            print(f"\n❌ {msg}")
+
+    elif args.command == "list":
+        # Scanning .agents/skills
+        skills_dir = ".agents/skills"
+        metrics_mgr = SkillMetricsManager()
+        print(f"\n[Installed AutoSkills List]")
+        if not os.path.exists(skills_dir):
+            print("No skills folder found.")
+        else:
+            for skill_name in os.listdir(skills_dir):
+                skill_path = os.path.join(skills_dir, skill_name)
+                if os.path.isdir(skill_path):
+                    health = metrics_mgr.get_health_summary(skill_name)
+                    status_flag = "[HEALTHY]" if health.get("status") == "healthy" else "[WARNING]" if health.get("status") == "warning" else "[UNKNOWN]"
+                    print(f"- {skill_name:25} {status_flag:12} SR: {health.get('success_rate', 'N/A')}")
 
 if __name__ == "__main__":
     main()
