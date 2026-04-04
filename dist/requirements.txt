@@ -1,9 +1,0 @@
-# AutoAgent-TW Dependencies
-# Core
-psutil>=5.9.0
-requests>=2.31.0
-python-dotenv>=1.0.0
-portalocker>=2.7.0
-
-# Build
-pyinstaller>=6.19.0
