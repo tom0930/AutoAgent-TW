@@ -1,0 +1,14 @@
+{
+  "name": "translation-skill",
+  "version": "1.0.0",
+  "description": "Automatically generated skill for: translation-skill",
+  "risk_level": 1,
+  "permissions": {
+    "tools": [
+      "default"
+    ],
+    "network": false
+  },
+  "entry": "SKILL.md",
+  "auto_evolve": true
+}
