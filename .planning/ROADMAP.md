@@ -16,6 +16,8 @@
 - [X] Phase 117: aa-cc-link 智慧架構鏈結工具 [DONE]
 - [X] Phase 119: PISRC LangGraph Integration & Installer Fixes [DONE]
 - [X] Phase 120: IRA 5-Level Permission System & AutoSkills Core [DONE]
+- [X] Phase 121: AutoSkills Evolution Engine & Handover [DONE]
+- [X] Phase 122: OpenClaw Bridge & Standalone Deployment [DONE]
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。

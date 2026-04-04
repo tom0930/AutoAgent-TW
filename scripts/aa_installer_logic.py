@@ -114,6 +114,41 @@ def register_global_command(target_dir):
         except Exception as e:
             print(f"⚠️ Could not update PATH automatically: {e}")
 
+def deploy_openclaw(target_dir):
+    """Deploys OpenClaw core to the target directory and decouples Z:\\ dependency (Phase 122)."""
+    print("\n--- [OpenClaw Deployment] ---")
+    oc_dest = os.path.join(target_dir, "openclaw")
+    
+    # Check if we are in build environment (Z:\openclaw exists)
+    oc_source = "Z:\\openclaw"
+    if os.path.exists(oc_source):
+        print(f"Detected OpenClaw source at {oc_source}...")
+        try:
+            if os.path.exists(oc_dest): shutil.rmtree(oc_dest)
+            # Copy excluding node_modules to avoid massive bloat, we recreate it via npm
+            shutil.copytree(oc_source, oc_dest, ignore=shutil.ignore_patterns("node_modules", ".git", "dist/*.map", ".planning"))
+            print(f"✅ Deployed OpenClaw Core to {oc_dest}")
+            
+            # Step 2: Initialize Registry (Metadata Fix)
+            print("🔧 Initializing OpenClaw registry (Running npm install)...")
+            try:
+                # Use shell=True for npm.cmd on Windows
+                subprocess.run(["npm.cmd", "install"], cwd=oc_dest, check=True, shell=True)
+                print("✅ Metadata registry initialized successfully.")
+            except Exception as e:
+                print(f"⚠️ Metadata initialization warning: {e} (Manual 'npm install' inside {oc_dest} may be required)")
+                
+            # Step 3: Register openclaw shim (Dynamic path)
+            oc_bin = os.path.join(target_dir, "openclaw.cmd")
+            with open(oc_bin, "w") as f:
+                f.write(f'@echo off\nnode "{os.path.join(oc_dest, "openclaw.mjs")}" %*')
+            print(f"✅ Created dynamic shim: {oc_bin}")
+            
+        except Exception as e:
+            print(f"❌ Failed to deploy OpenClaw: {e}")
+    else:
+        print("💡 OpenClaw source not found. Assuming standalone usage or manual install.")
+
 def deploy_core_files(target_dir):
     """Copies core files from base_path to target_dir."""
     base_path = get_base_path()
@@ -121,8 +156,8 @@ def deploy_core_files(target_dir):
         print("Skipping core file deployment (Source == Target)")
         return
 
-    dirs = ["scripts", ".agents", "_agents"]
-    files = ["requirements.txt", "README.md", "version_list.md"]
+    dirs = ["scripts", ".agents", "_agents", "src"]
+    files = ["requirements.txt", "README.md", "version_log.md"]
     
     for d in dirs:
         src, dest = os.path.join(base_path, d), os.path.join(target_dir, d)
@@ -175,6 +210,7 @@ def main():
         print(f"Install Location: {target_dir}")
         
         deploy_core_files(target_dir)
+        deploy_openclaw(target_dir) # New: Deploy OpenClaw as part of AutoAgent
         setup_git_config()
         setup_project_config(target_dir)
         setup_venv(python_cmd, target_dir)
@@ -186,6 +222,22 @@ def main():
         
         deploy_global_workflows(target_dir)
         register_global_command(target_dir)
+        
+        # New: AutoSkills Global shim
+        skills_shim = os.path.join(target_dir, "openclaw-skills.cmd")
+        with open(skills_shim, "w") as f:
+            python_exe = os.path.join(target_dir, "venv", "Scripts", "python.exe") if os.name == "nt" else "python"
+            f.write(f'@echo off\nSET PYTHONPATH=%~dp0\n"{python_exe}" "%~dp0src\\cli\\openclaw_skills.py" %*')
+            
+        # New: IDE-Bridge Global shim (Phase 122)
+        bridge_shim = os.path.join(target_dir, "aa-bridge.cmd")
+        with open(bridge_shim, "w") as f:
+            python_exe = os.path.join(target_dir, "venv", "Scripts", "python.exe") if os.name == "nt" else "python"
+            f.write(f'@echo off\nSET PYTHONPATH=%~dp0\n"{python_exe}" "%~dp0src\\bridge\\ai_proxy.py" %*')
+            
+        # Versioning log for installer
+        version_suffix = "V240" # For v2.4.0
+        print(f"\n✅ Ready for packaging: AutoAgent-TW_Setup_{version_suffix}.exe")
         
         print("\n" + "="*40)
         print("🎉 SUCCESS! AutoAgent-TW Installed.")

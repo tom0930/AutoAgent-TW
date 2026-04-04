@@ -1,5 +1,21 @@
 # AutoAgent-TW Version Log
 
+## [v2.4.0-final-bridge] - 2026-04-04
+
+### 🚀 新增功能 (Key Features)
+1. **IDE-Bridge 指令轉發 (Brain Delegation Mode)**: 實施具備 FastAPI 後端的 `aa-bridge` 代理伺服器。允許外部 AI 代理 (如 OpenClaw) 無縫存取 Antigravity IDE 內建的 AI 推理能力，解決本地 API Key 缺失與跨項目模型共享難題。
+2. **OpenClaw 全方位集成 (Standalone Decoupling)**: 安裝程式現在支持 OpenClaw 核心的動態部署。自動修復 Metadata 遺失與硬編碼路徑依賴，建立基於 `OPENCLAW_HOME` 的可移植性架構。
+3. **全域指令集擴充 (CLI Ecosystem)**: 新增 `autoagent` (主控)、`openclaw-skills` (技能管理) 與 `aa-bridge` (大腦中轉) 三大核心指令，並自動註冊至系統 PATH。
+4. **AutoSkills 自我進化引擎 (Evolution Engine)**: 實施全自動的技能健檢與重產機制。系統會監控技能成功率，當低於 85% 時自動啟動進化循環以修補缺陷。
+
+### 📁 核心文件更新 (@file:)
+- `scripts/aa_installer_logic.py`: 大幅更新安裝邏輯，包含核心 `src/` 部署、OpenClaw 地區化拷貝與全域指令註冊。
+- `src/bridge/ai_proxy.py`: IDE-Bridge 核心代理實作。
+- `aa-bridge.cmd` & `openclaw-skills.cmd`: 全域啟動腳本。
+- `src/agents/skills/skill_metrics.py`: 技能健康度追蹤核心。
+- `src/cron/skill_evolution.py`: 技能自動進化引擎。
+- `.planning/phases/122-openclaw-bridge-installer/`: 研發計畫與驗證報告 (PLAN/QA)。
+
 ## [v2.3.0-autoskills-security] - 2026-04-04
 
 ### 🚀 新增功能 (Key Features)
