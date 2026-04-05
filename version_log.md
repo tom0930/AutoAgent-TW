@@ -1,5 +1,32 @@
 # AutoAgent-TW Version Log
 
+## [v2.5.0-context-defense] - 2026-04-05
+
+### 🚀 新增功能 (Key Features)
+1. **Active Context Defense (ACD)**: 根治 Antigravity 工作區 Max Token Limit Error。自動掃描工作區檔案大小分佈、預估 Token 佔用、生成 `.geminiignore` 排除二進位與編譯產物。
+2. **Context Guard Pre-scan**: `/aa-plan` 新增 Step 0 前置檢查，在載入任何上下文前先驗證 Token 預算安全性。超過 100K tokens 即觸發告警。
+3. **自動 .geminiignore 生成**: `/aa-new-project` 新增 Step 1.5，初始化專案時自動建立 `.geminiignore`，確保每個新專案從第一天就受到保護。
+4. **Windows cp950 相容**: 所有 CLI 輸出改用 ASCII-safe 標記 + UTF-8 強制輸出，解決繁體中文 Windows 下的 emoji crash。
+
+### 📊 關鍵數據 (Impact)
+- **z:\ac 修復前**: 512 MB / 16,888 檔案 → Token 爆炸 (800K+ tokens)
+- **z:\ac 修復後**: `.geminiignore` 排除後僅索引 ~13 MB 原始碼 → 安全範圍
+
+### 📁 新增/修改文件 (@file:)
+- `scripts/context_guard.py`: Context Guard 核心掃描引擎 (220 lines)。
+- `.geminiignore`: AutoAgent-TW 工作區 Antigravity 索引排除規則。
+- `z:\ac\.geminiignore`: OpenClaw 工作區即時修復。
+- `_agents/workflows/aa-plan.md`: 新增 Step 0 Context Guard pre-scan。
+- `_agents/workflows/aa-new-project.md`: 新增 Step 1.5 自動生成 .geminiignore。
+- `.planning/phases/123-context-guard/CONTEXT.md`: 根因分析與設計決策。
+- `.planning/phases/123-context-guard/GUARD-REPORT.md`: 安全掃描報告 (ALL PASS)。
+- `.planning/phases/123-context-guard/QA-REPORT.md`: 品質驗證報告 (7/7 UAT PASS)。
+
+### 🔒 安全性 (Security)
+- Guardian Scan: ALL PASS (零洩漏、零注入風險)
+- 1 個 LOW-risk finding: `shell=True` 於靜態 `npm.cmd install` 命令（已標註）
+
+
 ## [v2.4.0-final-bridge] - 2026-04-04
 
 ### 🚀 新增功能 (Key Features)
