@@ -18,6 +18,16 @@ git init
 mkdir -p .planning/research .planning/phases .agent-state
 ```
 
+### Step 1.5: Context Guard — 自動生成 .geminiignore
+// turbo
+1. 執行 Context Guard 前置掃描：
+```bash
+python scripts/context_guard.py .
+```
+2. 若 `.geminiignore` 不存在，`context_guard.py` 會自動生成預設版本。
+3. 若已存在，則驗證覆蓋率並回報缺漏。
+4. 此步驟確保 Antigravity 不會因索引二進位檔而觸發 Max Token Limit Error。
+
 ### Step 2: 深度訪談 (Deep Questioning)
 **如果是 `--auto` 模式：**
 - 自動讀取輸入文件（如 PR 或 Issue 詳情）。

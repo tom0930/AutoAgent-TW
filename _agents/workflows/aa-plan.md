@@ -11,6 +11,15 @@ description: Plan & Research Phase N / 研究 + 規劃階段 N。
 
 ## Steps
 
+### Step 0: Context Guard 前置檢查 (Active Context Defense)
+1. 檢查 `.geminiignore` 是否存在。若不存在，自動執行：
+```bash
+python scripts/context_guard.py .
+```
+2. 掃描工作區中 >500KB 的非原始碼檔案，預估 Token 佔用。
+3. 若預估 Token > 100K → 發出 ⚠️ 警告並建議瘦身。
+4. 確認安全後才進入 Step 1。
+
 ### Step 1: 匯入上下文
 1. 讀取 `.planning/PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`。
 2. 讀取 `.planning/phases/{N}-*/CONTEXT.md` 以確定當前階段的設計決策。
