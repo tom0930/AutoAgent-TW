@@ -10,6 +10,10 @@
 - Phase 116: aa-Dashboard 一鍵自動化命令 [DONE]
 - Phase 117: aa-cc-link 智慧架構鏈結工具 [DONE]
 - Phase 119: PISRC LangGraph Integration & Installer Fixes [DONE]
+- Phase 120: IRA 5-Level Permission System & AutoSkills Core [DONE]
+- Phase 121: AutoSkills Evolution Engine & Handover [DONE]
+- Phase 122: OpenClaw Bridge & Standalone Deployment [DONE]
+- Phase 123: Active Context Defense (ACD) & .geminiignore [DONE]
 
 ## Phase 0 summary
 - Analyzed `plus.md` and translated into v1.7.0 project definition and roadmap.
