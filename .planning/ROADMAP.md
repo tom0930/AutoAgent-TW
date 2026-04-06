@@ -19,6 +19,7 @@
 - [X] Phase 121: AutoSkills Evolution Engine & Handover [DONE]
 - [X] Phase 122: OpenClaw Bridge & Standalone Deployment [DONE]
 - [X] Phase 123: Active Context Defense & .geminiignore [DONE]
+- [ ] Phase 124: Sub-Agent Orchestration Engine (v1.9.0 Core) [PLANNING]
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。
