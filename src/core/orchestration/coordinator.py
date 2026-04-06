@@ -1,36 +1,81 @@
 import asyncio
-from typing import Dict, Any
+import sys
+from typing import Dict, Any, List
 from langgraph.graph import StateGraph, START, END
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
+from langgraph.prebuilt import ToolNode
 from src.core.state import AgentState
 from src.core.orchestration.spawn_manager import AgentProcess
+from src.core.mcp.mcp_client import MCPClientManager
 
 
 class OrchestrationCoordinator:
     """
-    Main coordinator for Phase 124 Sub-Agent Engine.
-    Uses LangGraph to manage task splitting and parallel execution via process isolation.
+    Main coordinator for Phase 125 Sub-Agent Engine.
+    Integrates MCP Protocol via LangGraph ToolNode and ReAct loops.
     """
 
     def __init__(self, thread_id: str = "orchestrator-001"):
         self.thread_id = thread_id
-        self.graph = self._build_graph()
+        self.mcp_manager = MCPClientManager()
+        self.graph = None # Will be built async or on first run
 
-    def _build_graph(self) -> StateGraph:
+    async def _ensure_graph(self):
+        """Ensures MCP is started and graph is built with active tools."""
+        if self.graph:
+            return
+        
+        # 1. Start MCP Client Manager (Parallel Startup)
+        await self.mcp_manager.startup()
+        
+        # 2. Build Graph with Tools
         builder = StateGraph(AgentState)
 
         # Nodes
         builder.add_node("supervisor", self.supervisor_node)
         builder.add_node("execute_tasks", self.execute_tasks_node)
         builder.add_node("aggregator", self.aggregator_node)
+        
+        # Wave 2: MCP Tool Support
+        tools = self.mcp_manager.get_tools_for_agent()
+        if tools:
+            builder.add_node("mcp_tools", ToolNode(tools))
+            # Edges with ReAct Router
+            builder.add_edge("execute_tasks", "mcp_tools")
+            builder.add_conditional_edges(
+                "mcp_tools",
+                self.should_continue_reasoning,
+                {
+                    "continue": "supervisor", # Back to supervisor for re-planning
+                    "end": "aggregator"
+                }
+            )
+        else:
+            builder.add_edge("execute_tasks", "aggregator")
 
-        # Edges
+        # Basic Flow
         builder.add_edge(START, "supervisor")
         builder.add_edge("supervisor", "execute_tasks")
-        builder.add_edge("execute_tasks", "aggregator")
         builder.add_edge("aggregator", END)
 
-        return builder.compile()
+        self.graph = builder.compile()
+
+    def should_continue_reasoning(self, state: AgentState) -> str:
+        """
+        Determines if tool results require further supervisor reasoning.
+        (ReAct / Loop protection)
+        """
+        last_message = state["messages"][-1]
+        # In a real scenario, we'd check if the tool output is an error or 
+        # if the last message contains complex instructions.
+        # Here we check if we've looped too many times.
+        if len(state.get("mcp_tools_used", [])) > 5:
+            return "end"
+        
+        if isinstance(last_message, ToolMessage) and "error" in last_message.content.lower():
+             return "continue"
+             
+        return "end"
 
     async def supervisor_node(self, state: AgentState) -> Dict[str, Any]:
         """Splits high-level task into parallelizable sub-tasks."""
@@ -96,24 +141,36 @@ class OrchestrationCoordinator:
             "success_rate": 1.0,
         }
 
-    def run(self, task_prompt: str):
-        """Entry point for orchestration."""
-        initial_state = {
+    async def run_async(self, task_prompt: str) -> Dict[str, Any]:
+        """Async entry point for orchestration."""
+        await self._ensure_graph()
+        
+        initial_state: AgentState = {
             "messages": [],
             "task_input": task_prompt,
             "failure_count": 0,
             "last_errors": [],
-            "current_version": "v1.9.0",
+            "current_version": "v1.9.1",
             "risk_level": 1,
+            "mcp_tools_used": [],
+            "tool_outputs": [],
+            "tool_errors": [],
+            "last_action": {},
             "pending_approval": False,
             "approval_result": None,
             "thread_id": self.thread_id,
             "review_reports": [],
-            "success_rate": 0.0,
+            "success_rate": 0.0
         }
-        # Execute asynchronously as coordinator.run is sync wrapper
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.graph.ainvoke(initial_state))
+
+        # Run the graph
+        config = {"configurable": {"thread_id": self.thread_id}}
+        final_state = await self.graph.ainvoke(initial_state, config=config)
+        return final_state
+
+    def run(self, task_prompt: str):
+        """Entry point for orchestration."""
+        return asyncio.run(self.run_async(task_prompt))
 
 
 def sys_executable():

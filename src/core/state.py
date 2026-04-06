@@ -24,6 +24,10 @@ class AgentState(TypedDict):
     pending_approval: bool
     approval_result: Optional[str]        # 'approved', 'denied', or 'modified'
     
+    # MCP Tool Orchestration (Phase 125 Wave 2)
+    mcp_tools_used: List[str]
+    tool_outputs: List[Dict[str, Any]]
+    tool_errors: List[str]
     # Context & Persistence
     thread_id: str
     review_reports: List[Dict]
