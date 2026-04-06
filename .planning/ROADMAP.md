@@ -20,6 +20,11 @@
 - [X] Phase 122: OpenClaw Bridge & Standalone Deployment [DONE]
 - [X] Phase 123: Active Context Defense & .geminiignore [DONE]
 - [X] Phase 124: Sub-Agent Orchestration Engine (v1.9.0 Core) [DONE]
+- [ ] Phase 125: MCP Protocol Integration Layer (v1.9.1) [PLANNED]
+- [ ] Phase 126: Windows GUI Automation (Windows-Use) [BACKLOG]
+- [ ] Phase 127: Workflow Customization System (Hooks + CLAUDE.md) [BACKLOG]
+- [ ] Phase 128: Persistent Memory System (L1/L2/L3 MemoryStore) [BACKLOG]
+- [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。
