@@ -1,7 +1,5 @@
-import os
 import sys
-import json
-from typing import Dict, Optional, List
+from typing import Dict, Optional
 from pathlib import Path
 
 # Constants

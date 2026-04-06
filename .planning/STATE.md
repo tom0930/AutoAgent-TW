@@ -14,7 +14,7 @@
 - Phase 121: AutoSkills Evolution Engine & Handover [DONE]
 - Phase 122: OpenClaw Bridge & Standalone Deployment [DONE]
 - Phase 123: Active Context Defense (ACD) & .geminiignore [DONE]
-- Phase 124: Sub-Agent Orchestration Engine (v1.9.0 Core) [PLANNED]
+- Phase 124: Sub-Agent Orchestration Engine (v1.9.0 Core) [DONE]
 
 ## Phase 0 summary
 - Analyzed `plus.md` and translated into v1.7.0 project definition and roadmap.
