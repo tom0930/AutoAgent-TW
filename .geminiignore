@@ -45,6 +45,7 @@ Thumbs.db
 *.jpg
 *.jpeg
 *.gif
+*.webp
 
 # === 大型或非必要檔案 (Token Slimming) ===
 plus.md
