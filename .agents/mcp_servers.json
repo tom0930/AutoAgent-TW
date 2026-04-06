@@ -1,0 +1,42 @@
+{
+  "_comment": "AutoAgent-TW MCP Server Configuration v2. API Keys utilize ${VAR_NAME} environment variable hydration.",
+  "servers": [
+    {
+      "name": "filesystem",
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+      "roots": ["./src", "./scripts", "./.planning", "./docs"],
+      "env": {},
+      "enabled": true,
+      "description": "Local filesystem access (limited to roots)."
+    },
+    {
+      "name": "github",
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" },
+      "enabled": false,
+      "description": "PR/Issue/Repo operations."
+    },
+    {
+      "name": "slack",
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-slack"],
+      "env": { "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}" },
+      "enabled": false,
+      "description": "Slack integration."
+    },
+    {
+      "name": "autoagent-internal",
+      "transport": "stdio",
+      "command": "python",
+      "args": ["scripts/mcp_internal_server.py"],
+      "env": {},
+      "enabled": true,
+      "description": "Internal AutoAgent-TW automation (Planning/Scheduling)."
+    }
+  ]
+}
