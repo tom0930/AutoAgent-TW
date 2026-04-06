@@ -29,7 +29,7 @@ async def check_status():
     
     print("\n--- MCP Server Health Status ---")
     for s in status:
-        icon = "🟢" if s['connected'] else "🔴"
+        icon = "[OK]" if s['connected'] else "[ERR]"
         print(f"{icon} {s['name']} (Tools: {s['tool_count']})")
         if s['error']:
             print(f"   Error: {s['error']}")

@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+import sys
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, List, Dict, Optional
@@ -90,6 +91,7 @@ class MCPClientManager:
     async def _connect_server_with_retry(self, server_cfg: dict) -> None:
         """依回退機制嘗試連接單一 MCP 伺服器。"""
         name = server_cfg["name"]
+        last_error = "Unknown error"
         for attempt in range(MAX_RETRIES):
             try:
                 # 實務上在此呼叫 langchain_mcp_adapters 的初始化邏輯
@@ -107,24 +109,54 @@ class MCPClientManager:
                 logger.info(f"[MCP] '{name}' connected. Registered {len(tools)} tools.")
                 return
             except Exception as e:
+                last_error = str(e)
                 wait = 2 ** attempt
                 logger.warning(f"[MCP] Failed to connect '{name}' (Attempt {attempt+1}/{MAX_RETRIES}): {e}. Retrying in {wait}s...")
                 await asyncio.sleep(wait)
-
+        
         # 最終失敗紀錄
-        self._status[name] = ServerStatus(name=name, connected=False, error=str(e))
+        self._status[name] = ServerStatus(name=name, connected=False, error=last_error)
 
     async def _do_connect_logic(self, cfg: dict) -> List[BaseTool]:
         """封裝後的連接邏輯，核心與 stdio/HTTP 等相關。"""
-        # 第一版 Phase 125 實作 mock 回傳
-        # 實務整合時會在此實例化 MultiServerMCPClient 的 server 連接
-        # 為了 Wave 1 骨幹，我們回傳一組 mock tools 用於驗證通路
+        from langchain_mcp_adapters.tools import load_mcp_tools
+        
+        # 根據 cfg 構造連接參數
+        # 實測確認：需使用 load_mcp_tools(None, connection=config_dict) 模式
+        # 且 config_dict 必須包含 'transport' 字串鍵
+        try:
+            if cfg.get("transport") == "stdio":
+                # 直接構造配置字典
+                mcp_config = {
+                    "command": sys.executable if cfg.get("command") == "python" else cfg.get("command"),
+                    "args": cfg.get("args", []),
+                    "env": cfg.get("env"),
+                    "transport": "stdio"
+                }
+                
+                # 載入工具 (需使用 await，回傳的是 coroutine)
+                tools = await load_mcp_tools(
+                    None,
+                    connection=mcp_config,
+                    server_name=cfg.get("name")
+                )
+                
+                return list(tools)
+        except Exception:
+             logger.error(f"[MCP] Error in _do_connect_logic for '{cfg.get('name')}'")
+             raise 
+        
         return []
 
     async def shutdown(self) -> None:
         """優雅清理資源。"""
-        # 未來整合資源回收邏輯
         logger.info("[MCP] Gracefully shutting down all connections.")
+        for stack in self._raw_clients:
+            try:
+                await stack.aclose()
+            except Exception as e:
+                logger.error(f"[MCP] Error closing connection stack: {e}")
+        self._raw_clients.clear()
 
     def get_tools_for_agent(
         self,
