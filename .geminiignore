@@ -46,5 +46,11 @@ Thumbs.db
 *.jpeg
 *.gif
 
+# === 大型或非必要檔案 (Token Slimming) ===
+plus.md
+testclaw.md
+idea_claueloop.mf
+testclaw.md
+
 # === Guardian 暫存 ===
 _guard_scan.py
