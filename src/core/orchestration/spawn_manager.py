@@ -16,10 +16,12 @@ class AgentProcess:
     Manages the lifecycle of a sub-agent process in AutoAgent-TW v1.9.0.
     Ensures safe spawning, status tracking, and resource isolation.
     """
-    def __init__(self, task_name: str, parent_id: str = "main"):
+    def __init__(self, task_name: str, parent_id: str = "main", budget_tokens: int = 10000, risk_limit: int = 3):
         self.agent_id = str(uuid.uuid4())[:8]
         self.task_name = task_name
         self.parent_id = parent_id
+        self.budget_tokens = budget_tokens
+        self.risk_limit = risk_limit
         self.start_time = time.time()
         self.status = "pending"
         self.progress = 0
@@ -41,6 +43,8 @@ class AgentProcess:
             "status": "pending",
             "progress": 0,
             "start_time": get_iso_time(),
+            "budget_tokens": self.budget_tokens,
+            "risk_limit": self.risk_limit,
             "logs": ["Process initialized."],
             "result": None
         }
@@ -60,8 +64,11 @@ class AgentProcess:
         if env_ovrides:
             env.update(env_ovrides)
         
-        # Add AGENT_ID to env for self-reporting
+        # Add AGENT_ID and inheritance values to env
         env["AA_SUBAGENT_ID"] = self.agent_id
+        env["AA_PARENT_ID"] = self.parent_id
+        env["AA_BUDGET_TOKENS"] = str(self.budget_tokens)
+        env["AA_RISK_LIMIT"] = str(self.risk_limit)
         
         creationflags = 0
         if sys.platform == "win32":
@@ -79,7 +86,7 @@ class AgentProcess:
                 bufsize=1
             )
             self.status = "running"
-            self.update_progress(10, "Process spawned successfully.")
+            self.update_progress(10, f"Process spawned successfully (Budget: {self.budget_tokens}).")
         except Exception as e:
             self.status = "fail"
             self.update_progress(0, f"Spawn failed: {str(e)}")
