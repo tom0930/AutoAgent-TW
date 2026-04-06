@@ -8,15 +8,24 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, Any
 
+
 def get_iso_time():
     return datetime.now().isoformat()
+
 
 class AgentProcess:
     """
     Manages the lifecycle of a sub-agent process in AutoAgent-TW v1.9.0.
     Ensures safe spawning, status tracking, and resource isolation.
     """
-    def __init__(self, task_name: str, parent_id: str = "main", budget_tokens: int = 10000, risk_limit: int = 3):
+
+    def __init__(
+        self,
+        task_name: str,
+        parent_id: str = "main",
+        budget_tokens: int = 10000,
+        risk_limit: int = 3,
+    ):
         self.agent_id = str(uuid.uuid4())[:8]
         self.task_name = task_name
         self.parent_id = parent_id
@@ -26,12 +35,12 @@ class AgentProcess:
         self.status = "pending"
         self.progress = 0
         self.process: Optional[subprocess.Popen] = None
-        
+
         # State paths
         self.state_dir = Path(".agent-state/subagents")
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.state_file = self.state_dir / f"{self.agent_id}.json"
-        
+
         self._initialize_state()
 
     def _initialize_state(self):
@@ -46,7 +55,7 @@ class AgentProcess:
             "budget_tokens": self.budget_tokens,
             "risk_limit": self.risk_limit,
             "logs": ["Process initialized."],
-            "result": None
+            "result": None,
         }
         self._write_state(data)
 
@@ -63,18 +72,18 @@ class AgentProcess:
         env = os.environ.copy()
         if env_ovrides:
             env.update(env_ovrides)
-        
+
         # Add AGENT_ID and inheritance values to env
         env["AA_SUBAGENT_ID"] = self.agent_id
         env["AA_PARENT_ID"] = self.parent_id
         env["AA_BUDGET_TOKENS"] = str(self.budget_tokens)
         env["AA_RISK_LIMIT"] = str(self.risk_limit)
-        
+
         creationflags = 0
         if sys.platform == "win32":
             # 0x00000008 = DETACHED_PROCESS
             creationflags = 0x00000008
-            
+
         try:
             self.process = subprocess.Popen(
                 command,
@@ -83,10 +92,12 @@ class AgentProcess:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                bufsize=1
+                bufsize=1,
             )
             self.status = "running"
-            self.update_progress(10, f"Process spawned successfully (Budget: {self.budget_tokens}).")
+            self.update_progress(
+                10, f"Process spawned successfully (Budget: {self.budget_tokens})."
+            )
         except Exception as e:
             self.status = "fail"
             self.update_progress(0, f"Spawn failed: {str(e)}")
@@ -113,7 +124,8 @@ class AgentProcess:
         if self.process:
             self.process.terminate()
             self.status = "terminated"
-            self._initialize_state() # Reset or update state
+            self._initialize_state()  # Reset or update state
+
 
 if __name__ == "__main__":
     # Internal component test
