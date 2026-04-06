@@ -1,5 +1,28 @@
 # AutoAgent-TW Version Log
 
+## [v2.6.0-mcp-orchestrator] - 2026-04-07
+
+### 🚀 新增功能 (Key Features)
+1. **MCP Protocol Integration Layer (Phase 125)**: 實施 Model Context Protocol (MCP) 客戶端管理架構。支援 Stdio 傳輸協議與並行伺服器啟動，解決子代理「有大腦無工具」的斷層。
+2. **MCP Tool Registry (NRT)**: 具備命名空間的工具註冊表 (`server::tool`)。整合 `langchain-mcp-adapters` 並修復 `Missing transport key` 配置缺陷，支援 17+ 跨平台自動化工具。
+3. **ReAct Orchestration Loop**: 升級 `OrchestrationCoordinator` 以支援 LangGraph `ToolNode`。提供最多 5 輪的自主規劃與工具調用循環（ReAct），具備自動報錯與重試機制。
+4. **MCP 視覺化儀表板 (Dashboard v2)**: 在 `status.html` 整合 MCP Toolkit 標籤。即時監控連線伺服器健康度 (🟢/🔴)、工具總數與調用詳細日誌。
+5. **內建自動化工具集 (Internal MCP)**: 部署 `autoagent-internal` 伺服器，將 Phase 查詢、排程管理與狀態報告封裝為標準 MCP 工具。
+
+### 📁 核心文件更新 (@file:)
+- `src/core/mcp/mcp_client.py`: 並行連線管理器與 `load_mcp_tools` 修正 (v1.9.2 Bridge)。
+- `src/core/mcp/registry.py`: 具備命名空間的工具註冊與 Schema 解析。
+- `scripts/aa_mcp.py`: 統一的 MCP 管理 CLI (list/status/test)。
+- `src/core/orchestration/coordinator.py`: 升級支援 ReAct 循環與動態工具節點。
+- `scripts/mcp_internal_server.py`: 內建 FastMCP 伺服器實作。
+- `.agents/mcp_servers.json`: 安全化的 MCP 伺服器配置文件。
+- `.agents/skills/status-notifier/templates/status.html`: 儀表板 MCP Toolkit 功能模組。
+
+### 🔒 安全性 (Security)
+- Guardian Scan: ALL PASS (已實施 Root Path 限制與環境變數脫敏)。
+- 支援 IRA 5-Level 權限管制：MCP 工具調用自動注入風險評估欄位。
+
+
 ## [v2.5.0-context-defense] - 2026-04-05
 
 ### 🚀 新增功能 (Key Features)
