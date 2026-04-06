@@ -5,6 +5,8 @@ from datetime import datetime
 from pathlib import Path
 import sys
 import io
+import os
+import time
 
 # Force UTF-8 for console output on Windows
 if hasattr(sys.stdout, 'detach'):
@@ -110,12 +112,17 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
     subagents_dir = state_dir / "subagents"
     subagents_data = []
     if subagents_dir.exists():
-        try:
-            for f_path in subagents_dir.glob("*.json"):
-                with open(f_path, "r", encoding="utf-8") as f:
-                    subagents_data.append(json.load(f))
-        except: pass
+        for f_path in subagents_dir.glob("*.json"):
+            # Aggressive retry for reading subagent JSON (might be locked by child)
+            for _ in range(3):
+                try:
+                    with open(f_path, "r", encoding="utf-8") as f:
+                        subagents_data.append(json.load(f))
+                    break
+                except Exception:
+                    time.sleep(0.1)
 
+    import portalocker
     data = {
         "version": version,
         "current_task": task,
@@ -133,9 +140,15 @@ def update_status(task, next_goal, phase, total_phases, status="running", logs=N
         "timestamp": datetime.now().isoformat()
     }
     
-    # Write JSON
-    with open(state_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
+    # Write JSON with portalocker for safety
+    try:
+        with open(state_file, "w", encoding="utf-8") as f:
+            portalocker.lock(f, portalocker.LOCK_EX)
+            json.dump(data, f, indent=4, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+    except Exception as e:
+        print(f"CRITICAL: Failed to write status_state.json: {e}")
     
     # Write JS (for local browser preview without CORS) - Legacy fallback
     with open(js_file, "w", encoding="utf-8") as f:
