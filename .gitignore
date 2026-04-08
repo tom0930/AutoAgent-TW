@@ -60,6 +60,9 @@ _guard_scan.py
 *.pem
 *.key
 certs/
+secrets/
+*creds.json
+*.json.key
 
 # === Phase 130 資源連結 ===
 antigravity/
