@@ -7,9 +7,9 @@
 
 ### 1. 中繼架構 (Buffer Strategy)
 *   **目錄規範**：建立 `.agents/running_temp/` 作為工作目錄。
-*   **任務清單 (Manifest)**：
-    *   AI 會先將待處理的「檔案清單」或「資料片段」寫入 `running_temp/task_manifest.json`。
-    *   這確保了當前任務的「範圍 (Scope)」是持久化的。
+*   **任務清單 (Manifest) 格式**：採用 **JSON / JSONL** 格式（先採純 JSON / JSONL，以最小化修改成本，並有效應對大量結構化資料）。
+    *   AI 會先將待處理的「檔案清單」或「資料片段」依序寫入 `running_temp/task_manifest.jsonl` (或 `.json`)。
+    *   此方式便於行級讀寫 (JSONL) 以及序列化分析，並確保當前任務的「範圍 (Scope)」被安全持久化。
 
 ### 2. 迭代執行 (Chunking Execution)
 *   **分片 (Slicing)**：不再一次讀寫 50 個檔案，而是根據 Token 預算，每次處理 N 個（例如每次 5 個）。
