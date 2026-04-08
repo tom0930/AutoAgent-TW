@@ -1,6 +1,6 @@
 # AutoAgent-TW: Advanced Autonomous Agent System
 
-[![Version](https://img.shields.io/badge/version-1.6.0--autonomous--scheduling-blue)](https://github.com/tom0930/AutoAgent-TW)
+[![Version](https://img.shields.io/badge/version-1.7.3--knowledge--automation-blue)](https://github.com/tom0930/AutoAgent-TW)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 🚀 繁體中文介紹 (Introduction)
