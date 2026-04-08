@@ -124,5 +124,24 @@ nlm audio create <notebook-id> --format deep_dive --confirm
     簡單且不會有伺服器維護成本。
 
 ---
+
+## 第六章：環境遷移與安裝注意事項 (Portability & Installer)
+
+在將此方案建立為產品或打包進安裝程式 (Installer) 時，必須考量環境移植性（例如：使用者沒有 `Z:\` 或路徑權限受限）。
+
+### 6.1 避開絕對路徑與目錄連結 (No Junctions)
+*   **風險**：在開發期使用 `mklink` 連結路徑很方便，但**絕不能寫入安裝腳本**。因為其他人的電腦沒有您特定的路徑結構。
+*   **建議做法**：一律使用相對路徑或動態路徑。
+    ```python
+    import os
+    # 動態取得家目錄下的 Antigravity 配置路徑
+    config_base = os.path.join(os.path.expanduser("~"), ".gemini", "antigravity")
+    ```
+
+### 6.2 安裝程式邏輯
+1.  **自動化建立**：使用 `os.makedirs(path, exist_ok=True)` 確保全局標籤與工作流目錄存在。
+2.  **磁碟無關性**：確保安裝程式不依賴特定的磁碟機代號（如 `Z:`）。
+
+---
 > [!NOTE]
-> 這份文件 `linebot.md` 已依照完整分析存檔於您的系統中。您可以隨時匯入您的 NotebookLM 中進行重點複習！
+> 本文件已優化為具備「產品化思維」的技術指南，適合長期維護與團隊分享。
