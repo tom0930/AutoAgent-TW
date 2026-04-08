@@ -7,7 +7,16 @@ from pathlib import Path
 class PreflightScorer:
     def __init__(self, plan_path):
         self.plan_path = Path(plan_path)
-        self.content = self.plan_path.read_text(encoding='utf-8') if self.plan_path.exists() else ""
+        self.content = ""
+        if self.plan_path.exists():
+            try:
+                self.content = self.plan_path.read_text(encoding='utf-8')
+            except UnicodeDecodeError:
+                # Fallback to utf-16 for Windows PowerShell redirected output
+                try:
+                    self.content = self.plan_path.read_text(encoding='utf-16')
+                except:
+                    self.content = ""
         self.score = 0
         self.details = []
 
