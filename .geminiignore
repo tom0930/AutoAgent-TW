@@ -55,3 +55,23 @@ testclaw.md
 
 # === Guardian 暫存 ===
 _guard_scan.py
+# === Token Optimization ===
+.agents/logs/*.log
+temp/
+build/
+dist/
+*.pyc
+__pycache__/
+*.exe
+*.pkg
+.agent-state/*.json
+# === Token Optimization ===
+.agents/logs/*.log
+temp/
+build/
+dist/
+*.pyc
+__pycache__/
+*.exe
+*.pkg
+.agent-state/*.json
