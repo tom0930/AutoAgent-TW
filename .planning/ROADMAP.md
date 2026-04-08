@@ -28,6 +28,7 @@
 - [X] Phase 130: 自動化知識庫整合 (Line -> GDrive -> NLM) [DONE]
 - [X] Phase 131: 知識檢索與主動分享 (Retrieval & Sharing) [DONE]
 - [X] Phase 132: 緩衝執行引擎 (Buffer Engine) [DONE]
+- [ ] Phase 134: Token-Aware Execution & Sub-task Splitting [PLANNED]
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。

@@ -22,6 +22,7 @@
 - Phase 128: Persistent Memory System [BACKLOG]
 - Phase 129: Headless + CI/CD [BACKLOG]
 - Phase 131: GUI Dashboard Integration for NLM [PLANNED]
+- Phase 134: Token-Aware Execution & Sub-task Splitting [PLANNED]
 
 ## Phase 0 summary
 - Analyzed `plus.md` and translated into v1.7.0 project definition and roadmap.
