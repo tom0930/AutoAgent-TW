@@ -37,7 +37,8 @@
     ```
 
 ### 2.2 帳號與登入初始化 (特別注意)
-*   **Google Drive 權限**：為了讓腳本能無縫上傳，建議至 Google Cloud Console 申請 **「Service Account」** 並下載 JSON 憑證，這免去了瀏覽器手動點擊授權的麻煩。
+*   **Google Drive 權限**：為了讓腳本能無縫上傳，建議至 Google Cloud Console 申請 **「Service Account」**。
+    *   *詳細步驟請參閱：[Google Cloud 憑證申請圖文教學](file:///z:/autoagent-TW/docs/GOOGLE_CLOUD_SETUP_GUIDE.md)*。
 *   **Line Developer 帳號**：取得 Channel Access Token 與 Channel Secret。
 *   > [!IMPORTANT]
     > **資安防護**：絕對不要將 Token 或 Secret 直接寫在程式碼中。請使用 `.env` 檔案管理，並確保建立 `.gitignore` 排除該檔案。
