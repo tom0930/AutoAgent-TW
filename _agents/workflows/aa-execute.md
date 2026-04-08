@@ -11,6 +11,15 @@ description: Execute Phase N (Parallel) / 執行階段 N 的所有 Plans。
 
 ## Steps
 
+### Step 0: 智慧風險評估 (Pre-flight Check)
+1. 執行風險偵測脚本：
+```bash
+python scripts/preflight_scorer.py .planning/phases/{N}-*/PLAN.md
+```
+2. **分流決策**：
+- **分數 < 8**：視為「安全執行路徑」。自動化標記讀取類指令 (ls, git status, cat) 為 `SafeToAutoRun: true`。
+- **分數 >= 8**：**觸發警報 🚨**。中止流程並詢問：「這單太硬，預估風險過高（或 Token 成本巨大），是否轉為 Orchestrate 拆單模式？」
+
 ### Step 1: 匯入執行計畫
 1. 讀取 `.planning/phases/{N}-*/PLAN.md`
 2. 提取所有待執行的任務與其對應的 Wave。

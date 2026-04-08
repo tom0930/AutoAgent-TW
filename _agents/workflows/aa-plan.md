@@ -31,11 +31,15 @@ python scripts/context_guard.py .
 3. 如果需要，使用 `search_web` 搜尋技術實現方案。
 4. 產出 `RESEARCH.md` 內容：實施方案分析、依賴檢查、已識別的陷阱。
 
-### Step 3: 定義執行計畫 (PLAN.md)
-1. 產出 `.planning/phases/{N}-*/PLAN.md`。
-2. 將任務拆解為多個 Wave，每個 Wave 包含多個可執行的原子任務。
-3. 每個任務需包含：目標、具體步驟、預期變更的文件列表。
-4. 加入驗證標準 (UAT Criteria)。
+### Step 3: 定義執行計畫 (Atomic Splitting)
+1. **複雜度評估**：計算本 Phase 任務的總步數與檔案跨度。
+2. **決策拆單**：
+- **若內容單純**：產出單一 `.planning/phases/{N}-*/PLAN.md`。
+- **若內容複雜 (涉及多模組、外部認證、步數 > 10)**：將 Phase ${N} 強制拆分為子任務檔案：
+    - `task_1_setup.md`
+    - `task_2_implementation.md`
+    - `task_3_verification.md`
+3. 每個任務需包含：目標、具體步驟、預期變更的文件列表，以及對應的驗證標準 (UAT Criteria)。
 
 ### Step 4: 狀態更新與 Commit
 1. 更新 `.planning/STATE.md`。
