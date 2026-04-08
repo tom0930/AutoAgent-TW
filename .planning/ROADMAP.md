@@ -26,6 +26,8 @@
 - [ ] Phase 128: Persistent Memory System (L1/L2/L3 MemoryStore) [BACKLOG]
 - [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
 - [X] Phase 130: 自動化知識庫整合 (Line -> GDrive -> NLM) [DONE]
+- [X] Phase 131: 知識檢索與主動分享 (Retrieval & Sharing) [DONE]
+- [X] Phase 132: 緩衝執行引擎 (Buffer Engine) [DONE]
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。

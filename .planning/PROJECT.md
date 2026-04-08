@@ -1,7 +1,7 @@
-# 🎯 AutoAgent-TW
-[![Version](https://img.shields.io/badge/version-1.7.3--knowledge--automation-blue)](https://github.com/tom0930/AutoAgent-TW)
-Version: 1.7.4 (Knowledge Automation)
-Status: ACTIVE
+# Project: AutoAgent-TW
+Version: v1.7.5
+Status: Active (Phase 132 - Buffer Engine Deployed)
+Description: 專注於全自動、無感、具備高韌性（Resilience）的高級 AI 系統與知識庫自動化管道。
 Type: Python CLI & Autonomous Agent Workspace
 
 ## 📝 專案說明 (Project Description)
