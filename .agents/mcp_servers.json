@@ -37,6 +37,15 @@
       "env": {},
       "enabled": true,
       "description": "Internal AutoAgent-TW automation (Planning/Scheduling)."
+    },
+    {
+      "name": "memory",
+      "transport": "stdio",
+      "command": "python",
+      "args": ["scripts/memory_server.py"],
+      "env": {},
+      "enabled": true,
+      "description": "Persistent Memory System (L1/L2/L3 MemoryStore)."
     }
   ]
 }

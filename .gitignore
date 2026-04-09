@@ -66,3 +66,7 @@ secrets/
 
 # === Phase 130 資源連結 ===
 antigravity/
+
+# === Project Context Testing ===
+.context-*
+.context/

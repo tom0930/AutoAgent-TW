@@ -25,10 +25,10 @@
 - [ ] Phase 127: Workflow Customization System (Hooks + CLAUDE.md) [BACKLOG]
 - [ ] Phase 128: Persistent Memory System (L1/L2/L3 MemoryStore) [BACKLOG]
 - [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
+- [ ] Phase 131: 知識檢索與主動分享 (Retrieval & Sharing) [BACKLOG - 待實作 get: 權限調整]
 - [X] Phase 130: 自動化知識庫整合 (Line -> GDrive -> NLM) [DONE]
-- [X] Phase 131: 知識檢索與主動分享 (Retrieval & Sharing) [DONE]
 - [X] Phase 132: 緩衝執行引擎 (Buffer Engine) [DONE]
-- [ ] Phase 134: Token-Aware Execution & Sub-task Splitting [PLANNED]
+- [x] Phase 134: Token-Aware Execution & Sub-task Splitting (Completed)
 
 ## 已完成核心目標
 *   實現 5 級錯誤分類邏輯。
