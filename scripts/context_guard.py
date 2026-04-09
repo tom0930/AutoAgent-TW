@@ -17,7 +17,14 @@ AutoAgent-TW Context Guard (Phase 123: Active Context Defense)
 
 import os
 import sys
+import subprocess
 from pathlib import Path
+
+# 導入 Phase 128 記憶體哨兵
+try:
+    from auto_summarizer import MemorySentinel
+except ImportError:
+    MemorySentinel = None
 
 # === 預設忽略規則模板 ===
 DEFAULT_GEMINIIGNORE = """# === AutoAgent-TW Active Context Defense (ACD) ===
@@ -200,15 +207,23 @@ def run_guard(workspace_path: str = None):
     else:
         print(f"  [OK] SAFE: Within normal operating range.")
 
-    # Step 4: .geminiignore 檢查
-    has_ignore = check_geminiignore(workspace_path)
-    if has_ignore:
-        print(f"\n[OK] .geminiignore exists at {workspace_path}")
-    else:
-        print(f"\n[MISSING] .geminiignore NOT FOUND at {workspace_path}")
-        print(f"   Generating default .geminiignore...")
-        path = generate_geminiignore(workspace_path)
-        print(f"   [OK] Created: {path}")
+    # Step 5: 記憶體哨兵檢查 (Phase 128 Integration)
+    if MemorySentinel:
+        print(f"\n--- Persistent Memory Check ---")
+        sentinel = MemorySentinel(threshold=50000)
+        # 針對 current.md 所在的實際路徑進行探測
+        project_root = os.getcwd()
+        basename = os.path.basename(project_root)
+        current_md_path = os.path.join(project_root, f".context-{basename}", "current.md")
+        
+        sentinel.target_file = current_md_path
+        exit_code = sentinel.check()
+        
+        if exit_code == 2:
+            print(f"  [OVERLOAD] L1 Memory (current.md) exceeds threshold!")
+            print(f"  >>> ACTION: Requesting Antigravity to perform Delegated Summary.")
+        else:
+            print(f"  [OK] L1 Memory is healthy.")
 
     print(f"\n{'=' * 50}")
     print(f"  Context Guard scan complete.")

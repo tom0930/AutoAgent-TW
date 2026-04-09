@@ -1,4 +1,28 @@
+# https://www.gitagent.sh
+# https://repoinside.com/open-gitagent/gitagent
+gitagent.sh
+GitAgent：Git-Native AI Agent 開放標準
+三個核心檔案（agent.yaml + SOUL.md + SKILL.md）定義 AI agent
+可攜式 agent 定義 (龍蝦也是類似架構，但是還多了 Memory 管理）
+支援匯出到 Claude Code、OpenAI Agents SDK、CrewAI、Google ADK、LangChain
+- 天生繼承 git 的版本控制
+- branching promotion（dev→staging→main）
+- PR review 做 human-in-the-loop
+
 # https://github.com/awesome-skills/code-review-skill 
+- https://zhuanlan.zhihu.com/p/2015725269667840386
+
+• Anthropic 官方 Skills 仓库：https://github.com/anthropics/skills
+
+• Anthropic 官方 Plugins 仓库：https://github.com/anthropics/claude-plugins-official
+
+• Awesome Claude Skills 社区列表：https://github.com/travisvn/awesome-claude-skills
+
+• Claude Code Skills 文档：https://code.claude.com/docs/en/skills
+
+• Skills 市场：https://skillsmp.com/
+
+/brooks-lint:brooks-review 触发 PR 审查，/brooks-lint:brooks-audit 做架构审计。
 
 
 ## 五、 進階技巧：把提示詞「說兩次」
@@ -21,3 +45,10 @@
 * **任務 (Task)** ：明確指出您希望 AI 執行的具體工作。這是提示詞中最重要的部分，請務必包含明確的動詞或指令（例如：撰寫、總結、改變語氣等）。
 * **背景資訊 (Context)** ：提供相關的背景細節、參考資料或情境，讓 AI 根據這些資訊生成內容。例如：根據 [相關專案文件的細節]。
 * **格式 (Format)** ：指定輸出的形式或呈現方式。例如：「限制使用列點方式呈現」 或「整理成表格格式」。
+
+
+git cli
+https://ithelp.ithome.com.tw/articles/10240215
+
+
+https://deepwiki.com
