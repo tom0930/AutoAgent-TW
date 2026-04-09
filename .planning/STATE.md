@@ -20,7 +20,7 @@
 - Phase 134: Token-Aware Execution & Sub-task Splitting [DONE]
 - Phase 126: Windows GUI Automation [BACKLOG]
 - Phase 127: Workflow Customization [BACKLOG]
-- Phase 128: Persistent Memory System [BACKLOG]
+- Phase 128: Persistent Memory System [DONE]
 - Phase 129: Headless + CI/CD [BACKLOG]
 - Phase 131: 知識檢索與主動分享 (Retrieval & Sharing) [BACKLOG - get: 權限策略待定]
 
