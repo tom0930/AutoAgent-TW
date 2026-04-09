@@ -24,7 +24,7 @@
 - [ ] Phase 126: Windows GUI Automation (Windows-Use) [BACKLOG]
 - [ ] Phase 127: Workflow Customization System (Hooks + CLAUDE.md) [BACKLOG]
 - [X] Phase 128: Persistent Memory System (L1/L2/L3 MemoryStore) [DONE]
-- [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
+- [X] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
 - [ ] Phase 131: 知識檢索與主動分享 (Retrieval & Sharing) [BACKLOG - 待實作 get: 權限調整]
 - [X] Phase 130: 自動化知識庫整合 (Line -> GDrive -> NLM) [DONE]
 - [X] Phase 132: 緩衝執行引擎 (Buffer Engine) [DONE]
