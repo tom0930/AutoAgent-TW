@@ -1,0 +1,53 @@
+name: AutoAgent-TW Headless CI
+
+on:
+  push:
+    branches: [ master, main ]
+  schedule:
+    - cron: '0 0 * * *'  # 每天午夜執行一次背景維護
+  workflow_dispatch:      # 允許手動觸發
+
+jobs:
+  headless-gsd:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if (Test-Path requirements.txt) { pip install -r requirements.txt }
+          pip install portalocker  # 鎖定機制必備
+
+      - name: Pre-flight Lock Check
+        run: |
+          python scripts/utils/state_lock.py --check
+      
+      - name: Run AutoAgent Headless (Discuss -> Plan -> Execute)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 這裡模擬執行 AA 的主入口，帶上 --auto 與 --headless
+          # python main.py --auto --headless --phase current
+          echo "Executing Headless Workflow..."
+
+      - name: Run AI Reviewer (Wave 3)
+        run: |
+          python scripts/utils/code_reviewer.py
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-reports
+          path: |
+            REVIEW-REPORT.md
+            .agent-state/
