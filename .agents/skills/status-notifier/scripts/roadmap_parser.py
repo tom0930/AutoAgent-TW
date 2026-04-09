@@ -20,43 +20,36 @@ def get_roadmap_mermaid():
             for m in matches:
                 statuses[int(m.group(1))] = m.group(3)
 
-    # Extract Phases from ROADMAP.md: "## Phase X: Title"
-    phase_blocks = re.split(r"## Phase ", roadmap_content)[1:]
+    # Extract Phases from ROADMAP.md: "- [ ] Phase X: Title"
+    matches = re.finditer(r"- \[(.)\] Phase (\d+): (.*)", roadmap_content)
     
     mermaid_lines = ["graph TD"]
     phases = []
     
-    for i, block in enumerate(phase_blocks):
-        lines = block.split("\n")
-        header = lines[0].strip()
-        # header format: "1: Title"
-        match = re.match(r"(\d+): (.*)", header)
-        if match:
-            p_num = int(match.group(1))
-            p_title = match.group(2).strip()
-            
-            # Escape quotes for Mermaid
-            p_title_esc = p_title.replace('"', "'")
-            
-            # Map status to Mermaid classes
-            p_status = statuses.get(p_num, "PENDING")
-            p_class = "pending"
-            if p_status == "DONE":
-                p_class = "done"
-            elif p_status == "PLANNED": # For visualization, planned means ready or current
-                 p_class = "running"
-            elif "RUNNING" in p_status:
-                p_class = "running"
-            elif "FAIL" in p_status:
-                p_class = "fail"
-            
-            node_id = f"P{p_num}"
-            phases.append(node_id)
-            mermaid_lines.append(f'  {node_id}["Phase {p_num}: {p_title_esc}"]:::{p_class}')
+    for match in matches:
+        is_done = match.group(1).upper() == "X"
+        p_num = int(match.group(2))
+        p_title = match.group(3).strip()
+        
+        # Escape quotes for Mermaid
+        p_title_esc = p_title.replace('"', "'")
+        
+        # Map status to Mermaid classes
+        p_class = "done" if is_done else "pending"
+        
+        # If this is the current phase N, mark it as running
+        # (Heuristic: first unchecked phase is running)
+        if not is_done and "running" not in [l.split(":::")[-1] for l in mermaid_lines if ":::" in l]:
+            p_class = "running"
+        
+        node_id = f"P{p_num}"
+        phases.append(node_id)
+        mermaid_lines.append(f'  {node_id}["Phase {p_num}: {p_title_esc}"]:::{p_class}')
 
     # Connect nodes
     for i in range(len(phases) - 1):
         mermaid_lines.append(f'  {phases[i]} --> {phases[i+1]}')
+
 
     # Add Class Definitions
     mermaid_lines.append('  classDef done fill:#238636,color:white,stroke:none')
