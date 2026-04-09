@@ -87,6 +87,10 @@
             </div>
         </div>
         <div class="flex items-center gap-6">
+            <div class="flex flex-col items-end">
+                <p class="text-[10px] font-bold text-gray-500 uppercase">Last Interaction</p>
+                <p id="last-interaction-text" class="text-[10px] font-mono text-purple-400">Never</p>
+            </div>
             <div class="hidden md:flex flex-col items-end">
                 <p class="text-[10px] font-bold text-gray-500 uppercase">Phase Progress</p>
                 <div class="flex items-center gap-2">
@@ -266,6 +270,11 @@
                     document.getElementById('repair-tag').classList.add('hidden');
                 }
 
+                if (data.last_interaction) {
+                    const lastInt = new Date(data.last_interaction);
+                    document.getElementById('last-interaction-text').innerText = lastInt.toLocaleTimeString();
+                }
+
                 // Log Sync with Auto-scroll
                 const logBox = document.getElementById('log-container');
                 if (data.logs && data.logs.length !== lastLogCount) {
@@ -425,7 +434,7 @@
     </script>
 <script id="status-data-payload">window.AA_STATUS = {
     "version": "1.8.0",
-    "current_task": "Researching Execution Routing",
+    "current_task": "Dashboard Updated",
     "next_goal": "None set",
     "phase_num": 120,
     "total_phases": 115,
@@ -580,7 +589,8 @@
             "end_time": "2026-04-07T07:11:35.975874"
         }
     ],
-    "timestamp": "2026-04-08T21:31:27.042910"
+    "timestamp": "2026-04-09T09:43:34.715619",
+    "last_interaction": "2026-04-09T09:43:34.715643"
 };</script>
 </body>
 </html>

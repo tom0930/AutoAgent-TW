@@ -162,6 +162,7 @@ def update_status(
         "predictions": predictions_data,
         "subagents": subagents_data,
         "timestamp": datetime.now().isoformat(),
+        "last_interaction": datetime.now().isoformat(),  # Phase 129: Idle Tracking
     }
 
     # Write JSON with portalocker for safety
