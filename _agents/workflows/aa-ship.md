@@ -35,7 +35,13 @@ description: Ship Phase N / 出貨階段 N 與 PR 生成。
 1. 根據使用者的 Git 分支模式，建立 Pull Request 並添加 Phase 摘要。
 2. 標註相關的 GitHub Issue ID (如果存在)。
 
-### Step 5: 準備下一個階段
+### Step 6: 記憶持久化 (Memory Mining)
+// turbo
+1. 如果已安裝 `mempalace`，執行 `mempalace mine . --mode projects`。
+   > [!NOTE]
+   > 指令會自動讀取本地 `mempalace.yaml` 中的 `wing` 設定（如 `autoagent_tw`），確保記憶與 `InvoiceAI` 等其他專案完美隔離。
+
+### Step 7: 準備下一個階段
 1. 提示 Phase N 已完成。
 2. 推薦執行 `/aa-discuss N+1` 進入下一階段討論。
 3. 交互模式下為使用者產出總結信息。

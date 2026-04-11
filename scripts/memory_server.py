@@ -5,6 +5,7 @@ import re
 import subprocess
 from datetime import datetime
 from typing import Optional, List, Dict
+from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 
 # 初始化 FastMCP
@@ -46,23 +47,38 @@ async def query(keyword: str, scope: str = "archives") -> str:
     logger.info(f"🧠 正在記憶庫中檢索: {keyword} (範圍: {scope})")
 
     try:
-        # 使用 ripgrep (rg) 進行全文檢索，若無則回退至 grep
-        cmd = ["rg", "-a", "-i", "--context", "2", keyword, search_path]
-        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8')
+        results = []
+        files_to_scan = []
         
-        if result.returncode != 0:
-            # 嘗試一般的 grep
-            cmd = ["grep", "-r", "-i", "-A", "2", keyword, search_path]
-            result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8')
+        if os.path.isfile(search_path):
+            files_to_scan.append(Path(search_path))
+        elif os.path.isdir(search_path):
+            files_to_scan.extend(Path(search_path).rglob("*.md"))
+        
+        for file_path in files_to_scan:
+            try:
+                content = file_path.read_text(encoding='utf-8')
+                if keyword.lower() in content.lower():
+                    # Extract matches with line numbers and context
+                    lines = content.splitlines()
+                    for i, line in enumerate(lines):
+                        if keyword.lower() in line.lower():
+                            start = max(0, i - 1)
+                            end = min(len(lines), i + 2)
+                            context = "\n".join(lines[start:end])
+                            results.append(f"--- {file_path.name} (Line {i+1}) ---\n{context}\n")
+            except Exception as fe:
+                logger.warning(f"Could not read {file_path}: {fe}")
 
-        if not result.stdout.strip():
+        if not results:
             return f"ℹ️ 記憶庫中查無與 '{keyword}' 相關的明確紀錄。"
 
-        return f"--- 檢索結果 ---\n{result.stdout.strip()}"
+        return "--- 檢索結果 ---\n" + "\n".join(results[:10]) # Limit to top 10 matches
 
     except Exception as e:
         logger.error(f"❌ 檢索出錯: {e}")
         return f"❌ 記憶庫存取失敗: {str(e)}"
+
 
 @mcp.tool()
 async def save(content: str, title: str, tags: str = "general", importance: int = 3) -> str:
