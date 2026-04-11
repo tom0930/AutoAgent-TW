@@ -1,0 +1,55 @@
+wing: autoagent_tw
+rooms:
+- name: bin
+  description: Files from bin/
+  keywords:
+  - bin
+  - bin
+- name: data
+  description: Files from data/
+  keywords:
+  - data
+  - data
+- name: del
+  description: Files from del/
+  keywords:
+  - del
+  - del
+- name: documentation
+  description: Files from docs/
+  keywords:
+  - documentation
+  - docs
+- name: scripts
+  description: Files from scripts/
+  keywords:
+  - scripts
+  - scripts
+- name: src
+  description: Files from src/
+  keywords:
+  - src
+  - src
+- name: temp
+  description: Files from temp/
+  keywords:
+  - temp
+  - temp
+- name: templates
+  description: Files from templates/
+  keywords:
+  - templates
+  - templates
+- name: testing
+  description: Files from tests/
+  keywords:
+  - testing
+  - tests
+- name: research
+  description: Files from research/
+  keywords:
+  - research
+  - research
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []
