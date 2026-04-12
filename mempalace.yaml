@@ -1,15 +1,5 @@
 wing: autoagent_tw
 rooms:
-- name: bin
-  description: Files from bin/
-  keywords:
-  - bin
-  - bin
-- name: data
-  description: Files from data/
-  keywords:
-  - data
-  - data
 - name: del
   description: Files from del/
   keywords:
@@ -20,6 +10,11 @@ rooms:
   keywords:
   - documentation
   - docs
+- name: mempalace_repo
+  description: Files from mempalace_repo/
+  keywords:
+  - mempalace_repo
+  - mempalace_repo
 - name: scripts
   description: Files from scripts/
   keywords:
@@ -50,6 +45,11 @@ rooms:
   keywords:
   - research
   - research
+- name: design
+  description: Files from assets/
+  keywords:
+  - design
+  - assets
 - name: general
   description: Files that don't fit other rooms
   keywords: []
