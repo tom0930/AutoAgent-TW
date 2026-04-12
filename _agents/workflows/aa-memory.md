@@ -19,17 +19,22 @@ description: "AI Memory System (MemPalace) / 持久化大腦記憶系統：跨�
 
 ## Commands
 
+### Init
+```bash
+$env:PYTHONIOENCODING='utf-8'; $env:PYTHONUTF8=1; python -m mempalace --palace . init .
+```
+
 ### Search
 ```bash
-$env:PYTHONIOENCODING='utf-8'; $env:PYTHONUTF8=1; mempalace search "{{query}}"
+$env:PYTHONIOENCODING='utf-8'; $env:PYTHONUTF8=1; python -m mempalace --palace . search "{{query}}"
 ```
 
 ### Mine
 ```bash
-$env:PYTHONIOENCODING='utf-8'; $env:PYTHONUTF8=1; mempalace mine {{dir}} --mode projects
+$env:PYTHONIOENCODING='utf-8'; $env:PYTHONUTF8=1; python -m mempalace --palace . mine . --mode projects
 ```
 
 ### Status
 ```bash
-mempalace status
+$env:PYTHONIOENCODING='utf-8'; $env:PYTHONUTF8=1; python -m mempalace --palace . status
 ```

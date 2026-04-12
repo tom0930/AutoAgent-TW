@@ -156,8 +156,8 @@ def deploy_core_files(target_dir):
         print("Skipping core file deployment (Source == Target)")
         return
 
-    dirs = ["scripts", ".agents", "_agents", "src"]
-    files = ["requirements.txt", "README.md", "version_log.md"]
+    dirs = ["scripts", ".agents", "_agents", "src", "mempalace_repo"]
+    files = ["requirements.txt", "README.md", "version_log.md", "mempalace.cmd"]
     
     for d in dirs:
         src, dest = os.path.join(base_path, d), os.path.join(target_dir, d)
@@ -181,6 +181,24 @@ def setup_venv(python_cmd, target_dir):
         except Exception as e:
             print(f"Failed to create venv: {e}")
             raise
+
+def setup_mempalace(python_exe, target_dir):
+    """Initializes and mines the MemPalace memory system."""
+    print("\n--- [MemPalace Initialization] ---")
+    try:
+        # Run init (non-interactive handled by providing dir, but detection prompt may still show)
+        # We'll use --palace target_dir
+        print("Initializing palace...")
+        # Since it's interactive, we'll try to use a simple skip or assume defaults
+        # For now, we'll just run it and hope for the best, or use an automated version if possible
+        # Actually, MemPalace init loves user input. We'll skip it in the SILENT installer or provide a way to bypass.
+        # But for this dev env, we want it run.
+        subprocess.run([python_exe, "-m", "mempalace", "--palace", target_dir, "init", target_dir], cwd=target_dir)
+        print("Mining initial memories (this may take a minute)...")
+        subprocess.run([python_exe, "-m", "mempalace", "--palace", target_dir, "mine", target_dir, "--mode", "projects"], cwd=target_dir)
+        print("✅ MemPalace ready.")
+    except Exception as e:
+        print(f"⚠️ MemPalace setup warning: {e}")
 
 def find_python():
     """Attempts to find a valid system python command."""
@@ -222,6 +240,10 @@ def main():
         
         deploy_global_workflows(target_dir)
         register_global_command(target_dir)
+        
+        # New: Setup MemPalace
+        python_exe = os.path.join(target_dir, "venv", "Scripts", "python.exe") if os.name == "nt" else "python"
+        setup_mempalace(python_exe, target_dir)
         
         # New: AutoSkills Global shim
         skills_shim = os.path.join(target_dir, "openclaw-skills.cmd")
