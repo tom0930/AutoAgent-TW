@@ -1,5 +1,25 @@
 # AutoAgent-TW Version Log
 
+## [v2.7.0-knowledge-gateway] - 2026-04-13
+
+### 🚀 新增功能 (Key Features)
+1. **知識閘道器 (Knowledge Gateway - Phase 133)**: 實施具備「前綴路由」機制的處理中心。支援 `@大腦` (RAG 查詢) 與 `#知識庫` (內容匯入) 自動分流。
+2. **多模態 OCR 攝取管道**: 整合 Gemini 1.5 Flash 視覺模型。自動對 Line 上傳的圖片進行高精準文字擷取，並排除冗餘問候語，精煉核心知識。
+3. **混合同步平面 (Hybrid Sync Plane)**: 實施 `scripts/kb_gdrive_sync.py`。支援 Rclone 映射與原生 GDrive API (Service Account) 雙模式，解決受限網路環境下的同步難題。
+4. **零成本資安防禦 (Whitelist Defense)**: 導入 `LINE_ADMIN_UID_LIST` 白名單鎖定機制。確保只有授權管理員能觸發 AI 運算與知識庫異動，防範惡意 Token 耗損。
+5. **本地緩衝與災難恢復 (Local Buffering)**: 所有匯入內容優先落盤於 `data/kb_upload_queue/`，確保在網路故障時知識不遺失。
+
+### 📁 核心文件更新 (@file:)
+- `scripts/aa_kb_gateway.py`: 核心路由、白名單驗證與 OCR 邏輯實作。
+- `scripts/kb_gdrive_sync.py`: GDrive API 與 Rclone 同步引擎。
+- `ARCHITECTURE.md`: 新增知識攝取管道與 RAG 路徑圖。
+- `SECURITY.md`: 新增攝取防禦與視覺 Injection 緩解策略。
+- `.planning/phases/133-linebot-gdrive-nlm-combo/QA-REPORT.md`: 完整驗證與測試報告。
+
+### 🔒 安全性 (Security)
+- Guardian Scan: ALL PASS (認證密鑰脫敏驗證通過)。
+- 支援 Visual Prompt Injection 防禦：限定 OCR Prompt 範圍。
+
 ## [v2.6.0-mcp-orchestrator] - 2026-04-07
 
 ### 🚀 新增功能 (Key Features)
