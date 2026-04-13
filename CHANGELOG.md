@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v1.7.5] - 2026-04-08
+## [v2.7.0] - 2026-04-13
 ### Added
-- **Buffer-based Execution Engine (Phase 132)**: Fault-tolerant task processing using JSONL manifests to handle large-scale file operations without timeouts.
-- **Knowledge Retrieval & Sharing (Phase 131)**: Live LineBot integration with Active Fetching from Google Drive and NotebookLM.
-- **Auto-Sync Knowledge Base (Phase 130)**: Line -> GDrive -> NotebookLM automated ingestion pipeline.
+- **Knowledge Gateway (Phase 133)**: Direct LineBot integration for unified RAG Queries and Knowledge Ingestion.
+- **Multimodal OCR Extraction**: Gemini 1.5 Flash powered image-to-knowledge pipeline.
+- **Hybrid Sync Plane**: Dual support for GDrive API and Rclone synchronization.
+
+## [v2.6.0] - 2026-04-07
+### Added
+- **MCP Orchestration Layer**: Full support for Model Context Protocol and external tool chaining.
+- **ReAct Execution Loop**: Advanced autonomous reasoning with adaptive tool calls.
+
+## [v1.7.5] - 2026-04-08
 
 ## [v1.7.4] - 2026-04-02
 ### Added
