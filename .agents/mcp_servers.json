@@ -46,6 +46,15 @@
       "env": {},
       "enabled": true,
       "description": "Persistent Memory System (L1/L2/L3 MemoryStore)."
+    },
+    {
+      "name": "auto-skills-engine",
+      "transport": "stdio",
+      "command": "python",
+      "args": ["scripts/auto_skills_server.py"],
+      "env": {},
+      "enabled": true,
+      "description": "Autonomous Skill discovery, generation and global library management."
     }
   ]
 }

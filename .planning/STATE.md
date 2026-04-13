@@ -17,12 +17,15 @@
 - Phase 124: Sub-Agent Orchestration Engine (v1.9.0 Core) [DONE]
 - Phase 125: MCP Protocol Integration Layer (v1.9.1) [DONE]
 - Phase 130: Knowledge Base & Material Integration (KBMI) [DONE]
+- Phase 132: 緩衝執行引擎 (Buffer Engine) [DONE]
+- Phase 133: LineBot x GDrive x NLM 整合實作 [DONE]
 - Phase 134: Token-Aware Execution & Sub-task Splitting [DONE]
 - Phase 126: Windows GUI Automation [BACKLOG]
 - Phase 127: Workflow Customization [BACKLOG]
 - Phase 128: Persistent Memory System [DONE]
 - Phase 129: Headless + CI/CD [BACKLOG]
 - Phase 131: 知識檢索與主動分享 (Retrieval & Sharing) [BACKLOG - get: 權限策略待定]
+
 
 ## Phase 0 summary
 - Analyzed `plus.md` and translated into v1.7.0 project definition and roadmap.
