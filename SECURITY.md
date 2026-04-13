@@ -19,3 +19,8 @@ MemPalace is designed with a **Zero-Trust (ZT)** and **Local-First** approach. N
 2. **Path Sanitization**: All file interactions are rooted within the workspace.
 3. **Ignore Patterns**: Inherits project `.gitignore` and `.geminiignore` rules to avoid accidental indexing of API keys and secrets.
 4. **No External Dependencies**: Works fully offline after the initial installation.
+
+## Knowledge Ingestion Security (Phase 133)
+1. **User Whitelist**: Only User IDs listed in `LINE_ADMIN_UID_LIST` can trigger ingestion or query tasks. This prevents unauthorized access to the organization's knowledge base.
+2. **Command Prefixing**: Use of `@大腦` and `#知識庫` prefixes acts as a functional "Air-Gap" between normal chat and AI execution, preventing unintentional token consumption or mis-triggering.
+3. **Vision Processing**: OCR is restricted to specific text extraction prompts to prevent agents from interpreting and executing hidden instructions embedded in images (Visual Prompt Injection).
