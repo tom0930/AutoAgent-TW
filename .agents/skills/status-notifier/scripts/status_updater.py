@@ -156,6 +156,32 @@ def update_status(
                 except Exception:
                     time.sleep(0.1)
 
+    # [v2.3.1 Feature] Execution History (Rolling Buffer 50)
+    execution_history = []
+    if state_file.exists():
+        try:
+            with open(state_file, "r", encoding="utf-8") as f:
+                old_data = json.load(f)
+                execution_history = old_data.get("execution_history", [])
+        except Exception:
+            pass
+
+    # Add current entry to history if task changed or status changed
+    current_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "task": task,
+        "phase": phase,
+        "status": status,
+        "repair_round": repair_round
+    }
+
+    # Only append if different from last entry to avoid spam
+    if not execution_history or execution_history[0]["task"] != task or execution_history[0]["status"] != status:
+        execution_history.insert(0, current_entry)
+
+    # Cap at 50
+    execution_history = execution_history[:50]
+
     import portalocker
 
     data = {
@@ -168,12 +194,13 @@ def update_status(
         "mermaid_code": mermaid_code,
         "logs": log_list,
         "repair_round": repair_round,
+        "execution_history": execution_history, # New Field
         "scheduled_tasks": scheduled_tasks,
         "hooks": hooks_config,
         "predictions": predictions_data,
         "subagents": subagents_data,
         "timestamp": datetime.now().isoformat(),
-        "last_interaction": datetime.now().isoformat(),  # Phase 129: Idle Tracking
+        "last_interaction": datetime.now().isoformat(),
     }
 
     # Write JSON with portalocker for safety

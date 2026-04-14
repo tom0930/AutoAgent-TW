@@ -10,7 +10,8 @@
 - [X] **Agentic Engine**: Sub-agent Spawner, Coordinator, Orchestrator [DONE]
 - [X] **Knowledge System**: LineBot-NLM Pipeline, AutoSkills Bridge [DONE]
 - [X] **Memory System**: L1/L2/L3 Store, Persistence [DONE]
-- [X] **Observability**: Dashboard Modernization (React Integration) [DONE]
+- [X] Phase 136: Dashboard Modernization - Core logic [DONE]
+- [X] Phase 137: Dashboard Finisher & QA Audit [DONE]
 
 ## 近期完成摘要
 - 成功清除冗餘規劃目錄 (`.planning1`, `.planningClaw`)，確保單一發令來源。
