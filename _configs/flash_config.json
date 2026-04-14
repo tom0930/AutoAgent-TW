@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "name": "Phase-151-SoC-Debug",
+    "target_mcu": "MicroBlaze",
+    "platform": "Xilinx-Vitis",
+    "version": "1.0.2"
+  },
+  "uart_settings": {
+    "port": "COM4",
+    "baudrate": 115200,
+    "udp_host": "127.0.0.1",
+    "udp_port_human": 5000,
+    "udp_port_ai": 5001,
+    "timeout": 1.0
+  },
+  "flash_settings": {
+    "default_offset": "0x00000000",
+    "flash_type": "qspi-x4-single",
+    "cable_url": "TCP:127.0.0.1:3121",
+    "bin_path": "./build/firmware.bin",
+    "elf_path": "./build/firmware.elf",
+    "program_flash_bin": "program_flash"
+  },
+  "data_integrity": {
+    "endianness": "LSB",
+    "bit_ordering": "LSB_FIRST",
+    "word_size_bytes": 4,
+    "header_magic": "0xAA995566",
+    "check_header_before_flash": true
+  },
+  "execution_rules": {
+    "auto_flash": false,
+    "manual_step_required": true,
+    "retry_limit": 5,
+    "rollback_on_fail": true,
+    "vitis_workspace": "./vitis_ws",
+    "status_file": ".agent-state/fw_debug_session.json"
+  }
+}
