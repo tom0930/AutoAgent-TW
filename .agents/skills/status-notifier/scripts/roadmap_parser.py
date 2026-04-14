@@ -1,9 +1,24 @@
 import re
+import sys
 from pathlib import Path
 
+# Add project root scripts dir for aa_constants
+script_dir = Path(__file__).parent.resolve()
+sys.path.append(str(script_dir.parent.parent.parent.parent / "scripts"))
+
+try:
+    import aa_constants
+except ImportError:
+    # Minimal fallback or let it fail if not in AA env
+    aa_constants = None
+
 def get_roadmap_mermaid():
-    roadmap_path = Path(".planning/ROADMAP.md")
-    status_path = Path(".planning/STATE.md")
+    if aa_constants:
+        roadmap_path = aa_constants.get_planning_dir() / "ROADMAP.md"
+        status_path = aa_constants.get_state_dir() / "STATE.md"
+    else:
+        roadmap_path = Path(".planning/ROADMAP.md")
+        status_path = Path(".planning/STATE.md")
     
     if not roadmap_path.exists():
         return "graph TD\n  Error[ROADMAP.md not found]"

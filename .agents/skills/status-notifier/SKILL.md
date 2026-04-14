@@ -24,6 +24,11 @@ To integrate this status notifier into ANY workflow, add the following turbo ste
 ## External Alerts (LINE Notify)
 - Critical failures (`--status fail`) automatically trigger a LINE notification if `LINE_NOTIFY_TOKEN` environment variable is set.
 
-## Viewing the Dashboard
+## Viewing the Dashboard (Modern Integration)
+1. Ensure the Antigravity Dashboard is running: `npm run dev` in `C:\Users\TOM\.gemini\antigravity\dashboard\skills`.
+2. Open: `http://localhost:5175`
+3. Click the **"Live Status"** tab to see real-time AutoAgent-TW execution data.
+
+## Legacy View (Fallback)
 1. Start a local server: `python -m http.server 9999` in project root.
-2. Open: `http://localhost:9999/.agents/skills/status-notifier/templates/status.html`
+2. Open: `http://localhost:9999/status.html`

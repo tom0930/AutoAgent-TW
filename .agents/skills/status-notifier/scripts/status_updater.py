@@ -18,7 +18,17 @@ if hasattr(sys.stdout, "detach"):
     )
 
 # Add script dir to path for imports
-sys.path.append(str(Path(__file__).parent))
+script_dir = Path(__file__).parent.resolve()
+sys.path.append(str(script_dir))
+# Add project root scripts dir
+sys.path.append(str(script_dir.parent.parent.parent.parent / "scripts"))
+
+try:
+    import aa_constants
+except ImportError:
+    # Fallback if aa_constants is not in path yet
+    import scripts.aa_constants as aa_constants
+
 import roadmap_parser
 import line_notifier
 
@@ -35,7 +45,7 @@ def update_status(
 ):
     version = "1.0.0"
     try:
-        config_file = Path(".planning/config.json")
+        config_file = aa_constants.get_planning_dir() / "config.json"
         if config_file.exists():
             with open(config_file, "r", encoding="utf-8") as f:
                 config = json.load(f)
@@ -45,7 +55,7 @@ def update_status(
 
     # [v1.7.2 Fix] Phase Persistence & Intelligence
     # If phase/total are defaults (0 or 1/5), try to read current state first
-    state_file = Path(".agent-state/status_state.json")
+    state_file = aa_constants.get_state_dir() / "status_state.json"
     if (phase == 1 or phase == 0) and state_file.exists():
         try:
             with open(state_file, "r", encoding="utf-8") as f:
@@ -61,7 +71,7 @@ def update_status(
     # If still not set meaningfully, auto-detect from roadmap
     if phase <= 1:
         try:
-            roadmap_file = Path(".planning/ROADMAP.md")
+            roadmap_file = aa_constants.get_planning_dir() / "ROADMAP.md"
             if roadmap_file.exists():
                 with open(roadmap_file, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -80,7 +90,7 @@ def update_status(
             pass
 
     # Ensure current working directory is z:\AutoAgent-TW or similar
-    state_dir = Path(".agent-state")
+    state_dir = aa_constants.get_state_dir()
     if not state_dir.exists():
         state_dir.mkdir(parents=True, exist_ok=True)
 
@@ -92,6 +102,7 @@ def update_status(
 
     state_file = state_dir / "status_state.json"
     js_file = state_dir / "status_state.js"
+    html_file = aa_constants.get_aa_home() / "status.html"
 
     # Generate roadmap mermaid or use custom
     mermaid_code = (
@@ -175,12 +186,22 @@ def update_status(
     except Exception as e:
         print(f"CRITICAL: Failed to write status_state.json: {e}")
 
+    # [v2.3.0 Feature] Push to Global Dashboard
+    try:
+        global_public = Path(os.path.expandvars(r"%USERPROFILE%\.gemini\antigravity\dashboard\skills\public"))
+        if global_public.exists():
+            global_status = global_public / "aa-status.json"
+            with open(global_status, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"Warning: Failed to sync with global dashboard: {e}")
+
     # Write JS (for local browser preview without CORS) - Legacy fallback
     with open(js_file, "w", encoding="utf-8") as f:
         f.write(f"window.AA_STATUS = {json.dumps(data, indent=4, ensure_ascii=False)};")
 
     # [v1.7.1 Fix] Data Inlining: Injecting directly into status.html to bypass CORS/File-access limits
-    template_file = Path(__file__).parent.parent / "templates" / "status.html"
+    template_file = html_file
     if template_file.exists():
         try:
             with open(template_file, "r", encoding="utf-8") as f:

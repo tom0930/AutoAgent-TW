@@ -1,0 +1,22 @@
+[
+    {
+        "id": "d5386c74",
+        "timestamp": "2026-04-02T09:10:16.268787",
+        "content": "Refactored Dashboard to use Python injections instead of JS files because of CORS.",
+        "tags": [
+            "dashboard",
+            "bugfix"
+        ],
+        "focus": true
+    },
+    {
+        "id": "96939819",
+        "timestamp": "2026-04-02T09:10:35.108584",
+        "content": "Database password must not contain special symbols in CI environment.",
+        "tags": [
+            "db",
+            "ci"
+        ],
+        "focus": false
+    }
+]
