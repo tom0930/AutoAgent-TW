@@ -509,3 +509,6 @@ graph TD
     style Bridge fill:#f96,stroke:#333,stroke-width:2px
     style Agent fill:#bbf,stroke:#333,stroke-width:2px
     style FPGA fill:#dfd,stroke:#333
+
+
+
