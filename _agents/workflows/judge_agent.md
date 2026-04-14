@@ -13,10 +13,12 @@
 - 呼叫 `box_read(timeout=5.0)`。
 - 獲取 Booting Log 與 Runtime Logs。
 
-### 2. 深度分析 (Deep Audit)
-- **文字模式**: 找關鍵字 `Success`, `Error`, `Assert`, `Illegal Instruction`。
-- **Hex 模式**: 如果 Log 出現 Hex Dump，呼叫 `python scripts/hex_parser.py` 分析。
-- **比對位元**: 檢查 Status Register 的特定 Bit 是否代表硬體逾時。
+### 2. 深度分析 & 合約校驗 (Audit & Contract Check)
+- **合約優先**: 讀取 `verification_contract.json`。
+  - **立即中斷 (Early Abort)**: 若匹配到 `negative_patterns` 之一，不論進度如何，立即判決 FAIL 並回送修復。
+  - **計數器**: 若匹配到 `positive_patterns`，則增加 `consecutive_passes` 計數。
+- **文字分析**: 搜尋 `Error`, `Panic`, `Assert Failed` 等通用錯誤。
+- **Hex 模式**: 使用 `python scripts/hex_parser.py` 解析特定的暫存器狀態位。
 
 ### 3. 發布判決 (Verdict)
 - **PASS**: 如果符合所有 Requirements ➔ 結案。

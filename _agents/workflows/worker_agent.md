@@ -14,9 +14,13 @@
 - 讀取 `.agent-state/fw_debug_session.json`。
 - 分析 `judge_feedback`。如果看到 "Endianness Swapped" 或 "Bit 14 High (Error)"，定位至對應的代碼段。
 
-### 2. 精確修復 (Patch)
+### 2. 精確修復 & 驗證合約 (Patch & Contract)
 - 修改代碼。
-- **原則**: 優先使用顯性的 MSB/LSB 宏定義，避免隱性假設。
+- **問題分類與選項生成 (Heuristics)**：
+    - **Endian 類**：正向清單應包含特定的數據排列檢查；負向清單應包含 Byte-swap 偵測。
+    - **DMA/Memory 類**：正向清單應包含 `DMA_DONE`；負向清單應包含 `ADDR_MISALIGN` 或 `BUS_FAULT`。
+    - **Timing/IRQ 類**：正向清單應包含 `Interrupt Triggered`；負向清單應包含 `Timeout` 或 `Spurious IRQ`。
+- **產出格式**：以 Markdown Checkbox 形式在對話中列出選項，並同步寫入 `verification_contract.json`。
 - 呼叫 `git add` 準備追蹤改動。
 
 ### 3. 編譯預檢 (Build & Verify)
