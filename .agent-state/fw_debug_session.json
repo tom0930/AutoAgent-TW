@@ -1,0 +1,9 @@
+{
+  "current_session": "FW_DEBUG_001",
+  "goal": "Pending Initialization",
+  "attempt_count": 0,
+  "last_status": "IDLE",
+  "checklist_file": "tests/fw_debug_task.md",
+  "current_error": null,
+  "history": []
+}

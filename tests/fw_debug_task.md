@@ -1,0 +1,5 @@
+- `[x]` **[Observe]** 讀取 UART Log 並擷取異常特徵 (偵測到亂碼輸出)
+- `[x]` **[Diagnose]** 分析異常根因：發現 BAUD_115200 (0x00C20100) 與 LSB 規範不符。
+- `[x]` **[Fix]** 修正 C 代碼完畢，並通過 `pre_flash_verify` 校驗。
+- `[x]` **[Flash]** 執行燒錄完成 (手動觸發)。
+- `[x]` **[Verify]** 重啟成功！Log 顯示 `UART Initialized with 115200`，任務結案。
