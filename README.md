@@ -1,7 +1,7 @@
 # 🤖 AutoAgent-TW
-> **工業級自主開發代理系統 (Autonomous Agent Framework v1.7.5)**
+> **工業級自主開發代理系統 (Autonomous Agent Framework v2.4.1)**
 
-[![Version](https://img.shields.io/badge/version-1.7.5--resilience-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.4.1--industrial-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Engine: GSD](https://img.shields.io/badge/Methodology-GSD-green)](https://juejin.cn/post/7622885592715739145)
 
@@ -57,9 +57,13 @@ graph TD
 
 ## 🏁 快速開始 (Getting Started)
 
-1.  **環境需求**：Windows 10/11, Python 3.10+, Antigravity IDE。
-2.  **一鍵安裝**：下載並執行專案目錄下的 `dist/AutoAgent-TW_Setup.exe`。
-3.  **啟動開發**：在 IDE Terminal 輸入 `/aa-helper` 即可開始接辦任務。
+1.  **環境需求**：Windows 10/11, Python 3.10+, Node.js, Git。
+2.  **一鍵安裝 (推薦)**：
+    在 PowerShell (系統管理員) 執行：
+    ```powershell
+    Set-ExecutionPolicy Bypass -Scope Process -Force; .\aa-installer.ps1
+    ```
+3.  **啟動開發**：在 IDE Terminal 輸入 `aa-tw --help` 即可開始。
 
 ---
 
