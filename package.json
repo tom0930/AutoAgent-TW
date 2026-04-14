@@ -1,0 +1,14 @@
+{
+  "name": "autoagent-tw-root",
+  "version": "1.0.0",
+  "description": "Root proxy for AutoAgent-TW Dashboard",
+  "scripts": {
+    "dev": "npm --prefix C:\\Users\\TOM\\.gemini\\antigravity\\dashboard\\skills run dev",
+    "dashboard": "npm --prefix C:\\Users\\TOM\\.gemini\\antigravity\\dashboard\\skills run dev",
+    "build": "npm --prefix C:\\Users\\TOM\\.gemini\\antigravity\\dashboard\\skills run build",
+    "preview": "npm --prefix C:\\Users\\TOM\\.gemini\\antigravity\\dashboard\\skills run preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

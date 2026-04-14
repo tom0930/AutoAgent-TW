@@ -1,5 +1,27 @@
 # AutoAgent-TW Version Log
 
+## [v2.8.0-observability-modernization] - 2026-04-14
+
+### 🚀 新增功能 (Key Features)
+1. **React 現代化儀表板 (Phase 136/137)**: 徹底捨棄舊有的 HTML 注入模式，轉向 React/Vite 架構。提供毫秒級響應、Glassmorphism 與波紋動畫的極致 UI 體驗。
+2. **滾動式執行軌跡 (Execution Timeline)**: 實施具備 50 筆緩衝的 LIFO 執行歷史。記錄任務、Phase 歸屬與狀態，支援開發者回溯 Agent 的決策過程。
+3. **Mermaid.js v11 動態整合**: 在 Dashboard 內核整合 Mermaid 引擎。根據 `ROADMAP.md` 即時生成多色標註的開發流程圖，支援自動縮放與交互式導覽。
+4. **工業級並發治理 (Concurrent Hardening)**: 升級 `status_updater.py` (v1.8.0)。採用 **原子寫入 (Atomic Write)** 與 **Exclusive Locking (portalocker)** 機制，在 100 輪併發壓力測試下達成 0 衝突。
+5. **根目錄指令代理 (Global Hub)**: 於專案根目錄部屬代理 `package.json`。開發者現在可在根目錄直接執行 `npm run dev` 啟動所有觀察組件，解決目錄混亂問題。
+6. **環境自動偵測 (Context Awareness)**: 儀表板自動與 `PROJECT.md` 掛鉤。無須手動設定即可自動識別當前專案背景與維度。
+
+### 📁 核心文件更新 (@file:)
+- `.agents/skills/status-notifier/scripts/status_updater.py`: 升級至 v1.8.0，支援原子鎖與雙軌同步。
+- `~/.gemini/antigravity/dashboard/skills/src/App.tsx`: 全新 React 儀表板核心。
+- `package.json`: 根目錄指令代理鏈。
+- `run-dashboard.cmd`: 快捷啟動腳本。
+- `.planning/phases/137-dashboard-finisher/QA-REPORT.md`: 壓力測試與品質審計報告。
+
+### 🔒 安全性 (Security)
+- Guardian Scan: ALL PASS (無密鑰洩漏)。
+- CORS Defense: 透過 Vite Proxy 解決本地資源讀取限制。
+
+
 ## [v2.7.0-knowledge-gateway] - 2026-04-13
 
 ### 🚀 新增功能 (Key Features)
