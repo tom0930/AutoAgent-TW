@@ -370,6 +370,7 @@ def get_bit_range(value, start_bit, end_bit):
 
 **你需要我為你把這套 MSB/LSB 自動判定邏輯寫入 Phase 151 的 `RESEARCH.md` 嗎？這能確保 Worker Agent 在改 Code 時就具備字節序的防錯意識。**
 
+# box_build_and_flash 目前手動
 
 既然目前 `box_flash` 仍需手動干預，我們需要為 **Worker Agent** 定義一套極其標準的 **「預設參數指令集」**。這樣即便現在是你手動下指令，Agent 產出的指令格式也能與未來的自動化腳本無縫銜接。
 

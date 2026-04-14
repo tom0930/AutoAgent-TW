@@ -1,8 +1,6 @@
 import json
 import argparse
 import logging
-import re
-import shutil
 from datetime import datetime
 from pathlib import Path
 import sys
@@ -77,6 +75,7 @@ def update_status(
             if roadmap_file.exists():
                 with open(roadmap_file, "r", encoding="utf-8") as f:
                     content = f.read()
+                    import re
 
                     # Look for first unchecked phase
                     all_phases = re.findall(r"- \[ \] Phase (\d+):", content)
@@ -110,50 +109,38 @@ def update_status(
         custom_mermaid if custom_mermaid else roadmap_parser.get_roadmap_mermaid()
     )
 
-    # --- Initialize default empty states ---
-    scheduled_tasks = []
-    hooks_config = {}
-    predictions_data = []
-    subagents_data = []
+    # Parse logs
     log_list = logs.split(",") if logs else []
 
-    # [v1.8.0] Professional Title Refinement
-    display_task = task
-    if "Stress Task" in task:
-        display_task = f"Dashboard Performance Load Test ({task})"
-    elif not task or task == "task":
-        # Try to auto-detect from project context
+    # Load Scheduled Tasks
+    sched_file = state_dir / "scheduled_tasks.json"
+    scheduled_tasks = []
+    if sched_file.exists():
         try:
-            project_file = aa_constants.get_aa_home() / "PROJECT.md"
-            if project_file.exists():
-                with open(project_file, "r", encoding="utf-8") as f:
-                    first_line = f.readline().strip()
-                    if first_line.startswith("# "):
-                        display_task = first_line[2:]
-        except:
-            display_task = "AutoAgent-TW Instance"
-
-    # --- Load persistence data if files exist ---
-    try:
-        sched_file = state_dir / "scheduled_tasks.json"
-        if sched_file.exists():
             with open(sched_file, "r", encoding="utf-8") as f:
                 scheduled_tasks = json.load(f)
-    except: pass
+        except Exception:
+            pass
 
-    try:
-        hooks_file = state_dir / "hooks.json"
-        if hooks_file.exists():
+    # Load Hooks
+    hooks_file = state_dir / "hooks.json"
+    hooks_config = {}
+    if hooks_file.exists():
+        try:
             with open(hooks_file, "r", encoding="utf-8") as f:
                 hooks_config = json.load(f)
-    except: pass
+        except Exception:
+            pass
 
-    try:
-        predictions_file = state_dir / "predictions.json"
-        if predictions_file.exists():
+    # Load Predictions (Phase 5)
+    predictions_file = state_dir / "predictions.json"
+    predictions_data = []
+    if predictions_file.exists():
+        try:
             with open(predictions_file, "r", encoding="utf-8") as f:
                 predictions_data = json.load(f)
-    except: pass
+        except Exception:
+            pass
 
     # Load Subagents (Phase 1)
     subagents_dir = state_dir / "subagents"
@@ -182,14 +169,14 @@ def update_status(
     # Add current entry to history if task changed or status changed
     current_entry = {
         "timestamp": datetime.now().isoformat(),
-        "task": display_task,
-        "phase": f"P{phase}",
+        "task": task,
+        "phase": phase,
         "status": status,
         "repair_round": repair_round
     }
 
     # Only append if different from last entry to avoid spam
-    if not execution_history or execution_history[0]["task"] != display_task or execution_history[0]["status"] != status:
+    if not execution_history or execution_history[0]["task"] != task or execution_history[0]["status"] != status:
         execution_history.insert(0, current_entry)
 
     # Cap at 50
@@ -199,7 +186,7 @@ def update_status(
 
     data = {
         "version": version,
-        "current_task": display_task,
+        "current_task": task,
         "next_goal": next_goal,
         "phase_num": phase,
         "total_phases": total_phases,
@@ -216,104 +203,60 @@ def update_status(
         "last_interaction": datetime.now().isoformat(),
     }
 
-    # 1. Update status_state.json, JS and Global Sync in ONE transaction
-    lock_path = state_dir / "dashboard.lock"
-    success = False
-    max_lock_attempts = 200 # 20 seconds total
-    for attempt in range(max_lock_attempts):
-        try:
-            with open(lock_path, "a") as f_lock:
-                # Use non-blocking + manual retry to support all portalocker versions
-                portalocker.lock(f_lock, portalocker.LOCK_EX | portalocker.LOCK_NB)
-                
-                # --- INTERNAL STATE ---
-                def safe_atomic_write(target, content, is_json=True):
-                    tmp = target.with_suffix(".tmp")
-                    with open(tmp, "w", encoding="utf-8") as f:
-                        if is_json: json.dump(content, f, indent=4, ensure_ascii=False)
-                        else: f.write(content)
-                        f.flush()
-                        try: os.fsync(f.fileno())
-                        except: pass
-                    # Windows safe rename: might need retry or delete first
-                    if target.exists():
-                        try: os.replace(tmp, target)
-                        except OSError:
-                            # Fallback for extreme contention
-                            import time
-                            for _ in range(5):
-                                try:
-                                    time.sleep(0.01)
-                                    os.replace(tmp, target)
-                                    break
-                                except: continue
-                    else:
-                        os.rename(tmp, target)
+    # Write JSON with portalocker for safety
+    try:
+        with open(state_file, "w", encoding="utf-8") as f:
+            portalocker.lock(f, portalocker.LOCK_EX)
+            json.dump(data, f, indent=4, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+    except Exception as e:
+        print(f"CRITICAL: Failed to write status_state.json: {e}")
 
-                safe_atomic_write(state_file, data)
-                js_content = f"window.AA_STATUS = {json.dumps(data, indent=4, ensure_ascii=False)};"
-                safe_atomic_write(js_file, js_content, is_json=False)
+    # [v2.3.0 Feature] Push to Global Dashboard
+    try:
+        global_public = Path(os.path.expandvars(r"%USERPROFILE%\.gemini\antigravity\dashboard\skills\public"))
+        if global_public.exists():
+            global_status = global_public / "aa-status.json"
+            with open(global_status, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"Warning: Failed to sync with global dashboard: {e}")
 
-                # --- GLOBAL SYNC ---
-                try:
-                    global_public = Path(os.path.expandvars(r"%USERPROFILE%\.gemini\antigravity\dashboard\skills\public"))
-                    if global_public.exists():
-                        global_status = global_public / "aa-status.json"
-                        safe_atomic_write(global_status, data)
-                except Exception as e:
-                    logging.warning(f"Warning: Failed to sync with global dashboard: {e}")
-                success = True
-                break # Lock acquired and tasks done
-        except (portalocker.exceptions.LockException, OSError):
-            # Lock is busy, wait and retry
-            time.sleep(0.1)
-    
-    if not success:
-        logging.error("❌ Update failed: Final lock failure after 20 seconds of contention.")
+    # Write JS (for local browser preview without CORS) - Legacy fallback
+    with open(js_file, "w", encoding="utf-8") as f:
+        f.write(f"window.AA_STATUS = {json.dumps(data, indent=4, ensure_ascii=False)};")
 
     # [v1.7.1 Fix] Data Inlining: Injecting directly into status.html to bypass CORS/File-access limits
     template_file = html_file
-    if not template_file.exists():
-        # Auto-recovery from skill templates
-        source_template = script_dir.parent / "templates" / "status.html"
-        if source_template.exists():
-            try:
-                shutil.copy2(source_template, template_file)
-                logging.info(f"🔄 Recovered status.html from template: {source_template}")
-            except Exception as e:
-                logging.error(f"❌ Failed to recover status.html: {e}")
-
     if template_file.exists():
         try:
             with open(template_file, "r", encoding="utf-8") as f:
                 html_content = f.read()
 
-            # Update existing payload or inject
-            new_payload = f'<script id="status-data-payload">window.AA_STATUS = {json.dumps(data, indent=4, ensure_ascii=False)};</script>'
-            
-            # Use global dashboard lock for HTML too
-            lock_path = state_dir / "dashboard.lock"
-            with open(lock_path, "a") as f_lock:
-                portalocker.lock(f_lock, portalocker.LOCK_EX)
-                if '<script id="status-data-payload">' in html_content:
-                    html_content = re.sub(
-                        r'<script id="status-data-payload">.*?</script>',
-                        new_payload,
-                        html_content,
-                        flags=re.DOTALL,
-                    )
-                else:
-                    html_content = html_content.replace("</body>", f"{new_payload}\n</body>")
+            # Find the script tag for data and replace its content
+            import re
 
-                # Atomic write for HTML template
-                temp_html = template_file.with_suffix(".tmp.html")
-                with open(temp_html, "w", encoding="utf-8") as f:
-                    f.write(html_content)
-                    f.flush()
-                    try: os.fsync(f.fileno())
-                    except: pass
-                os.replace(temp_html, template_file)
-            logging.info("✅ Data successfully inlined into status.html with locking")
+            data_json = json.dumps(data, indent=4, ensure_ascii=False)
+            new_payload = f'<script id="status-data-payload">window.AA_STATUS = {data_json};</script>'
+
+            if '<script id="status-data-payload">' in html_content:
+                # Update existing payload
+                html_content = re.sub(
+                    r'<script id="status-data-payload">.*?</script>',
+                    new_payload,
+                    html_content,
+                    flags=re.DOTALL,
+                )
+            else:
+                # Inject before </body>
+                html_content = html_content.replace(
+                    "</body>", f"{new_payload}\n</body>"
+                )
+
+            with open(template_file, "w", encoding="utf-8") as f:
+                f.write(html_content)
+            logging.info("✅ Data successfully inlined into status.html")
         except Exception as e:
             logging.error(f"❌ Failed to inline data into HTML: {e}")
 
