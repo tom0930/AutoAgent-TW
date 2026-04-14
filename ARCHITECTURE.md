@@ -34,8 +34,10 @@ graph LR
     GW -- "Direct Query" --> NLM
 ```
 
-## Design Decisions
-- **Local First**: We chose MemPalace because it requires zero API keys and keeps all user data in the workspace.
-- **Hybrid Sync**: Implementation of Rclone alongside Drive API allows the system to run in air-gapped or restricted environments where direct API access might be blocked.
-- **Whitelist Defense**: Instead of using LLM for intent classification of every message, a prefix-based whitelist approach is used to save costs and prevent prompt injection from unauthorized sources.
+
+## Deployment & Installation
+AutoAgent-TW uses a **Hybrid Industrial Installer** (`aa-installer.ps1` + `aa_installer_logic.py`):
+- **Bootstrapper**: PowerShell handles OS-level execution policies and Python detection.
+- **Logic Engine**: Python manages venv creation, dependency resolution, and internal registry.
+- **Global Shims**: Automatically generates `.cmd` shims in the project root and adds them to the **User-level PATH** to avoid Administrative overhead while ensuring global availability of `aa-tw` and `autoagent` commands.
 
