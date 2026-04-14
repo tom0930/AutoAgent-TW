@@ -27,5 +27,5 @@
     - [X] Deploy collapsible UI for optimized observability.
 
 ## 🚀 Phase 4.x: Automation & Deployment (v2.4.0+)
-- [ ] Phase 126: Windows GUI Automation (Windows-Use) [BACKLOG]
+- [ ] Phase 138: Windows GUI Automation (RVA & Vision Integration) [TODO]
 - [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]

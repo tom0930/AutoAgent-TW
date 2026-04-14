@@ -54,18 +54,18 @@ def main():
     phase_id = args.phase or get_current_phase()
     
     if phase_id is None:
-        print("⚠️ [CC-Link] Unable to determine current phase state.")
+        print("[CC-Link] Unable to determine current phase state.")
         sys.exit(1)
         
     if args.check_audit:
         status = check_audit_status(phase_id)
         if not status["exists"]:
-            print(f"❓ [CC-Link] Phase {phase_id} documentation not found.")
+            print(f"[CC-Link] Phase {phase_id} documentation not found.")
         elif not status["audited"]:
-            print(f"🔶 [CC-Link] Warning: Phase {phase_id} implementation found but lacks /cc-qa audit report.")
-            print(f"👉 Suggestion: Run '/cc-qa {phase_id}' to verify architectural integrity.")
+            print(f"[CC-Link] WARNING: Phase {phase_id} implementation found but lacks /cc-qa audit report.")
+            print(f"[CC-Link] INFO: Suggestion: Run '/cc-qa {phase_id}' to verify architectural integrity.")
         else:
-            print(f"✅ [CC-Link] Phase {phase_id} has been audited and approved by Code Consultant.")
+            print(f"[CC-Link] SUCCESS: Phase {phase_id} has been audited and approved by Code Consultant.")
 
 if __name__ == "__main__":
     main()

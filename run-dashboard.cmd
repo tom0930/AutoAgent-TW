@@ -1,0 +1,3 @@
+@echo off
+echo [AutoAgent] Launching Modern Dashboard from root...
+npm --prefix C:\Users\TOM\.gemini\antigravity\dashboard\skills run dev
