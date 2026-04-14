@@ -1,0 +1,15 @@
+{
+  "project_name": "AutoAgent-TW-Resilience-v1.8.0",
+  "version": "1.8.1",
+  "mode": "YOLO",
+  "granularity": "TASK",
+  "notifications": {
+    "browser_panel": true,
+    "line_notify": true,
+    "voice_announcement": false
+  },
+  "locales": [
+    "zh-TW",
+    "en-US"
+  ]
+}
