@@ -1,43 +1,45 @@
-# PLAN: AutoAgent-TW Unified Industrial Installer
+# GSD PLAN: biggoALL Multi-Source Engine Enhancement (v2.5.0)
 
 ## 1. 任務細節 (Plan Details)
 
 | 步驟 | 說明 | 負責組件 |
 | :--- | :--- | :--- |
-| **1. 需求拆解** | 建立全自動與互動模式並存的安裝程式。 | RESEARCH.md |
-| **2. 技術選型** | PowerShell (Windows 原生引導) + Python (核心業務邏輯)。 | `aa-installer.ps1`, `aa_installer_logic.py` |
-| **3. 系統架構** | 混合式 Bootstrapper 引導模式，支援動態 PATH 載入。 | Mermaid Workflow |
-| **4. 並行與效能** | 使用 `uv` (若可用) 或並行 `pip` 優化套件下載速度。 | Logic script |
-| **5. 資安設計** | **STRIDE 分析**: 防止 PATH Injection，確保 env 遮罩，User PATH 隔離。 | `SECURITY.md` |
-| **6. AI 產品考量** | 提供極致的終端機回饋 (Fancy Spinners/Colors)，簡化 User Onboarding。 | UI Feedback |
-| **7. 錯誤處理** | 支援斷點續傳 (Resumable) 與 虛擬環境自動修復。 | Recovery logic |
-| **8. 測試策略** | `smoke-test` 驗證 `autoagent` 與 `aa-tw` 指令是否全域可達。 | Verification script |
+| **1. 需求拆解** | 整合 PChome, BigGo, MOMO 三大平台，支援精確 CP 值計算。 | RESEARCH.md |
+| **2. 技術選型** | Python `asyncio` + `urllib` (輕量化) + `re` (高效能解析)。 | `biggoALL.py` |
+| **3. 系統架構** | Provider-based architecture with Centralized CP Analyzer. | `StoreProvider` classes |
+| **4. 並行與效能** | 非同步抓取多個站點，減少總等待時間。 | `asyncio.gather` |
+| **5. 資安設計** | **STRIDE**: 防止 Query Injection，對 User Input 進行 URL Encoding。 | `urllib.parse.quote` |
+| **6. AI 產品考量** | 輸出格式化美觀的終端機表格與 CSV 報表。 | Table Printer |
+| **7. 錯誤處理** | 針對不同的 API 解析失敗建立容錯機制。 | try-except blocks |
+| **8. 測試策略** | 執行 `python scripts/biggoALL.py "iPhone 15" --cp` 並驗證 BigGo 來源是否存在。 | CLI Test |
 
 ## 2. 具體待辦事項 (Checklist)
 
-### Wave 1: 引導層 (The Bootstrapper)
-- [ ] 撰寫 `aa-installer.ps1`。
-- [ ] 實作「管理員權限檢查」與「ExecutionPolicy 自動繞過」。
-- [ ] 檢測 Python/Git 系統安裝狀況。
+### Wave 1: 核心修復 (Parsing Fixes)
+- [ ] 修正 `BigGoProvider`: 調研 BigGo 目前的 HTML 結構，改善 Regex 提取邏輯。
+- [ ] 升級 `PChomeProvider`: 導入 `pchome_iphone_cp.py` 中的分類與多頁抓取邏輯。
+- [ ] 擴展 `CPAnalyzer`: 支援 吋 (inches) 與 系列 (generation) 提取。
 
-### Wave 2: 核心邏輯層 (The Core)
-- [ ] 修改 `scripts/aa_installer_logic.py` 增加 `@click` 或 `argparse` 原生支援 `--auto`。
-- [ ] 新增 `aa-tw.cmd` 作為指令別名。
-- [ ] 優化 MemPalace 初始化流程，支援非互動模式。
+### Wave 2: 功能擴展 (Expansion)
+- [ ] 實作 `MomoProvider` (或至少建立 Mock 測試可行性)。
+- [ ] 增加對 「福利品」 關鍵字的權重處理或特殊過濾。
 
-### Wave 3: 驗證與交付 (Verification & Ship)
-- [ ] 執行單一指令驗證全流程。
-- [ ] 更新 `README.md` 安裝指南。
-- [ ] Git Commit & Version Bump (v2.4.1).
+### Wave 3: 拋光與交付 (Ship)
+- [ ] 優化終端機輸出顏色 (使用 ANSI 轉義碼)。
+- [ ] 更新 `ARCHITECTURE.md` 加入 biggoALL 引擎說明。
+- [ ] Git Commit: `feat: 升級 biggoALL 引擎 - 修正 BigGo 解析與增強 CP 邏輯 v2.5.0`。
 
 ## 3. 系統架構圖
 ```mermaid
-graph LR
-    User -->|Exec| PS1[aa-installer.ps1]
-    PS1 -->|Detect Python| Venv[Setup Venv]
-    Venv -->|Install| Pip[requirements.txt]
-    Pip -->|logic| Core[aa_installer_logic.py]
-    Core -->|Registry| PATH[User PATH Update]
-    Core -->|Init| Memory[MemPalace Mine]
-    Memory -->|Done| Ready[Global Command 'aa-tw' Ready]
+graph TD
+    CLI[biggoALL CLI] --> Coordinator[Collector asyncio]
+    Coordinator --> PCH[PChomeProvider]
+    Coordinator --> BG[BigGoProvider]
+    Coordinator --> MO[MomoProvider]
+    PCH --> Net[Network Request]
+    BG --> Net
+    MO --> Net
+    Net --> Parsers[Regex/JSON Parsers]
+    Parsers --> Analyzer[CPAnalyzer]
+    Analyzer --> Reporter[CLI Table / CSV]
 ```
