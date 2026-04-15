@@ -1,6 +1,6 @@
 # Project: AutoAgent-TW
-Version: v1.9.5
-Status: Active (Phase 135 - AutoSkills Library & Intent Bridge Deployed)
+Version: v2.5.0
+Status: Active (Phase 139 - biggoALL Engine Deployed)
 Description: 專注於全自動、無感、具備高韌性（Resilience）的高級 AI 系統與知識庫自動化管道。
 Type: Python CLI & Autonomous Agent Workspace
 
