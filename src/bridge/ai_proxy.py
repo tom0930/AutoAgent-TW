@@ -35,42 +35,46 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="AA-Bridge - Antigravity IDE Proxy", lifespan=lifespan)
 
 # ====================== 核心：呼叫 Antigravity IDE AI ======================
-async def call_antigravity_ide(prompt: str, session_key: str, model: str = "ide-brain") -> AsyncGenerator[str, None]:
+async def call_antigravity_ide(prompt: str, session_key: str, model: str = "gemini-3-flash") -> AsyncGenerator[str, None]:
     """
-    實作 IDE 大腦共享：
-    1. 優先從環境變數 GEMINI_API_KEY 獲取 IDE 的 AI 能力。
-    2. 未來可擴展為直接呼叫 IDE 的內部 RPC。
+    對接截圖所示的本地 Antigravity Tools (Port 8045):
     """
     try:
-        api_key = os.environ.get("GEMINI_API_KEY")
-        
-        if not api_key:
-            yield "❌ [AA-Bridge] 錯誤：在 IDE 環境中未偵測到 GEMINI_API_KEY。\n請確保 Antigravity IDE 已正確啟動並配置 AI 能力。"
+        local_token = os.environ.get("IDE_LOCAL_TOKEN") or os.environ.get("LANGSMITH_API_KEY")
+        if not local_token:
+            yield "❌ [AA-Bridge] 錯誤：在 .env 中未找到 IDE_LOCAL_TOKEN (sk-...)。"
             return
 
-        # 使用 Google Gemini API 模擬 IDE 大腦回覆
-        # (這裡使用的是 IDE 共享出來的憑證)
+        headers = {
+            "Authorization": f"Bearer {local_token}",
+            "Content-Type": "application/json"
+        }
+        
+        # 截圖 1 顯示 Gemini 3 Flash 配額充足，我們對接到本機端的 OpenAI 相容接口
+        url = "http://127.0.0.1:8045/v1/chat/completions"
+        payload = {
+            "model": model if model != "ide-brain" else "gemini-3-flash",
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": True
+        }
+
         async with httpx.AsyncClient(timeout=120.0) as client:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?key={api_key}"
-            payload = {
-                "contents": [{"parts": [{"text": prompt}]}]
-            }
-            
-            async with client.stream("POST", url, json=payload) as response:
+            async with client.stream("POST", url, headers=headers, json=payload) as response:
                 if response.status_code != 200:
-                    yield f"❌ IDE AI 調用失敗 (HTTP {response.status_code})"
+                    yield f"❌ 本機服務 (8045) 調用失敗: HTTP {response.status_code} - {response.text}"
                     return
                 
                 async for line in response.aiter_lines():
-                    if line.startswith("data: "): # 處理 SSE 或 Google 格式
-                        continue
-                    try:
-                        chunk = json.loads(line)
-                        if "candidates" in chunk:
-                            text = chunk["candidates"][0]["content"]["parts"][0]["text"]
-                            yield text
-                    except:
-                        continue
+                    if line.startswith("data: "):
+                        line = line[6:]
+                        if line == "[DONE]": break
+                        try:
+                            chunk = json.loads(line)
+                            if "choices" in chunk and "delta" in chunk["choices"][0]:
+                                text = chunk["choices"][0]["delta"].get("content", "")
+                                if text: yield text
+                        except:
+                            continue
 
     except Exception as e:
         logger.error("IDE AI 呼叫失敗: %s", e)
@@ -109,6 +113,66 @@ async def chat_completions(request: Request):
 
     return StreamingResponse(generate(), media_type="text/event-stream")
 
+# ====================== Gemini 格式處理器 (Relay) ======================
+@app.post("/v1beta/models/{model_path}:generateContent")
+async def gemini_relay(model_path: str, request: Request):
+    """
+    Gemini 視覺轉發器：將 RVA Engine 的截圖轉發給本地 Port 8045
+    """
+    local_token = os.environ.get("IDE_LOCAL_TOKEN") or os.environ.get("LANGSMITH_API_KEY")
+    if not local_token:
+        return JSONResponse({"error": "No IDE_LOCAL_TOKEN found"}, status_code=500)
+    
+    body = await request.json()
+    
+    # 轉換 Gemini 格式為 OpenAI 格式 (帶 Vision)
+    # 擷取 prompt 與 base64
+    try:
+        parts = body['contents'][0]['parts']
+        prompt = next((p['text'] for p in parts if 'text' in p), "")
+        image_data = next((p['inline_data']['data'] for p in parts if 'inline_data' in p), None)
+        
+        openai_payload = {
+            "model": "gemini-3-flash", # 使用截圖中的正式型號
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt}
+                    ]
+                }
+            ]
+        }
+        
+        if image_data:
+            openai_payload["messages"][0]["content"].append({
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{image_data}"}
+            })
+            
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            headers = {"Authorization": f"Bearer {local_token}"}
+            logger.info("📡 Forwarding Vision request to Port 8045 | Model: google/gemini-3-flash")
+            response = await client.post("http://127.0.0.1:8045/v1/chat/completions", headers=headers, json=openai_payload)
+            logger.info("📥 Port 8045 Response: %s", response.status_code)
+            
+            # 轉換回 Gemini 格式
+            if response.status_code == 200:
+                result = response.json()
+                text = result['choices'][0]['message']['content']
+                logger.info("✅ Vision Relay Success | Extracted: %s", text[:50])
+                return JSONResponse({
+                    "candidates": [{"content": {"parts": [{"text": text}]}}]
+                })
+            else:
+                logger.error("❌ Vision Relay Failed: %s", response.text)
+                return JSONResponse({"error": f"Base logic failed: {response.text}"}, status_code=response.status_code)
+                
+    except Exception as e:
+        return JSONResponse({"error": f"Relay logic error: {str(e)}"}, status_code=500)
+
 if __name__ == "__main__":
     import uvicorn
+    # 確保日誌目錄存在
+    os.makedirs("logs", exist_ok=True)
     uvicorn.run(app, host="127.0.0.1", port=BRIDGE_PORT)
