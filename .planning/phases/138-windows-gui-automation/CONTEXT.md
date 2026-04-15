@@ -1,50 +1,40 @@
 # Architectural Context: Phase 138 — Windows GUI Automation (RVA & Vision Integration)
 
 ## 🎯 任務目標與意圖挖掘 (Context & Intent)
-相較於常規的 API 串接或網頁爬蟲 (如 Phase 139 的 biggoALL)，許多遺留的 Windows 原生應用程式或受嚴格反爬機制保護的沙盒應用，缺乏開放接口。
-本階段的目標是建構一套具備「視覺感知 (Vision)」與「動態操作 (RVA - Robotic Vision Automation)」的自動化驅動引擎，使 Agent 能夠針對任意 Windows 視窗「看見畫面、理解元素、精準點擊」並將工作流模組化。
+相較於常規的 API 串接或網頁爬蟲，許多遺留的 Windows 原生應用程式（特別是硬體開發與燒錄工具，如 **Xilinx SDK, iMPACT, Vitis GUI**）缺乏開放標準接口。
+本階段的目標是建構一套具備「視覺感知 (Vision)」與「動態操作 (RVA - Robotic Vision Automation)」的自動化驅動引擎。
+特別是為了適配 `uart2mcp` 測試框架，這套 RVA 引擎將允許 Agent 透過電腦視覺去操控這些封閉的硬體 IDE，進而達成韌體自動化編譯、燒錄與硬體在環 (Hardware-In-the-Loop) 的全閉環控制。
 
 ## 🛠️ 架構選型與 Trade-off (Architecture & Decisions)
 
-要實作 Windows GUI 視覺自動化，必須具備三個層面的能力：
+1. **大腦選型 (Intelligence Engine)**
+   - *明確約束*: **暫不使用本地端模型 (No Local Models, e.g., Ollama)**。
+   - *核心方案*: 採用 **Antigravity AI (Gemini 3 系列, 如 Flash/Pro 等)** 作為唯一的多模態分析大腦。
+   - *優勢論證*: 無需消耗本地 GPU 資源、規避 OOM 風險、降低佈署成本；且最新一代 Gemini 具備極強的 GUI UI 語意理解能力，可準確辨識 Xilinx 複雜面板中的微小 Icon 與 TreeView。
 
-1. **視覺擷取層 (Capture Layer)**
-   - *方案 A*: 依賴 `Pillow` 的 `ImageGrab`。 (簡單但效能較差)
-   - *方案 B (首選)*: 使用 `mss` 進行極速跨平台螢幕擷取，搭配 `pygetwindow` 定位目標視窗範圍，減少全螢幕截圖導致的精準度下降。
-
-2. **定位與理解層 (Vision / Recognition Layer)**
-   - *方案 A*: OpenCV (Template Matching)。優點：速度快、不耗 Token。缺點：面對 UI 微調、解析度縮放 (DPI scaling) 容易失效。
-   - *方案 B*: Multimodal Agent (直接將畫面傳入 Gemini/Claude 獲取座標)。優點：具備語意理解。缺點：Token 重、延遲高 (3s+)。
-   - *方案 C (首選融合架構)*: **Hybrid RVA Engine**
-     - 基礎操作與重複性高/靜態的元素：以 OpenCV Template Matching + Text OCR (如 Tesseract 或快速 OCR API) 定位。
-     - 複雜或非預期畫面：觸發 Fallback 呼叫 Vision LLM 進行語意分析與除錯。
-
-3. **控制層 (Actuation Layer)**
-   - 採用 `pyautogui` 專責鍵盤/滑鼠自動化，並搭配防呆機制。
+2. **定位與控制層 (Vision to Actuation)**
+   - *混合 RVA 引擎架構*:
+     - **視覺截圖**: 使用 `mss` 進行極速跨平台螢幕擷取。
+     - **大腦指導定位**: 將畫面傳給 Gemini Vision，透過 Prompt 獲取目標 UI (例如：Program Device 按鈕或 Console 面板) 的座標區塊。
+     - **本地執行**: 收到大腦座標後，透過 `pyautogui` / `pywinauto` 驅動滑鼠點擊與鍵盤輸入。
 
 ## 🛡️ 資安與防護建模 (STRIDE & Failsafes)
 
-針對實體 GUI 操控，風險遠高於一般 Backend API：
-- **T (Tampering) & R (Repudiation)**: 需建立 `AuditLog`。每次執行操作前，記錄當下截圖、時間點及即將執行的動作，以利追溯。
-- **I (Information Disclosure)**: 由於會擷取螢幕，可能有高度機密資訊 (如密碼、對話) 入鏡。
-  *防禦*: 截圖檔案僅存放在不可 Commit 的 Buffer (`scratch/tmp_vision/`) 且不應傳輸至未受信任的第三方，若需送往 Vision LLM 應套用 Privacy Mask 或僅截取局部 Region。
-- **D (Denial of Service - Automation Runaway)**: 自動化失控 (例如滑鼠狂點導致無法關閉)。
+針對實體的硬體燒錄與 GUI 操控，潛在風險 (Risk) 極高：
+- **T (Tampering) & R (Repudiation)**: 需建立防竄改的 `RVA_AuditLog`。每次執行操作前，記錄當下截圖、時間點及即將執行的動作，以利事故追溯。
+- **I (Information Disclosure)**: 避免螢幕擷取到無關之私密對話。在向 API 發送截圖前，盡可能利用 `pywinauto` 取得 Xilinx/Vitis 視窗的邊界範圍 (Bounding Box) 進行局部截圖，而非全螢幕上傳。
+- **D (Denial of Service) & E (Elevation of Privilege)**: 自動化失控與高危險動作。
   *防禦*: 
-  1. 啟用 `pyautogui.FAILSAFE = True` (滑鼠移至螢幕角落即中斷)。
-  2. 設計全域緊急中斷快捷鍵 (Global Kill-Switch Shortcut，如 `Ctrl+Esc`)。
+  1. 啟用 `pyautogui.FAILSAFE = True` (滑鼠移至螢幕角落即物理中斷)。
+  2. 設計人機協作閘道 (Human-in-the-Loop)：對於「抹除 Flash」、「燒錄 FPGA」等毀滅性或不可逆變更，強制跳出對話框要求人類確認。
 
 ## 📋 邊界定義與驗收標準 (DoD)
 
-- [ ] 完成核心 `rva_engine.py` 開發，封裝截圖、等待、點擊及文字輸入等功能。
-- [ ] 支援基於圖片特徵的「等待並點擊 (Wait-and-Click)」功能。
-- [ ] 實作緊急中斷機制 (Kill-Switch) 與自動防呆 (Failsafe)。
-- [ ] 能通過一個完整的 E2E 模擬場景 (例如：自動打開記事本，從螢幕辨識它，輸入一段文字並存檔)。
-- [ ] 加入 `.planning/` 與系統架構文檔更新。
-
-## 🏗️ 編排策略 (Orchestration)
-- **Mode**: Multi-Agent 逐步構建 (Phase 分離實作)。
-- **Step 1**: 基礎 RVA 封裝與本機測試。
-- **Step 2**: 融合 Vision OCR / OpenCV。
+- [ ] 完成核心 `rva_engine.py` 開發，與 Antigravity Gemini 3 介接進行畫面理解。
+- [ ] 支援針對特定目標的辨識與點擊 (例如：打開 Xilinx / Vitis 相關測試畫面並精準點擊特徵按鈕)。
+- [ ] 實作全域緊急中斷機制 (Kill-Switch) 與畫面局部截圖功能。
+- [ ] 產出可與 `uart2mcp` 協作的概念性腳本 (PoC)。
+- [ ] 產出對應的 `PLAN.md` 規劃。
 
 ---
 *Signed by Tom, Senior Architect. Prepared for /aa-plan 138.*
