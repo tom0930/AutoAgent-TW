@@ -1,5 +1,23 @@
 # AutoAgent-TW Version Log
 
+## [v2.9.0-terminal-optimization] - 2026-04-15
+
+### 🚀 新增功能 (Key Features)
+1. **Starship 跨 Shell 提示字元整合 (Phase 141)**: 導入 Rust 編寫的 Starship 引擎。透過 `~/.config/starship.toml` 實施「極簡模式」，自動縮減路徑深度並關閉高耗能模組，提升開發直覺與降低 Token 日誌干擾。
+2. **JetBrainsMono Nerd Font 部署**: 自動化安裝並註冊 Nerd Font 家族。確保終端機能正確渲染 Git、目錄與系統狀態符號，提升視覺化開發體驗。
+3. **PowerShell 路徑強健性方案**: 實施 `scripts/setup_starship_force.py`。採用 .NET 特殊資料夾解析技術，徹底解決 Windows OneDrive `文件` 路徑與 PowerShell `$PROFILE` 之間的編碼與環境變數同步衝突。
+4. **Token 節省機制 (Context Lean)**: 透過 `truncation_length = 2` 與靜態模組過濾，將每次指令回應的路徑 Token 佔用降低約 40%。
+
+### 📁 核心文件更新 (@file:)
+- `.config/starship.toml`: Token 優化配置。
+- `scripts/setup_starship_force.py`: 路徑修復與注入核心。
+- `scripts/install_env.ps1`: 環境自動化安裝腳本。
+- `.planning/phases/141-starship-integration/QA-REPORT.md`: 完整品質驗證報告。
+
+### 🔒 安全性 (Security)
+- Guardian Scan: ALL PASS (無硬編碼路徑溢漏，支援絕對與相對環境變數共存)。
+- 支援 Idempotent 部署：多次執行指令不會重複污染 Profile。
+
 ## [v2.8.0-observability-modernization] - 2026-04-14
 
 ### 🚀 新增功能 (Key Features)
