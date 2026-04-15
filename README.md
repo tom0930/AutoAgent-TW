@@ -73,8 +73,14 @@ graph TD
 
 - **Ripgrep (rg)**: 工業級文本檢索工具，替代傳統 grep。
   - **優勢**: 速度快 10x+，自動忽略 `.gitignore`。
-  - **初始化**: 若環境未自動載入路徑，可執行 `.\scripts\init_rg.ps1`。
   - **範例**: `rg "search_term" --stats`
+- **Starship**: 跨 Shell 的超快提示字元，優化開發日誌的 Token 消耗。
+- **JetBrainsMono Nerd Font**: 視覺化符號支援，提供極致的終端開發體驗。
+
+### 環境初始化 (Setup)
+若需重新建立高效能開發環境，可執行：
+- `.\scripts\install_env.ps1`: 自動化安裝全套工具。
+- `.\scripts\setup_starship.ps1`: 自動化 PowerShell 提示字元配置。
 
 ---
 

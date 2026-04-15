@@ -1,0 +1,69 @@
+# AutoAgent-TW: Starship Configuration (Token Optimized)
+# This config is designed to be lean for terminal logs and context efficiency.
+
+# Don't print a new line at the start of the prompt
+add_newline = false
+
+# Custom format for the prompt
+format = """
+$directory\
+$git_branch\
+$git_status\
+$character
+"""
+
+# Directory module configuration
+[directory]
+truncation_length = 2
+truncate_to_repo = true
+truncation_symbol = "…/"
+style = "bold cyan"
+read_only = " 🔒"
+
+# Git branch module configuration
+[git_branch]
+symbol = " "
+style = "bold purple"
+format = "[$symbol$branch]($style) "
+
+# Git status module configuration (Simplified for performance & token reduction)
+[git_status]
+disabled = false
+format = "([$all_status$ahead_behind]($style)) "
+conflicted = "🏳 "
+ahead = "⇡ "
+behind = "⇣ "
+diverged = "⇕ "
+untracked = " "
+stashed = "󰏖 "
+modified = "󰏫 "
+staged = " "
+renamed = "󰑖 "
+deleted = "󰛌 "
+
+# Character module configuration
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+# Disable heavy and redundant modules
+[cmd_duration]
+disabled = true
+
+[package]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[python]
+disabled = true
+
+[rust]
+disabled = true
+
+[aws]
+disabled = true
+
+[docker_context]
+disabled = true
