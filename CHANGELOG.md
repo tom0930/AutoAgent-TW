@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.9.0] - 2026-04-15
+### Added
+- Phase 141: Starship Cross-Shell Prompt integration.
+- Phase 141: JetBrainsMono Nerd Font automated deployment.
+- Phase 141: `scripts/setup_starship_force.py` for robust PowerShell profile patching.
+
+### Fixed
+- Terminal path encoding issues in Windows OneDrive-managed environments.
+
 ## [v2.7.0] - 2026-04-13
 ### Added
 - **Knowledge Gateway (Phase 133)**: Direct LineBot integration for unified RAG Queries and Knowledge Ingestion.

@@ -1,9 +1,9 @@
-# 當前專案狀態 (STATE): v2.7.0
+# 專案狀態 (STATE): v2.9.0
 
-- **總進度**: Phase 141 / 142 (v2.7.0)
+- **總進度**: Phase 141 / 142 (v2.9.0)
 - **當前階段**: 138 (Windows GUI Automation)
 - **專案模式**: Multi-Agent Orchestration (Sub-Agent Mode)
-- **最後更新時間**: 2026-04-15
+- **最後更新基元**: 2026-04-15
 
 ## 核心功能狀態清單
 - [X] **Resilience Core**: Exponential Backoff, Error Classification [DONE]
