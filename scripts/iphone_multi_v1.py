@@ -1,3 +1,15 @@
+"""
+iPhone 15 Cross-Platform CP Value Comparison Engine (v2.5.0)
+-----------------------------------------------------------
+Authors: Antigravity AI Engine
+Description: 
+    Autonomous data extraction tool for comparing iPhone 15 prices across 
+    PChome (API-based) and BigGo (Next.js Stream-based). Calculates 
+    CP (Cost-Performance) values using Storage/Price ratio.
+    
+Usage:
+    python scripts/iphone_multi_v1.py
+"""
 import asyncio
 import json
 import csv
