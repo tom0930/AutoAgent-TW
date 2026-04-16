@@ -16,8 +16,8 @@
 - [X] Phase 141: Starship & Nerd Font Integration (v2.7.0) [DONE]
 - [X] Phase 142: RTK & Notifier Integration (v2.9.0) [DONE]
 - [X] Phase 143: Git Token Optimization (v3.0.0) [DONE]
-- [X] Phase 144: MCP Proxy Gateway (v3.1.0) [DONE]
 - [X] Phase 145: Industrialized Tooling (Context7 & Gateway Opt) [DONE]
+- [ ] Phase 146: Data Specialist & Long-term Memory (mcp3fs) [PLANNING]
 - [ ] Phase 138: Windows GUI Automation - Vision Fallback [TODO]
 
 ## 近期完成摘要
