@@ -98,6 +98,9 @@ class MCPProxyGateway:
         thought = arguments.get("thought", "")
         step = arguments.get("step_number", 1)
         self.thought_chain.append({"step": step, "thought": thought})
+        # Prevent memory leak by limiting thought chain size
+        if len(self.thought_chain) > 50:
+            self.thought_chain = self.thought_chain[-50:]
         return {"status": "thought_recorded", "step": step}
 
     async def _validate_sequential_thinking(self, tool_name: str) -> bool:

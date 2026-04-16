@@ -26,8 +26,7 @@ No markdown, no explanation. Just JSON.
 
     def prepare_image(self, img: Image.Image) -> str:
         """
-        Compress image if it's too large, but preserve PNG structure to avoid JPEG artifacts.
-        Scale down so the max dimension is 1440px to balance tokens vs precision for dense IDEs.
+        Compress image if it's too large. Using JPEG for transport to minimize payload size.
         """
         max_dim = 1440
         if img.width > max_dim or img.height > max_dim:
@@ -35,10 +34,16 @@ No markdown, no explanation. Just JSON.
             new_size = (int(img.width * ratio), int(img.height * ratio))
             img = img.resize(new_size, Image.Resampling.LANCZOS)
         
+        # Convert to RGB if it has alpha channel (JPEG doesn't support RGBA)
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+            
         buf = BytesIO()
-        # Save as PNG to avoid artifacts on small fonts
-        img.save(buf, format="PNG")
-        return base64.b64encode(buf.getvalue()).decode("utf-8")
+        # Quality 85 is the sweet spot for vision models
+        img.save(buf, format="JPEG", quality=85)
+        b64_str = base64.b64encode(buf.getvalue()).decode("utf-8")
+        buf.close() # Explicitly close buffer
+        return b64_str
 
     async def verify_action_result(self, before_img: Image.Image, after_img: Image.Image, expected_outcome: str) -> Dict[str, Any]:
         """

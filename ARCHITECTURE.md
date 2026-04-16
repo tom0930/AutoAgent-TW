@@ -41,3 +41,10 @@ AutoAgent-TW uses a **Hybrid Industrial Installer** (`aa-installer.ps1` + `aa_in
 - **Logic Engine**: Python manages venv creation, dependency resolution, and internal registry.
 - **Global Shims**: Automatically generates `.cmd` shims in the project root and adds them to the **User-level PATH** to avoid Administrative overhead while ensuring global availability of `aa-tw` and `autoagent` commands.
 
+
+## Resource & Lifecycle Management (Phase 149)
+To ensure system stability during long-running sessions, AutoAgent-TW implements a robust resource management layer:
+1. **Agent Reaper**: A background monitor that identifies and terminates orphaned node.exe (MCP servers) and python.exe processes by checking parent process health and command-line signatures.
+2. **Vision Zero-Copy Architecture**: Utilizes multiprocessing.shared_memory to transfer high-resolution screen data directly between the capture daemon (PyRefly) and the analysis agent without intermediate buffer copies.
+3. **Lazy Memory Allocation**: All vision and file-heavy tools use LRU caching and explicit buffer cleaning to prevent memory bloat over 500MB.
+4. **Task Isolation**: Uses Windows **Job Objects** to treat the entire agent tree as a single atomic unit for resource limiting and final cleanup.

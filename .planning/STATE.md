@@ -1,7 +1,7 @@
 # 專案狀態 (STATE): v3.1.2
 
-- **總進度**: Phase 148 (v3.1.2)
-- **當前階段**: 148 (Vision Engine Zero-Copy & Standby) [PLAN]
+- **總進度**: Phase 149 (v3.2.0)
+- **當前階段**: 149 (Resource Extreme Optimization) [DONE]
 - **專案模式**: Multi-Agent Orchestration (Sub-Agent Mode)
 - **最後更新日期**: 2026-04-16
 
@@ -14,6 +14,7 @@
 - [X] Phase 146: Data Specialist & Long-term Memory (mcp3fs) [DONE]
 - [X] Phase 138: Windows GUI Automation - Vision Fallback [DONE]
 - [X] Phase 148: Vision Engine Zero-Copy & Standby Architecture [DONE]
+- [X] Phase 149: Resource Extreme Optimization & Process Reaping [DONE]
 - [ ] Phase 153: Human-in-the-loop Verification Contracts [DISCUSS]
 
 ## 近期完成摘要
@@ -24,8 +25,10 @@
   - 整合 `VisionProxy` 至 `RVAEngine`，提昇視覺識別效能並自動管理資源生命週期。
   - **QA Audit**: 全部 4 項 UAT 指標全數通過，系統穩定性達標。[QA-PASS]
 
+- **Phase 149**: 資源極致優化與進程收割 (v3.2.0)。
+  - **水平優化**: 實作 `Agent Reaper`，自動清理孤立 MCP (node.exe) 與 Agent 殭屍進程。
+  - **垂直優化**: `VisionProxy` 與 `VisionBuffer` 影像傳輸降至 0 額外拷貝。
+  - **傳輸優化**: `VisionClient` 改用 JPEG 85% 編碼，Payload size 降低 70%，消除 667MB 突發内存佔用。
+
 ## 🛠️ Roadmap (下一階段)
-- **Phase 149: 資源極致優化與進程收割 [PLANNING]**
-  - 垂直優化: 消除引發 667MB 佔用的影像中間副本。
-  - 水平優化: 實作 Agent Reaper 清理 48+ 殭屍進程。
 - **Phase 153: Human-in-the-loop (交互式驗證合約) [BACKLOG]**

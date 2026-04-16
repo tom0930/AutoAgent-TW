@@ -44,6 +44,14 @@ class RVAEngine:
         self.vision_client = RVAVisionClient()
         self.vision_proxy = VisionProxy()
         
+        # Phase 149: Resource Extreme Optimization
+        try:
+            from src.core.reaper import AgentReaper
+            reaper = AgentReaper(dry_run=False)
+            reaper.reap() # Clear orphans on startup
+        except Exception as e:
+            logger.warning(f"Failed to run early reaping: {e}")
+        
     def _save_debug_image(self, image, name: str):
         r"""Helper to save screenshots to z:\del\rva if debugging is enabled."""
         if not RVA_DEBUG_SAVE:
