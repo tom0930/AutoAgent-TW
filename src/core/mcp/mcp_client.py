@@ -98,6 +98,10 @@ class MCPClientManager:
             if isinstance(result, Exception):
                 logger.error(f"[MCP] Critical failure connecting to '{server['name']}': {result}")
 
+    async def _connect_server_with_retry(self, server_cfg: dict) -> None:
+        """依回退機制嘗試連接單一 MCP 伺服器。"""
+        name = server_cfg["name"]
+        last_error = "Unknown error"
         fingerprint = self._get_server_fingerprint(server_cfg)
         
         for attempt in range(MAX_RETRIES):
