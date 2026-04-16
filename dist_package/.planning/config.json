@@ -1,0 +1,15 @@
+{
+  "project_name": "AutoAgent-TW-Industrial",
+  "version": "v3.1.1",
+  "mode": "YOLO",
+  "granularity": "TASK",
+  "notifications": {
+    "browser_panel": true,
+    "line_notify": true,
+    "voice_announcement": false
+  },
+  "locales": [
+    "zh-TW",
+    "en-US"
+  ]
+}
