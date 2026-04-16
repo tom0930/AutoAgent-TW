@@ -8,12 +8,12 @@ import pygetwindow as gw
 
 # Industrial Win32 additions
 try:
+    from pywinauto import Desktop
     import win32gui
     import win32ui
     import win32con
     import ctypes
     from ctypes import wintypes
-    import win32process
     HAS_WIN32 = True
     
     # DWM API for real coordinates (avoiding shadow bias)
@@ -174,13 +174,14 @@ class RVAEngine:
             # Search for buttons in all windows if active one doesn't have it
             # (Note: In a true industrial engine, we'd cache the HWND here)
             element = None
+            # Zero-copy Read: Create ndarray view pointing to SHM buffer
             try:
                 # Try search for target button in the active window first
                 element = app.child_window(title_re=f".*{target}.*", control_type="Button", found_index=0)
                 if not element.exists(timeout=0.2):
                     # Try list items or checkboxes too
                     element = app.child_window(title_re=f".*{target}.*", found_index=0)
-            except:
+            except Exception:
                 pass
 
             if element and element.exists(timeout=0.5):

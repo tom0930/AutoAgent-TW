@@ -1,8 +1,7 @@
 import logging
 import time
-import numpy as np
 from PIL import Image
-from typing import Optional, Tuple
+from typing import Optional
 
 from src.core.rva.shared_memory_manager import VisionBuffer
 from src.core.rva.control_plane import VisionControlClient

@@ -1,8 +1,5 @@
 import psutil
-import time
-import os
 import logging
-from pathlib import Path
 
 # Setup logging
 logging.basicConfig(
