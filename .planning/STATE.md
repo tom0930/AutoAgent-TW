@@ -22,3 +22,4 @@
   - 建立 Windows Named Pipes 控制平面與 Standby 狀態機，實現 0% 閒置 CPU 占用。
   - 導入 Windows Job Objects 徹底解決 `pyrefly.exe` 殭屍進程殘留問題。
   - 整合 `VisionProxy` 至 `RVAEngine`，提昇視覺識別效能並自動管理資源生命週期。
+  - **QA Audit**: 全部 4 項 UAT 指標全數通過，系統穩定性達標。[QA-PASS]

@@ -59,7 +59,6 @@ class PyReflyService:
         if self.buffer:
             self.buffer.close()
         logger.info("PyRefly Service Terminated.")
-        sys.exit(0)
 
     def _capture_loop(self):
         frame_id = 0
