@@ -16,9 +16,15 @@ class Win32JobManager:
         try:
             self.job = win32job.CreateJobObject(None, name)
             
-            # Configure job to kill all children on close
+            # Configure job to kill all children on close AND limit memory
             info = win32job.QueryInformationJobObject(self.job, win32job.JobObjectExtendedLimitInformation)
             info['BasicLimitInformation']['LimitFlags'] |= win32job.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+            
+            # Phase 149: Add Memory Limit (2GB = 2 * 1024 * 1024 * 1024 bytes)
+            # This prevents a runaway process from consuming 4GB+ again.
+            info['BasicLimitInformation']['LimitFlags'] |= win32job.JOB_OBJECT_LIMIT_JOB_MEMORY
+            info['JobMemoryLimit'] = 2 * 1024 * 1024 * 1024 
+            
             win32job.SetInformationJobObject(self.job, win32job.JobObjectExtendedLimitInformation, info)
             
             logger.info(f"Initialized Windows Job Object: {name}")
