@@ -11,6 +11,10 @@ description: Self-Repair Cycle / 自我修復循環。
 
 ## Steps
 
+### Step 0: 預防性資源清理 (Environment Preparation)
+1. 執行 `python scripts/kill_zombies.py`。
+2. 確保前一次失敗或掛起的 MCP/Agent 進程已完全清除，避免 PID 堆疊與記憶體洩漏。
+
 ### Step 1: 讀取 QA 報告
 1. 讀取 `.planning/phases/{N}-*/QA-REPORT.md`。
 2. 提取所有 FAIL 標籤對應的 Issues。

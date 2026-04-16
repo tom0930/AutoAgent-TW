@@ -17,6 +17,9 @@ class PermissionEngine:
         self.registry: Dict[str, ToolRisk] = {
             "delete_database": ToolRisk("delete_database", 5, "Destructive DB operations"),
             "delete_config": ToolRisk("delete_config", 5, "Global config deletion"),
+            "run_command": ToolRisk("run_command", 4, "Arbitrary system shell execution"),
+            "write_to_file": ToolRisk("write_to_file", 4, "File system modification"),
+            "mcp_GitKraken_git_push": ToolRisk("mcp_GitKraken_git_push", 4, "Remote code deployment"),
             "send_external_email": ToolRisk("send_external_email", 4, "External communication"),
             "high_cost_api": ToolRisk("high_cost_api", 4, "High credit consumption"),
             "read_sensitive_data": ToolRisk("read_sensitive_data", 3, "Internal customer records"),

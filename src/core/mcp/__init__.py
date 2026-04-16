@@ -1,4 +1,2 @@
-from src.core.mcp.mcp_client import MCPClientManager
-from src.core.mcp.registry import MCPToolRegistry
-
-__all__ = ["MCPClientManager", "MCPToolRegistry"]
+# Phase 153 Refactor: Empty __init__ to prevent circular imports during MCP discovery
+# Use absolute imports from child modules directly.

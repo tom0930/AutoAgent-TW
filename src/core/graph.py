@@ -10,10 +10,19 @@ load_dotenv()
 
 from src.core.state import AgentState
 from src.core.permission_engine import PermissionEngine
+from src.core.mcp.contract_engine import ContractEngine
 from src.core.persistence import get_checkpointer
 
 # Setup Engine
 permission_engine = PermissionEngine()
+CONTRACT_LOG_PATH = "z:/autoagent-TW/.planning/phases/153-hitl-contracts/signed_contracts.jsonl"
+
+def log_contract(contract: Dict[str, Any]):
+    """Appends the signed contract to a local JSONL file for non-repudiation."""
+    import json
+    os.makedirs(os.path.dirname(CONTRACT_LOG_PATH), exist_ok=True)
+    with open(CONTRACT_LOG_PATH, "a", encoding="utf-8") as f:
+        f.write(json.dumps(contract) + "\n")
 
 def gatekeeper_node(state: AgentState, config: RunnableConfig):
     """
@@ -45,21 +54,49 @@ def gatekeeper_node(state: AgentState, config: RunnableConfig):
     }
     
     if should_stop:
+        # Phase 153: Generate high-fidelity verification contract
+        thread_id = config["configurable"].get("thread_id", "anonymous")
+        args = last_action.get("args", {})
+        
+        contract = ContractEngine.generate_contract(
+            thread_id=thread_id,
+            risk_level=risk,
+            tool_name=tool_name,
+            args=args
+        )
+        
+        # Phase 153: Persist for non-repudiation audit
+        log_contract(contract)
+        
         return {
             "pending_approval": True,
             "risk_level": risk,
-            "messages": [AIMessage(content=f"PERMISSION BLOCK: {reason} Waiting for manual approval.")]
+            "verification_contract": contract,
+            "messages": [AIMessage(content=f"PERMISSION BLOCK: {reason}\n\n[Verification Contract v1.0 Generated]\nHash: {contract['hash']}\nPlease type 'approve' to proceed.")]
         }
         
-    return {"pending_approval": False, "risk_level": risk}
+    return {"pending_approval": False, "risk_level": risk, "verification_contract": None}
 
 def tool_executor_node(state: AgentState):
-    """Mock Tool Executor for Phase 120 testing."""
+    """Mock Tool Executor with Phase 153 Hash Verification."""
     last_action = state.get("last_action")
+    contract = state.get("verification_contract")
+    
+    # Phase 153: Strict drift protection
+    if contract:
+        current_args = last_action.get("args", {})
+        if not ContractEngine.verify_contract(contract, current_args):
+            return {
+                "messages": [AIMessage(content="CRITICAL: Verification Failure! Tool arguments have changed since approval (Agent Drift detected). Execution blocked.")],
+                "tool_errors": ["Contract Hash Mismatch"],
+                "pending_approval": False
+            }
+            
     return {
-        "messages": [AIMessage(content=f"Tool '{last_action.get('name')}' executed successfully.")],
+        "messages": [AIMessage(content=f"Tool '{last_action.get('name')}' executed successfully with valid contract signature.")],
         "last_action": None,
-        "pending_approval": False
+        "pending_approval": False,
+        "verification_contract": None # Clear contract after success
     }
 
 def compile_ira_graph(db_path: str = "checkpoints.sqlite"):
@@ -108,17 +145,21 @@ if __name__ == "__main__":
     # Test execution simulation
     test_state = {
         "messages": [],
-        "task_input": "Delete the main production database",
-        "last_action": {"name": "delete_database", "args": {}},
+        "task_input": "Execute a high-risk system command",
+        "last_action": {"name": "run_command", "args": {"command": "rm -rf /"}}, # Level 4
         "failure_count": 0,
         "last_errors": [],
         "current_version": "v1.0",
         "risk_level": 1, 
         "pending_approval": False,
         "approval_result": None,
-        "thread_id": "test-ira-001",
+        "verification_contract": None,
+        "thread_id": "test-p153-001",
         "review_reports": [],
-        "success_rate": 0.0
+        "success_rate": 0.0,
+        "mcp_tools_used": [],
+        "tool_outputs": [],
+        "tool_errors": []
     }
     
     config = {"configurable": {"thread_id": "test-ira-001"}}
