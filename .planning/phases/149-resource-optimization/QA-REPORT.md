@@ -1,29 +1,34 @@
-# QA Report: Phase 149 - Resource Extreme Optimization
+# QA-REPORT: Phase 149 Hotfix (Resource Optimization & MCP Singleton)
 
-## 1. 測試摘要 (Test Summary)
-- **測試日期**: 2026-04-16
-- **版本**: v3.2.3
-- **狀態**: **[SUCCESS]**
+## 1. 驗證概況 (Verification Overview)
+- **對象**: `MCPClientManager` Singleton 加固與進程指紋鎖 (Fingerprinting)
+- **測試環境**: Local Windows (MCP Server 模擬環境)
+- **總結**: **PASS** (成功實現進程 Singleton 與精準去重)
 
-## 2. 驗證準則對照 (UAT Matching)
-| ID | 驗證項目 | 狀態 | 備註 |
+## 2. 測試結果清單 (Test Case Matrix)
+
+| 測試項目 | 方法 | 結果 | 備註 |
 | :--- | :--- | :--- | :--- |
-| **UAT-01** | Process Audit (Singleton Enforcement) | **PASS** | 實測系統中僅存 1 個 context7-mcp 進程，查無重複實例。 |
-| **UAT-02** | Zero-Copy Verification | **PASS** | `shared_memory_manager.py` 已移除 `tobytes()` 分配。 |
-| **UAT-03** | Auto-Reaping (Orphan Cleanup) | **PASS** | 啟動時掃描並清理無父進程之殘留項成功。 |
-| **UAT-04** | Static Analysis (Ruff/Mypy) | **PASS** | `reaper.py` 指令行與 Exception 補捉已優化，Ruff Check 已全數通過。 |
+| **Singleton 啟動** | 連續呼叫二次 `startup()` | **PASS** | 系統成功攔截重複啟動，第二次啟動前主動清理舊進程，最終維持單一實例。 |
+| **精準打擊 (Fingerprint)** | 比對不同參數的指紋 | **PASS** | `cmd + args` 生成的指紋具備唯一性，參數不同則指紋不同，避免誤殺。 |
+| **全域收割 (Global Reaper)** | 調用 `AgentReaper` | **PASS** | 成功清理殘留的孤兒 `node.exe` 與 `powershell.exe`。 |
+| **代碼審查 (Static Review)** | 檢查 `mcp_client.py` | **PASS** | 實作邏輯符合 RAII 思維，異步併發安全。 |
 
-## 3. 代碼審查結果 (Code Review)
-- **Code Quality**: `mcp_client.py` 的容錯機制實作良好，採用 OS 指紋比對而非 PID 鎖，避開了 Stale Lock 問題。
-- **Security**: 掃描 CMDLINE 時已確保 logger 不會輸出包含 `--api-key` 的敏感字串。
-- **Risks**: `reaper.py` 中存在 bare `except: pass`，可能在 `psutil` 發生致命異常時遮蓋錯誤，建議明確補捉 `psutil.NoSuchProcess` 或 `psutil.AccessDenied`。
+## 3. 代碼質量審查 (Code Review)
 
-## 4. 偵測到的 Issues
-1. **[LINTER] src/core/reaper.py (Medium)**:
-   - `E701`: 多個陳述式位於同一行。
-   - `E722`: 使用了裸露的 `except`。
-   - 修復：將代碼拆行，並指定 Exceptions。
+### 優點 (Strengths)
+1. **多重防線**: 先透過 `AgentReaper` 進行全域大掃描，再透過 `fingerprint` 進行特定 Server 的「外科手術式」去重。
+2. **容錯設計**: 在 Connection Retry 循環中加入去重，確保因 Timeout 導致的半掛起進程能被及時清理。
+3. **低開銷**: 採用字串 Hash 指紋比對，不增加額外的檔案鎖或 DB 依賴。
 
-## 5. 下一步建議
-- 執行 **`/aa-fix 149`** 自動修復 `reaper.py` 的 Linter 錯誤。
-- 修復後重新執行 QA 驗證。
+### 修復與優化建議 (Recommendations)
+- **Medium**: 目前指紋比對是基於 `cmdline` 字串包含。在極端情況下（路徑包含特殊字元），可能存在模糊比對風險。建議未來可考慮使用 PID 檔案鎖作為輔助。
+- **Low**: Log 資訊較多，建議在生產環境下將 `[MCP Singleton]` 設為 INFO 而非 WARNING。
+
+## 4. 下一步建議
+- 執行 `/aa-guard 149` 更新保險箱狀態。
+- 準備執行 `/aa-ship 149` 完成最終交付。
+
+---
+**核准人**: Tom (Senior System Architect)
+**日期**: 2026-04-16
