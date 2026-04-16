@@ -1,7 +1,6 @@
 import logging
 import time
-from typing import Optional, Callable
-from pywinauto import Application, Desktop
+from pywinauto import Desktop
 
 logger = logging.getLogger("RVA_Xilinx")
 

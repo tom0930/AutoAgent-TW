@@ -24,6 +24,7 @@ except ImportError:
 
 from src.core.rva.rva_audit import rva_audit
 from src.core.rva.vision_client import RVAVisionClient
+from src.core.rva.vision_proxy import VisionProxy
 from PIL import Image
 
 logger = logging.getLogger("RVA.Engine")
@@ -41,6 +42,7 @@ pyautogui.PAUSE = 0.5  # Add a default pause between operations
 class RVAEngine:
     def __init__(self):
         self.vision_client = RVAVisionClient()
+        self.vision_proxy = VisionProxy()
         
     def _save_debug_image(self, image, name: str):
         r"""Helper to save screenshots to z:\del\rva if debugging is enabled."""
@@ -299,7 +301,11 @@ class RVAEngine:
         safe_rect = self._get_active_window_rect(window_name)
         left, top, width, height = safe_rect
 
-        screenshot = pyautogui.screenshot(region=safe_rect)
+        screenshot = self.vision_proxy.capture_frame()
+        if not screenshot:
+            logger.debug("VisionProxy unavailable, falling back to local screenshot.")
+            screenshot = pyautogui.screenshot(region=safe_rect)
+
         self._save_debug_image(screenshot, f"vision_locate_{target}")
         bbox = await self.vision_client.find_target_bbox(screenshot, target)
         if not bbox:

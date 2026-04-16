@@ -1,0 +1,14 @@
+{
+    "id": "b259d03a",
+    "parent_id": "main",
+    "task": "Safety-Test",
+    "status": "pending",
+    "progress": 0,
+    "start_time": "2026-04-16T17:19:52.971022",
+    "budget_tokens": 10000,
+    "risk_limit": 3,
+    "logs": [
+        "Process initialized."
+    ],
+    "result": null
+}

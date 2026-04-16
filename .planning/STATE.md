@@ -1,7 +1,7 @@
-# 專案狀態 (STATE): v3.1.0
+# 專案狀態 (STATE): v3.1.2
 
-- **總進度**: Phase 144 / 145 (v3.1.0)
-- **當前階段**: 138 (Windows GUI Automation - RVA Research DONE, implementation TODO)
+- **總進度**: Phase 148 (v3.1.2)
+- **當前階段**: 148 (Vision Engine Zero-Copy & Standby) [PLAN]
 - **專案模式**: Multi-Agent Orchestration (Sub-Agent Mode)
 - **最後更新日期**: 2026-04-16
 
@@ -10,17 +10,15 @@
 - [X] **Agentic Engine**: Sub-agent Spawner, Coordinator, Orchestrator [DONE]
 - [X] **Knowledge System**: LineBot-NLM Pipeline, AutoSkills Bridge [DONE]
 - [X] **Memory System**: L1/L2/L3 Store, Persistence [DONE]
-- [X] Phase 137: Dashboard Finisher & QA Audit (v2.3.0) [DONE]
-- [X] Phase 139: biggoALL Multi-Source Engine (v2.5.0) [DONE]
-- [X] Phase 140: Ripgrep System Optimization (v2.6.0) [DONE]
-- [X] Phase 141: Starship & Nerd Font Integration (v2.7.0) [DONE]
-- [X] Phase 142: RTK & Notifier Integration (v2.9.0) [DONE]
-- [X] Phase 143: Git Token Optimization (v3.0.0) [DONE]
 - [X] Phase 145: Industrialized Tooling (Context7 & Gateway Opt) [DONE]
 - [X] Phase 146: Data Specialist & Long-term Memory (mcp3fs) [DONE]
-- [ ] Phase 138: Windows GUI Automation - Vision Fallback [TODO]
+- [X] Phase 138: Windows GUI Automation - Vision Fallback [DONE]
+- [X] Phase 148: Vision Engine Zero-Copy & Standby Architecture [DONE]
+- [ ] Phase 153: Human-in-the-loop Verification Contracts [DISCUSS]
 
 ## 近期完成摘要
-- 成功清除冗餘規劃目錄 (`.planning1`, `.planningClaw`)，確保單一發令來源。
-- 全面備份舊有狀態至 `scratch/backup_state_20260414`。
-- 確立以 `.planning` 為唯一的核心治理目錄。
+- **Phase 148**: 實作工業級視覺引擎架構。
+  - 導入 `multiprocessing.shared_memory` 實現零拷貝影像傳輸。
+  - 建立 Windows Named Pipes 控制平面與 Standby 狀態機，實現 0% 閒置 CPU 占用。
+  - 導入 Windows Job Objects 徹底解決 `pyrefly.exe` 殭屍進程殘留問題。
+  - 整合 `VisionProxy` 至 `RVAEngine`，提昇視覺識別效能並自動管理資源生命週期。

@@ -1,0 +1,15 @@
+{
+    "id": "83717ea9",
+    "parent_id": "main",
+    "task": "Safety-Test",
+    "status": "running",
+    "progress": 10,
+    "start_time": "2026-04-16T17:20:09.033311",
+    "budget_tokens": 10000,
+    "risk_limit": 3,
+    "logs": [
+        "Process initialized.",
+        "[2026-04-16T17:20:09.063856] Process spawned successfully (Budget: 10000)."
+    ],
+    "result": null
+}
