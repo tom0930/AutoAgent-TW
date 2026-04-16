@@ -81,6 +81,9 @@ class MCPClientManager:
         config = self._load_config()
         enabled_servers = [s for s in config.get("servers", []) if s.get("enabled", True)]
 
+        # [Global Purge] 啟動前進行全域進程清場，確保沒有遺留的堆疊進程
+        await self._deduplicate_server_process("GLOBAL")
+
         if not enabled_servers:
             logger.info("[MCP] No servers are enabled for connection.")
             return
@@ -100,8 +103,7 @@ class MCPClientManager:
         name = server_cfg["name"]
         last_error = "Unknown error"
         
-        # 主動防禦：啟動前去重 (Pre-Flight Deduplication)
-        await self._deduplicate_server_process(name)
+        # 主動防禦：啟動前去重 (Pre-Flight Deduplication)已移至 startup() 統一執行
         
         for attempt in range(MAX_RETRIES):
             try:
@@ -125,6 +127,7 @@ class MCPClientManager:
                 logger.warning(f"[MCP] Failed to connect '{name}' (Attempt {attempt+1}/{MAX_RETRIES}): {e}. Retrying in {wait}s...")
                 
                 # 生命週期封裝：強制終止因 Timeout 或 Crash 半掛起的進程
+                # 這裡保留個別 Server 的重試清理
                 await self._deduplicate_server_process(name)
                 
                 await asyncio.sleep(wait)
