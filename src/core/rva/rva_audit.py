@@ -1,10 +1,8 @@
-import os
 import json
 import time
 import hashlib
 from typing import Dict, Any, Optional
 from pathlib import Path
-from PIL import Image
 
 class RVAAuditContext:
     def __init__(self, workspace_root: str):

@@ -3,7 +3,7 @@ import json
 import logging
 import httpx
 from io import BytesIO
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List, Dict, Any
 from PIL import Image
 
 logger = logging.getLogger("RVA.VisionClient")
@@ -39,6 +39,55 @@ No markdown, no explanation. Just JSON.
         # Save as PNG to avoid artifacts on small fonts
         img.save(buf, format="PNG")
         return base64.b64encode(buf.getvalue()).decode("utf-8")
+
+    async def verify_action_result(self, before_img: Image.Image, after_img: Image.Image, expected_outcome: str) -> Dict[str, Any]:
+        """
+        Compare two images to judge if the RVA action achieved the expected goal.
+        Returns: {"success": bool, "dx": int, "dy": int, "reason": str}
+        """
+        # Compress both images
+        b64_before = self.prepare_image(before_img)
+        b64_after = self.prepare_image(after_img)
+        
+        prompt = f"""
+{self.SYSTEM_PROMPT}
+Evaluate the result of a UI automation action.
+Before image provided. After image provided.
+Expected Goal: '{expected_outcome}'
+
+Compare 'before' vs 'after'. 
+Did the specific change occur? If it failed or was offset, estimate the pixel correction needed.
+
+Return ONLY valid JSON:
+{{
+  "success": true/false,
+  "reason": "description of what happened",
+  "dx": estimated_x_correction_pixels, 
+  "dy": estimated_y_correction_pixels
+}}
+"""
+        payload = {
+            "contents": [{
+                "parts": [
+                    {"text": prompt},
+                    {"inline_data": {"mime_type": "image/png", "data": b64_before}},
+                    {"inline_data": {"mime_type": "image/png", "data": b64_after}}
+                ]
+            }]
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                resp = await client.post(self.bridge_url, json=payload)
+                if resp.status_code != 200:
+                    return {"success": False, "reason": f"Retry: Vision Bridge Error {resp.status_code}", "dx":0, "dy":0}
+                
+                data = resp.json()
+                text = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                text = text.replace("```json", "").replace("```", "").strip()
+                return json.loads(text)
+        except Exception as e:
+            return {"success": False, "reason": str(e), "dx": 0, "dy": 0}
 
     async def find_target_bbox(self, image: Image.Image, target_query: str) -> Optional[Tuple[float, float, float, float]]:
         """

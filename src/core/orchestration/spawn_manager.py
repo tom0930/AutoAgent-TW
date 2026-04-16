@@ -66,9 +66,10 @@ class AgentProcess:
 
     def spawn(self, command: list, env_ovrides: Optional[dict] = None):
         """
-        Spawns the process using subprocess.Popen.
-        On Windows, uses DETACHED_PROCESS to ensure isolation.
+        Spawns the process using subprocess.Popen with Job Object protection.
         """
+        from src.utils.win32_job import process_job
+
         env = os.environ.copy()
         if env_ovrides:
             env.update(env_ovrides)
@@ -81,8 +82,9 @@ class AgentProcess:
 
         creationflags = 0
         if sys.platform == "win32":
-            # 0x00000008 = DETACHED_PROCESS
-            creationflags = 0x00000008
+            # 0x08000000 = CREATE_NO_WINDOW (Hides console but keeps process in job group)
+            # 0x00000008 = DETACHED_PROCESS (REMOVED: Source of zombies)
+            creationflags = 0x08000000
 
         try:
             self.process = subprocess.Popen(
@@ -94,6 +96,11 @@ class AgentProcess:
                 text=True,
                 bufsize=1,
             )
+            
+            # Securely link to parent lifecycle via Job Object
+            if self.process:
+                process_job.add_pid(self.process.pid)
+
             self.status = "running"
             self.update_progress(
                 10, f"Process spawned successfully (Budget: {self.budget_tokens})."

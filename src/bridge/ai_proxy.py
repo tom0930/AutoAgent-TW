@@ -11,6 +11,9 @@ import httpx
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv() # Load variables from .env file
 
 # ====================== Logging 配置 ======================
 logging.basicConfig(
@@ -153,20 +156,29 @@ async def gemini_relay(model_path: str, request: Request):
         async with httpx.AsyncClient(timeout=60.0) as client:
             headers = {"Authorization": f"Bearer {local_token}"}
             logger.info("📡 Forwarding Vision request to Port 8045 | Model: google/gemini-3-flash")
-            response = await client.post("http://127.0.0.1:8045/v1/chat/completions", headers=headers, json=openai_payload)
-            logger.info("📥 Port 8045 Response: %s", response.status_code)
             
-            # 轉換回 Gemini 格式
-            if response.status_code == 200:
-                result = response.json()
-                text = result['choices'][0]['message']['content']
-                logger.info("✅ Vision Relay Success | Extracted: %s", text[:50])
-                return JSONResponse({
-                    "candidates": [{"content": {"parts": [{"text": text}]}}]
-                })
-            else:
-                logger.error("❌ Vision Relay Failed: %s", response.text)
-                return JSONResponse({"error": f"Base logic failed: {response.text}"}, status_code=response.status_code)
+            try:
+                response = await client.post("http://127.0.0.1:8045/v1/chat/completions", headers=headers, json=openai_payload)
+                logger.info("📥 Port 8045 Response: %s", response.status_code)
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    text = result['choices'][0]['message']['content']
+                    logger.info("✅ Vision Relay Success | Extracted: %s", text[:50])
+                    return JSONResponse({
+                        "candidates": [{"content": {"parts": [{"text": text}]}}]
+                    })
+                elif response.status_code == 503 and "disabled" in response.text.lower():
+                    logger.error("❌ Port 8045 禁用中。修復建議：請在本機 IDE 控制台按一下 [Enable Proxy] 按鈕。")
+                    return JSONResponse({"error": "Proxy disabled. Please click [Enable Proxy] in IDE."}, status_code=503)
+                else:
+                    logger.error("❌ Vision Relay Failed: HTTP %s | Body: %s", response.status_code, response.text[:100])
+                    return JSONResponse({"error": f"Upstream Error: {response.status_code}"}, status_code=response.status_code)
+            except httpx.ConnectError:
+                logger.error("❌ 無法連接到 Port 8045。")
+                return JSONResponse({"error": "Connection to local AI (8045) failed"}, status_code=502)
+
+
                 
     except Exception as e:
         return JSONResponse({"error": f"Relay logic error: {str(e)}"}, status_code=500)
