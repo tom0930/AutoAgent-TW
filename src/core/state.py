@@ -23,6 +23,8 @@ class AgentState(TypedDict):
     last_action: Optional[Dict[str, Any]]
     pending_approval: bool
     approval_result: Optional[str]        # 'approved', 'denied', or 'modified'
+    verification_contract: Optional[Dict[str, Any]] # Phase 153: Cryptographic HITL Contract
+
     
     # MCP Tool Orchestration (Phase 125 Wave 2)
     mcp_tools_used: List[str]
