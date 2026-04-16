@@ -18,8 +18,9 @@
 - [ ] Phase 153: Human-in-the-loop Verification Contracts [DISCUSS]
 
 ## 最近完成事項
-- **Phase 149**: 資源極致優化與進程收割 (v3.2.1)
+- **Phase 149**: 資源極致優化與進程收割 (v3.2.2)
   - **水平優化**: 實作 `Agent Reaper`，自動掃描並終止孤立 MCP (node.exe) 與 Agent 殭屍進程。
+  - **熱修復 (Hotfix)**: 升級 `AgentReaper` 支援 **Singleton Mode**，主動去重重複執行檔，解決 `/aa-fix` 導致的進程堆疊。
   - **垂直優化**: `VisionProxy` 與 `VisionBuffer` 影像傳輸降至 0 額外拷貝。
   - **傳輸優化**: `VisionClient` 採用 JPEG 85% 編碼，Payload size 降低 70%，解決 667MB 突發性佔用。
   - **Lint 修正**: 修復了 12 處包含 `pywinauto` 引用缺失在內的靜態分析錯誤。
