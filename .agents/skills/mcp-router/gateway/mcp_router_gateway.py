@@ -17,7 +17,7 @@ class MCPProxyGateway:
         # Simple strategy resolver based on phase and tool name
         if self.phase == "Guardian":
             return "verbose"
-        if self.phase == "Research":
+        if self.phase == "Research" or "context7" in tool_name.lower():
             return "ultra-compact"
         
         # Hardcoded defaults for V1
