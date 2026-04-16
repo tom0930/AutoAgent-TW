@@ -1,6 +1,6 @@
 # Project: AutoAgent-TW
-Version: v2.6.0
-Status: Active (Phase 140 - Ripgrep Optimization Completed)
+Version: v3.1.0
+Status: Active (Phase 144 - MCP Proxy Gateway Completed)
 Description: 專注於全自動、無感、具備高韌性（Resilience）的高級 AI 系統與知識庫自動化管道。
 Type: Python CLI & Autonomous Agent Workspace
 
