@@ -2,53 +2,64 @@ import os
 import json
 import time
 import hashlib
-import logging
-from typing import Any, Dict
+from typing import Dict, Any, Optional
+from pathlib import Path
+from PIL import Image
 
-logger = logging.getLogger("RVA_Audit")
-
-class RVAAuditLogger:
-    """
-    RVA Audit System
-    以 Append-only 方式記錄所有 GUI 操作與視覺決策，確保不可否認性 (Non-repudiation)。
-    """
+class RVAAuditContext:
+    def __init__(self, workspace_root: str):
+        self.workspace_root = Path(workspace_root)
+        self.scratch_dir = self.workspace_root / ".agents" / "scratch"
+        self.scratch_dir.mkdir(parents=True, exist_ok=True)
+        self.audit_log = self.scratch_dir / "rva_audit.log"
+        
+        # Security Constants
+        self.MAX_TIMEOUT_SEC = 900  # 15 minutes watchdog
+        self.last_action_time = time.time()
+        self.in_flight_action = False
     
-    def __init__(self, log_dir: str = "data/rva_history"):
-        self.log_dir = log_dir
-        os.makedirs(self.log_dir, exist_ok=True)
-        self.current_session_file = os.path.join(
-            self.log_dir, 
-            f"audit_{time.strftime('%Y%m%d_%H%M%S')}.jsonl"
-        )
+    def check_watchdog(self):
+        """Enforce strict 900s timeout."""
+        if self.in_flight_action and (time.time() - self.last_action_time > self.MAX_TIMEOUT_SEC):
+            self._log_event("WATCHDOG_TIMEOUT", {"msg": "RVA operation exceeded 900s limit."})
+            raise TimeoutError("RVA Watchdog Triggered: Operation exceeded 15 minutes.")
 
-    def log_action(self, action_type: str, details: Dict[str, Any], screenshot_path: str = None):
-        """記錄單一操作"""
-        record = {
+    def log_action(self, tool_name: str, args: Dict[str, Any], status: str, details: str = ""):
+        """Log operations for repudiation protection."""
+        event = {
             "timestamp": time.time(),
-            "iso_time": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            "action_type": action_type,
-            "details": details,
-            "screenshot_hash": self._calculate_hash(screenshot_path) if screenshot_path else None
+            "tool": tool_name,
+            "args": args,
+            "status": status,
+            "details": details
         }
-
+        self._log_event("RVA_ACTION", event)
+        
+    def _log_event(self, event_type: str, data: Dict[str, Any]):
         try:
-            with open(self.current_session_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(record) + "\n")
-            logger.debug(f"RVA Audit: Recorded {action_type}")
-        except Exception as e:
-            logger.error(f"RVA Audit Fail: {e}")
+            with open(self.audit_log, "a", encoding="utf-8") as f:
+                log_entry = json.dumps({"event_type": event_type, **data})
+                f.write(f"{log_entry}\n")
+        except Exception:
+            pass # Failsafe logging should not crash the main thread
+            
+    def compute_image_hash(self, image_path: Path) -> Optional[str]:
+        """Compute MD5 of an image footprint to detect UI jitter/staleness."""
+        if not image_path.exists():
+            return None
+        hasher = hashlib.md5()
+        with open(image_path, "rb") as f:
+            buf = f.read()
+            hasher.update(buf)
+        return hasher.hexdigest()
 
-    def _calculate_hash(self, file_path: str) -> str:
-        """計算檔案的 SHA256 雜湊"""
-        if not os.path.exists(file_path):
-            return ""
-        sha256_hash = hashlib.sha256()
-        with open(file_path, "rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b""):
-                sha256_hash.update(byte_block)
-        return sha256_hash.hexdigest()
+    def start_action(self):
+        self.check_watchdog()
+        self.in_flight_action = True
+        self.last_action_time = time.time()
+        
+    def end_action(self):
+        self.in_flight_action = False
 
-    def create_snapshot(self, description: str):
-        """建立當前階段的快照包 (Repudiation protection)"""
-        # 未來可整合截圖 + 系統日誌打包成 zip
-        pass
+# Global instance for the workspace
+rva_audit = RVAAuditContext("z:/autoagent-TW/")

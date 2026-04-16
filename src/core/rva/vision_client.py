@@ -1,118 +1,84 @@
-import os
 import base64
 import json
 import logging
 import httpx
-from typing import Optional, List, Dict, Tuple
-from pydantic import BaseModel, Field
+from io import BytesIO
+from typing import Tuple, Optional
+from PIL import Image
 
-# 設置日誌
-logger = logging.getLogger("RVA_Vision")
+logger = logging.getLogger("RVA.VisionClient")
 
-class VisionCoordinate(BaseModel):
-    """Gemini Vision 回傳的座標結構"""
-    bbox: List[int] = Field(..., description="[ymin, xmin, ymax, xmax] 0-1000 normalized coordinates")
-    label: str = Field(..., description="Target name")
-    confidence: float = Field(0.0, description="Confidence score")
+class RVAVisionClient:
+    def __init__(self, bridge_port: int = 18800):
+        self.bridge_url = f"http://127.0.0.1:{bridge_port}/v1beta/models/gemini-3-flash-vision:generateContent"
+        
+        self.SYSTEM_PROMPT = """
+You are a robotic automation vision sensor. 
+Your only task is to locate the target element in the provided screenshot.
+Return ONLY valid JSON matching this schema exactly:
+{
+  "bbox": [ymin, xmin, ymax, xmax]
+}
+Where values are normalized floats between 0.0 and 1.0. 
+If the target is not found, return {"bbox": null}.
+No markdown, no explanation. Just JSON.
+"""
 
-class GeminiVisionClient:
-    """
-    Antigravity Gemini Vision Client
-    負責將螢幕截圖傳送至 Gemini Flash 進行 UI 元素定位。
-    """
-    
-    def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        # 優先指向本地代理 (AA-Bridge)，如果沒 Key 則強制走代理
-        if not self.api_key:
-            self.api_url = "http://127.0.0.1:18800/v1beta/models/gemini-1.5-flash:generateContent"
-            logger.info("RVA: Using local AA-Bridge proxy (No API Key detected).")
-        else:
-            self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={self.api_key}"
-            logger.info("RVA: Using direct Gemini API.")
-
-    async def locate_element(self, image_path: str, target: str) -> Optional[VisionCoordinate]:
-        """呼叫 Gemini Vision 定位元素"""
-        # 修正：即使沒有 api_key 也要允許執行，因為可能正在使用本地橋接器 (AA-Bridge)
-
-        # 1. 讀取截圖並進行 Base64 編碼
-        with open(image_path, "rb") as f:
-            image_data = base64.b64encode(f.read()).decode("utf-8")
-
-        # 2. 構建 Prompt
-        prompt = f"""
-        Please locate the UI element '{target}' in the provided screenshot.
-        Return ONLY a JSON object with the following schema:
-        {{
-            "bbox": [ymin, xmin, ymax, xmax],
-            "label": "{target}",
-            "confidence": 0.95
-        }}
-        The bbox coordinates should be normalized (0-1000).
-        If you cannot find it, return an empty JSON {{}}.
+    def prepare_image(self, img: Image.Image) -> str:
         """
+        Compress image if it's too large, but preserve PNG structure to avoid JPEG artifacts.
+        Scale down so the max dimension is 1440px to balance tokens vs precision for dense IDEs.
+        """
+        max_dim = 1440
+        if img.width > max_dim or img.height > max_dim:
+            ratio = min(max_dim / img.width, max_dim / img.height)
+            new_size = (int(img.width * ratio), int(img.height * ratio))
+            img = img.resize(new_size, Image.Resampling.LANCZOS)
+        
+        buf = BytesIO()
+        # Save as PNG to avoid artifacts on small fonts
+        img.save(buf, format="PNG")
+        return base64.b64encode(buf.getvalue()).decode("utf-8")
 
-        # 3. 準備 Payload
+    async def find_target_bbox(self, image: Image.Image, target_query: str) -> Optional[Tuple[float, float, float, float]]:
+        """
+        Send image and query to local aa-bridge relay, expect [ymin, xmin, ymax, xmax] back.
+        """
+        b64_img = self.prepare_image(image)
+        
+        prompt = f"{self.SYSTEM_PROMPT}\nTarget to find: '{target_query}'"
+        
         payload = {
             "contents": [{
                 "parts": [
                     {"text": prompt},
-                    {
-                        "inline_data": {
-                            "mime_type": "image/png",
-                            "data": image_data
-                        }
-                    }
+                    {"inline_data": {"mime_type": "image/png", "data": b64_img}}
                 ]
-            }],
-            "generationConfig": {
-                "response_mime_type": "application/json",
-            }
+            }]
         }
 
-        # 4. 發送請求
-        async with httpx.AsyncClient() as client:
-            try:
-                # 如果 URL 已經包含路徑參數或代理，直接使用
-                url = self.api_url
-                if self.api_key and "key=" not in url:
-                    url = f"{url}?key={self.api_key}"
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                resp = await client.post(self.bridge_url, json=payload)
+                if resp.status_code != 200:
+                    logger.error(f"Vision Bridge error: {resp.status_code} - {resp.text}")
+                    return None
                 
-                response = await client.post(
-                    url,
-                    json=payload,
-                    timeout=30.0
-                )
-                response.raise_for_status()
-                result = response.json()
+                data = resp.json()
+                text = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
                 
-                # 解析結果 (Gemini 1.5 Flash 回傳結構)
-                content = result['candidates'][0]['content']['parts'][0]['text'].strip()
+                # Cleanup potential markdown ticks if model hallucinates them
+                text = text.replace("```json", "").replace("```", "").strip()
                 
-                # 強健性：處理可能的 Markdown 程式碼區塊
-                if content.startswith("```"):
-                    content = content.split("```")[1]
-                    if content.startswith("json"):
-                        content = content[4:]
-                    content = content.replace("```", "").strip()
+                result = json.loads(text)
+                bbox = result.get("bbox")
                 
-                data = json.loads(content)
+                if not bbox or len(bbox) != 4:
+                    return None
+                    
+                # bbox is ymin, xmin, ymax, xmax
+                return (float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3]))
                 
-                if "bbox" in data and data["bbox"]:
-                    return VisionCoordinate(**data)
-            except Exception as e:
-                logger.error(f"RVA: Gemini Vision API error: {e} | Content: {content[:100] if 'content' in locals() else 'None'}")
-        
-        return None
-
-    def denormalize_coords(self, bbox: List[int], width: int, height: int) -> Tuple[int, int, int, int]:
-        """
-        將 0-1000 的正規化座標轉換為像素座標。
-        [ymin, xmin, ymax, xmax] -> (left, top, right, bottom)
-        """
-        ymin, xmin, ymax, xmax = bbox
-        left = int(xmin * width / 1000)
-        top = int(ymin * height / 1000)
-        right = int(xmax * width / 1000)
-        bottom = int(ymax * height / 1000)
-        return (left, top, right, bottom)
+        except Exception as e:
+            logger.error(f"Failed to query Vision Client: {e}")
+            return None
