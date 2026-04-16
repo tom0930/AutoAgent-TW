@@ -26,6 +26,12 @@ tool_prefix = ["fetch_page", "web_search", "read_url_content", "read_browser_pag
 rtk_mode = "browser"
 strategy = "summary"
 
+[routing.context7]
+tool_prefix = ["mcp__context7__query-docs", "mcp__context7__search"]
+rtk_mode = "docs"
+strategy = "ultra-compact"
+max_lines = 800
+
 [custom.vivado]
 exclude = [".cache", ".xpr", ".jou", "webtalk", "generated"]
 keep = ["ERROR", "CRITICAL WARNING", "Timing Violation", "AXI", "UDP", "IPC"]

@@ -1,6 +1,6 @@
 {
-  "project_name": "AutoAgent-TW-Resilience-v1.8.0",
-  "version": "1.8.1",
+  "project_name": "AutoAgent-TW-Industrial",
+  "version": "v3.1.1",
   "mode": "YOLO",
   "granularity": "TASK",
   "notifications": {
