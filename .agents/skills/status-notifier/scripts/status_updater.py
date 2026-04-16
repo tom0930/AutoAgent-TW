@@ -42,6 +42,7 @@ def update_status(
     logs=None,
     repair_round=0,
     custom_mermaid="",
+    agent_name=None,
 ):
     version = "1.0.0"
     try:
@@ -184,6 +185,26 @@ def update_status(
 
     import portalocker
 
+    # If we are in sub-agent mode, write to the subagents directory instead of main state
+    if agent_name:
+        subagent_file = subagents_dir / f"{agent_name}.json"
+        subagent_data = {
+            "name": agent_name,
+            "task": task,
+            "goal": next_goal,
+            "status": status,
+            "timestamp": datetime.now().isoformat()
+        }
+        try:
+            if not subagents_dir.exists():
+                subagents_dir.mkdir(parents=True, exist_ok=True)
+            with open(subagent_file, "w", encoding="utf-8") as f:
+                json.dump(subagent_data, f, indent=4, ensure_ascii=False)
+            print(f"Sub-agent {agent_name} status updated: {task}")
+            return # Exit early after updating sub-agent
+        except Exception as e:
+            print(f"Error updating sub-agent status: {e}")
+
     data = {
         "version": version,
         "current_task": task,
@@ -292,6 +313,10 @@ if __name__ == "__main__":
         "--mermaid", type=str, default="", help="Custom mermaid diagram code"
     )
 
+    parser.add_argument(
+        "--agent-name", type=str, help="Name of the sub-agent (e.g., Builder, QA)"
+    )
+
     args = parser.parse_args()
     update_status(
         args.task,
@@ -302,4 +327,5 @@ if __name__ == "__main__":
         args.logs,
         args.repair,
         args.mermaid,
+        args.agent_name,
     )
