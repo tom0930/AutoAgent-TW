@@ -98,15 +98,12 @@ class MCPClientManager:
             if isinstance(result, Exception):
                 logger.error(f"[MCP] Critical failure connecting to '{server['name']}': {result}")
 
-    async def _connect_server_with_retry(self, server_cfg: dict) -> None:
-        """依回退機制嘗試連接單一 MCP 伺服器。"""
-        name = server_cfg["name"]
-        last_error = "Unknown error"
-        
-        # 主動防禦：啟動前去重 (Pre-Flight Deduplication)已移至 startup() 統一執行
+        fingerprint = self._get_server_fingerprint(server_cfg)
         
         for attempt in range(MAX_RETRIES):
             try:
+                # 主動防禦：每次重試啟動前進行精準去重
+                await self._deduplicate_server_process(name, fingerprint)
                 # 實務上在此呼叫 langchain_mcp_adapters 的初始化邏輯
                 # 假設 MultiServerMCPClient 已對各種 transport (stdio/sse) 封裝
                 tools = await asyncio.wait_for(
@@ -127,8 +124,8 @@ class MCPClientManager:
                 logger.warning(f"[MCP] Failed to connect '{name}' (Attempt {attempt+1}/{MAX_RETRIES}): {e}. Retrying in {wait}s...")
                 
                 # 生命週期封裝：強制終止因 Timeout 或 Crash 半掛起的進程
-                # 這裡保留個別 Server 的重試清理
-                await self._deduplicate_server_process(name)
+                # 這裡保留個別 Server 的重試清理（傳入指紋）
+                await self._deduplicate_server_process(name, fingerprint)
                 
                 await asyncio.sleep(wait)
         
@@ -204,15 +201,42 @@ class MCPClientManager:
             for s in self._status.values()
         ]
 
-    async def _deduplicate_server_process(self, server_name: str) -> None:
+    async def _deduplicate_server_process(self, server_name: str, fingerprint: Optional[str] = None) -> None:
         """
         主動防禦：清空該 Server 名稱的所有舊實例。
+        如果是 GLOBAL，則執行全量 Reaper。
+        如果有 fingerprint，則進行精準打擊。
         """
         import psutil
         from src.core.reaper import AgentReaper
         
-        # 呼叫專門的 Reaper 執行單例強制檢查
         reaper = AgentReaper(dry_run=False)
-        reaper.reap()
         
-        logger.info(f"[MCP Lifecycle] Global cleanup finished for '{server_name}'")
+        if server_name == "GLOBAL":
+            reaper.reap()
+            logger.info("[MCP Lifecycle] Global cleanup finished.")
+            return
+
+        # 精準打擊模式
+        if fingerprint:
+            count = 0
+            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                try:
+                    cmdline = " ".join(proc.info['cmdline'] or []).lower()
+                    if fingerprint in cmdline:
+                        logger.warning(f"[MCP Singleton] Killing redundant instance of {server_name}: PID {proc.info['pid']}")
+                        proc.kill()
+                        count += 1
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    continue
+            if count > 0:
+                logger.info(f"[MCP Singleton] Terminated {count} redundant processes for '{server_name}'")
+
+    def _get_server_fingerprint(self, cfg: dict) -> str:
+        """根據配置生成進程指紋，用於精準去重。"""
+        cmd = cfg.get("command", "")
+        # 將 python 置換為系統路徑以確保比對一致性
+        if cmd == "python":
+            cmd = sys.executable
+        args = " ".join(cfg.get("args", []))
+        return f"{cmd} {args}".lower().strip()
