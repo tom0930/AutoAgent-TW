@@ -95,7 +95,7 @@ class VisionBuffer:
             if self._mutex:
                 win32event.ReleaseMutex(self._mutex)
 
-    def read(self) -> Tuple[Optional[np.ndarray], int]:
+    def read(self, make_copy: bool = True) -> Tuple[Optional[np.ndarray], int]:
         """Read frame from shared memory (Client/Consumer side)"""
         if self._mutex:
             win32event.WaitForSingleObject(self._mutex, 100)
@@ -112,9 +112,9 @@ class VisionBuffer:
             # Zero-copy Read: Create ndarray view pointing to SHM buffer
             frame = np.ndarray((h, w, c), dtype=np.uint8, buffer=self.shm.buf, offset=self.METADATA_SIZE)
             
-            # We return a COPY because the producer might overwrite the buffer
-            # Actually, to be truly efficient, we should encourage callers to process the view
-            # but for safety against tearing (if mutex released), we copy.
+            # Use view if requested to save memory (high risk of tearing if producer writes)
+            if not make_copy:
+                return frame, frame_id
             return frame.copy(), frame_id
         finally:
             if self._mutex:

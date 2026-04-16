@@ -45,14 +45,14 @@ class VisionProxy:
             # 2. Wait for a fresh frame to be captured
             time.sleep(wait_time) 
             
-            # 3. Read
-            frame, fid = self._buffer.read()
+            # 3. Read (Zero-copy view)
+            frame, fid = self._buffer.read(make_copy=False)
             
             # 4. Hibernate immediately to save CPU
             VisionControlClient.send_command("PAUSE")
             
             if frame is not None:
-                # Convert numpy array (RGB) to PIL Image
+                # Convert numpy array view to PIL Image (PIL will handle the copy if needed internally)
                 return Image.fromarray(frame)
             return None
         except Exception as e:
