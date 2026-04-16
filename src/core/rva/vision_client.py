@@ -3,7 +3,7 @@ import json
 import logging
 import httpx
 from io import BytesIO
-from typing import Tuple, Optional, List, Dict, Any
+from typing import Tuple, Optional, Dict, Any
 from PIL import Image
 
 logger = logging.getLogger("RVA.VisionClient")

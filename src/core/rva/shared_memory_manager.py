@@ -1,6 +1,5 @@
 import numpy as np
 import struct
-import time
 import logging
 from multiprocessing import shared_memory
 from typing import Optional, Tuple
@@ -8,7 +7,6 @@ from typing import Optional, Tuple
 try:
     import win32event
     import win32api
-    import pywintypes
     import win32con
 except ImportError:
     # Fallback for non-windows environments
@@ -108,7 +106,6 @@ class VisionBuffer:
             if w == 0 or h == 0:
                 return None, 0
                 
-            data_size = h * w * c
             # Zero-copy Read: Create ndarray view pointing to SHM buffer
             frame = np.ndarray((h, w, c), dtype=np.uint8, buffer=self.shm.buf, offset=self.METADATA_SIZE)
             
