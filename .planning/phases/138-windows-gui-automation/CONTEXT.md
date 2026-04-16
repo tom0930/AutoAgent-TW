@@ -15,11 +15,18 @@
 2. **定位與控制層 (Vision to Actuation - 降維優化策略)**
    - *UIA 優先之混合引擎 (Hybrid RVA Engine)*:
      - **本地 UIA 快速路徑**: 優先嘗試利用 `pywinauto(backend="uia")` 找尋標準 Win32/UWP 控制項 (如 Xilinx 的標準按鈕)，實現毫秒級定位與操作，大幅降低 LLM 依賴與 API Token 成本。
-     - **大腦指導定位 (Fallback)**: 若 UIA 樹解析失敗，則使用 `mss` 擷取畫面，利用 `ctypes.windll.shcore.SetProcessDpiAwareness(2)` 克服高 DPI 縮放偏移。局部截圖送交 Gemini Vision，嚴格要求其以 JSON Formatted Schema 回傳座標 `{"bbox": [x,y,w,h]}`。
-   - *狀態閉環與快取機制*:
-     - **Click → Wait → Verify**: 任何自動化點擊後需驗證狀態變化，非僅靠時間盲等。
-     - **畫面防抖動 (ImageHash Caching)**: 使用 `imagehash.dhash`，若擷取畫面與上一禎相比未變更 (小於 Threshold)，則不觸發 LLM 推理，節省 40~60% 以上不必要的 API 呼叫。
-     - **非同步 Console 監控**: 針對 Xilinx SDK 燒錄流程中的進度條或 Console，優先由 `pywinauto` 抓取 `richEdit` Control 擷取尾端日誌 (Tail-like tracking)，精準捕捉 `Programming succeeded` 等關鍵字，無須反覆送圖給 Vision 辨識進度。
+     - **大腦指導定位 (Fallback)**: 若 UIA 樹解析失敗，觸發視窗截圖並透過 `aa-bridge` 呼叫 Vision Fallback。
+   - *視覺 Prompt 座標正規化 (Normalized Coordinates)*:
+     - 絕對不請求實體像素。嚴格要求 Gemini 以 JSON 回傳 `[0.0, 1.0]` 的正規化 `[ymin, xmin, ymax, xmax]` 邊界框。本地端收到後再乘以實體解析度計算點擊位置，徹底解決 Windows 高 DPI 縮放與偏移問題。
+   - *聚焦式截圖 (Active Window Cropping)*:
+     - 結合 `pywinauto` 獲取目標視窗 RECT 後，僅針對局部範圍截圖並執行灰階壓縮，避免全螢幕上傳浪費 Token 與干擾辨識精準度。
+   - *抽象封裝 (MCP State Machine)*:
+     - 所有 UIA、Vision Fallback、防抖動與安全審核將封裝為統一的 Antigravity MCP Server（提供如 `rva_click` 偽工具）。Agent 只需拋出意圖即可，由底層隔離繁瑣的座標計算。
+
+3. **狀態閉環與快取機制 (Caching & Verification)**
+   - **Click → Wait → Verify**: 任何自動化點擊後需驗證狀態變化，非僅靠時間盲等。
+   - **畫面防抖動 (ImageHash Caching)**: 使用 `imagehash.dhash`，若擷取畫面與上一禎相比未變更 (小於 Threshold)，則不觸發 LLM 推理，節省 40~60% 以上不必要的 API 呼叫。
+   - **非同步 Console 監控**: 捕捉 `Programming succeeded` 等日誌不再依賴反覆送圖。
 
 ## 🛡️ 資安與防護建模 (STRIDE & Failsafes)
 
