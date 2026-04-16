@@ -51,7 +51,8 @@ class AgentReaper:
             return None
 
     def is_target(self, p_info):
-        if not p_info: return False
+        if not p_info:
+            return False
         name = p_info["name"]
         cmdline = p_info["cmdline"]
         
@@ -91,7 +92,8 @@ class AgentReaper:
                     try:
                         psutil.Process(p['pid']).terminate()
                         reaped_count += 1
-                    except: pass
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        pass
 
         # 2. Active Deduplication: Kill redundant singletons
         # Group by marker
@@ -111,7 +113,8 @@ class AgentReaper:
                             try:
                                 psutil.Process(p['pid']).terminate()
                                 reaped_count += 1
-                            except: pass
+                            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                                pass
         
         logger.info(f"Reaping cycle completed. Total reaped: {reaped_count}")
         return reaped_count
