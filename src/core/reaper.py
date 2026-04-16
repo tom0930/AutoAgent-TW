@@ -20,6 +20,7 @@ class AgentReaper:
         "mcp-router",
         "notebooklm-mcp",
         "context7-mcp",
+        "gitkraken",
         "vision_client",
         "pyrefly",
         "pisrc_graph"
@@ -29,6 +30,7 @@ class AgentReaper:
     SINGLETON_MARKERS = [
         "notebooklm-mcp",
         "context7-mcp",
+        "gitkraken",
         "mcp-router",
         "pyrefly"
     ]
@@ -61,9 +63,26 @@ class AgentReaper:
                 return True
         return False
 
+    def kill_proc_tree(self, pid, including_parent=True):
+        """Recursively kills a process and all its children."""
+        try:
+            parent = psutil.Process(pid)
+            children = parent.children(recursive=True)
+            for child in children:
+                try:
+                    logger.warning(f"Killing child of PID {pid}: PID {child.pid} ({child.name()})")
+                    child.kill()
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+            if including_parent:
+                logger.warning(f"Killing parent PID {pid} ({parent.name()})")
+                parent.kill()
+        except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
+            logger.error(f"Failed to kill process tree for PID {pid}: {e}")
+
     def reap(self):
         reaped_count = 0
-        logger.info(f"Starting industrial reaping cycle (dry_run={self.dry_run})...")
+        logger.info(f"Starting INDUSTRIAL reaping cycle (dry_run={self.dry_run})...")
         
         all_targets = []
         for proc in psutil.process_iter(['pid', 'name']):
@@ -78,38 +97,34 @@ class AgentReaper:
                 parent = psutil.Process(p['ppid'])
                 if not parent.is_running():
                     is_orphan = True
-            except psutil.NoSuchProcess:
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
                 is_orphan = True
             
             if is_orphan:
-                logger.warning(f"Reaping Orphan: PID {p['pid']} ({p['name']}) - Cmd: {p['cmdline'][:50]}...")
+                logger.warning(f"Reaping Orphan Tree: PID {p['pid']} ({p['name']})")
                 if not self.dry_run:
-                    try:
-                        psutil.Process(p['pid']).terminate()
-                        reaped_count += 1
-                    except (psutil.NoSuchProcess, psutil.AccessDenied):
-                        pass
+                    self.kill_proc_tree(p['pid'])
+                    reaped_count += 1
 
         # 2. Active Deduplication: Kill redundant singletons
-        # Group by marker
         for marker in self.SINGLETON_MARKERS:
-            matched = [p for p in all_targets if marker in p['cmdline']]
+            # Match against BOTH cmdline and name for robust detection
+            matched = [p for p in all_targets if marker in p['cmdline'] or marker in p['name'].lower()]
             if len(matched) > 1:
-                # Sort by creation time (descending), keep the newest one
                 matched.sort(key=lambda x: x['create_time'], reverse=True)
                 newest_pid = matched[0]['pid']
                 to_kill = matched[1:]
                 
                 for p in to_kill:
-                    # Double check we are not killing the current process or the newest one
                     if p['pid'] != newest_pid:
-                        logger.warning(f"Deduplicating {marker}: Terminating redundant PID {p['pid']} (Keeping newest PID {newest_pid})")
+                        logger.warning(f"Industrial Deduplication {marker}: Killing tree for PID {p['pid']}")
                         if not self.dry_run:
-                            try:
-                                psutil.Process(p['pid']).terminate()
-                                reaped_count += 1
-                            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                                pass
+                            self.kill_proc_tree(p['pid'])
+                            reaped_count += 1
+        
+        logger.info(f"Industrial Reaping completed. Total trees reaped: {reaped_count}")
+        return reaped_count
+
         
         logger.info(f"Reaping cycle completed. Total reaped: {reaped_count}")
         return reaped_count
