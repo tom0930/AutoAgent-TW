@@ -13,6 +13,7 @@ build_venv/
 # === 依賴與虛擬環境 ===
 node_modules/
 venv/
+env/
 .venv/
 __pycache__/
 *.pyc
@@ -31,6 +32,7 @@ temp/
 *.tar.gz
 *.zip
 *.rar
+.pytest_cache/
 
 # === IDE、OS 與快取 ===
 .vscode/
@@ -38,6 +40,8 @@ temp/
 .DS_Store
 Thumbs.db
 *.tmp
+*.exe
+*.pkg
 
 # === 媒體檔案 ===
 *.pdf
@@ -47,31 +51,26 @@ Thumbs.db
 *.gif
 *.webp
 
-# === 大型或非必要檔案 (Token Slimming) ===
+# === 大型及 Token Slimming ===
 plus.md
 testclaw.md
 idea_claueloop.mf
-testclaw.md
+.agent-state/*.json
+.agents/logs/*.log
 
 # === Guardian 暫存 ===
 _guard_scan.py
-# === Token Optimization ===
-.agents/logs/*.log
-temp/
-build/
-dist/
-*.pyc
-__pycache__/
-*.exe
-*.pkg
-.agent-state/*.json
-# === Token Optimization ===
-.agents/logs/*.log
-temp/
-build/
-dist/
-*.pyc
-__pycache__/
-*.exe
-*.pkg
-.agent-state/*.json
+
+# === 安全與敏感資訊 ===
+.env
+*.pem
+*.key
+certs/
+secrets/
+*creds.json
+*.json.key
+
+# === 相容與資源連結 ===
+antigravity/
+.context-*
+.context/

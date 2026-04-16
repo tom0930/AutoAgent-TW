@@ -1,0 +1,44 @@
+# === AutoAgent-TW: Antigravity Global Ignore (AGI) ===
+# 建立於 Phase 155 — PC 資源與 Memory 優化
+# 本文件優先級：高（AI 會優先忽略此處定義之路徑）
+
+# === 依賴與虛擬環境 ===
+node_modules/
+venv/
+env/
+.venv/
+__pycache__/
+
+# === 編譯產物與快取 ===
+*.pyc
+dist/
+build/
+.pytest_cache/
+
+# === 日誌與輸出 ===
+*.log
+aa-bridge.log
+
+# === 大型檔案與壓縮檔 (Token Slimming) ===
+*.zip
+*.rar
+*.tar.gz
+*.exe
+*.pkg
+chroma.sqlite3
+
+# === 安全與敏感資訊 ===
+.env
+*.pem
+*.key
+certs/
+secrets/
+*creds.json
+*.json.key
+
+# === IDE 與 OS ===
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp
