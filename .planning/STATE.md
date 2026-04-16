@@ -23,3 +23,9 @@
   - 導入 Windows Job Objects 徹底解決 `pyrefly.exe` 殭屍進程殘留問題。
   - 整合 `VisionProxy` 至 `RVAEngine`，提昇視覺識別效能並自動管理資源生命週期。
   - **QA Audit**: 全部 4 項 UAT 指標全數通過，系統穩定性達標。[QA-PASS]
+
+## 🛠️ Roadmap (下一階段)
+- **Phase 149: 資源極致優化與進程收割 [PLANNING]**
+  - 垂直優化: 消除引發 667MB 佔用的影像中間副本。
+  - 水平優化: 實作 Agent Reaper 清理 48+ 殭屍進程。
+- **Phase 153: Human-in-the-loop (交互式驗證合約) [BACKLOG]**

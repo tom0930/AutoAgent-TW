@@ -88,11 +88,9 @@ class VisionBuffer:
             self.shm.buf[0:self.METADATA_SIZE] = meta
             
             # Write Pixel Data
-            # Note: np.frombuffer is zero-copy for view, but we are copying TO buffer here
-            # For 100% zero-copy, the producer should render directly into self.shm.buf
-            # but usually capture returns a new ndarray, so we do one copy here.
-            # This is still 10x faster than Base64/JSON.
-            self.shm.buf[self.METADATA_SIZE:self.METADATA_SIZE+data_size] = frame.tobytes()
+            # Optimized: Use ravel() and direct buffer assignment to avoid frame.tobytes() 
+            # which creates a massive intermediate bytes object (35MB per frame).
+            self.shm.buf[self.METADATA_SIZE : self.METADATA_SIZE + data_size] = frame.ravel()
         finally:
             if self._mutex:
                 win32event.ReleaseMutex(self._mutex)

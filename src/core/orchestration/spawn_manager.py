@@ -4,10 +4,25 @@ import uuid
 import os
 import sys
 import time
+import atexit
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
+# Global registry for active processes (PID: AgentProcess)
+_ACTIVE_SUBAGENTS: List['AgentProcess'] = []
+
+def cleanup_all_agents():
+    """Safety net to kill all subagents on master exit."""
+    count = 0
+    for agent in _ACTIVE_SUBAGENTS[:]: 
+        if agent.process and agent.process.poll() is None:
+            agent.terminate()
+            count += 1
+    if count > 0:
+        print(f"RVA Cleanup: Terminated {count} dangling sub-agents.")
+
+atexit.register(cleanup_all_agents)
 
 def get_iso_time():
     return datetime.now().isoformat()
@@ -91,8 +106,8 @@ class AgentProcess:
                 command,
                 env=env,
                 creationflags=creationflags,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stdout=subprocess.DEVNULL, # Don't block on output to avoid memory build-up
+                stderr=subprocess.DEVNULL,
                 text=True,
                 bufsize=1,
             )
@@ -100,15 +115,20 @@ class AgentProcess:
             # Securely link to parent lifecycle via Job Object
             if self.process:
                 process_job.add_pid(self.process.pid)
+                _ACTIVE_SUBAGENTS.append(self)
 
             self.status = "running"
             self.update_progress(
-                10, f"Process spawned successfully (Budget: {self.budget_tokens})."
+                10, f"Process spawned successfully (PID: {self.process.pid})."
             )
         except Exception as e:
             self.status = "fail"
             self.update_progress(0, f"Spawn failed: {str(e)}")
             raise
+
+    def __del__(self):
+        """Auto-terminate on object destruction."""
+        self.terminate()
 
     def update_progress(self, progress: int, log_entry: str):
         """Updates the local state file for dashboard polling."""
@@ -129,9 +149,31 @@ class AgentProcess:
     def terminate(self):
         """Forcefully terminates the process."""
         if self.process:
-            self.process.terminate()
+            try:
+                if self.process.poll() is None:
+                    self.process.terminate()
+                    self.process.wait(timeout=2)
+            except Exception:
+                try:
+                    self.process.kill()
+                except:
+                    pass
             self.status = "terminated"
-            self._initialize_state()  # Reset or update state
+            if self in _ACTIVE_SUBAGENTS:
+                _ACTIVE_SUBAGENTS.remove(self)
+            self._write_state_final() 
+
+    def _write_state_final(self):
+        """Last gasp update to state file."""
+        if self.state_file.exists():
+            try:
+                with open(self.state_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                data["status"] = self.status
+                data["logs"].append(f"[{get_iso_time()}] Process cleaned up.")
+                self._write_state(data)
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":
