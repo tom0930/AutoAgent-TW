@@ -36,19 +36,26 @@ class ServerStatus:
 class MCPClientManager:
     """
     負責伺服器生命週期的核心管理器。
-    - 啟動並行连接 (Startup)
-    - 任務健康檢查 (Health Check)
-    - 子代理工具發現 (Tool Gathering)
-    - 系統優雅關閉 (Shutdown/Cleanup)
+    採用 Singleton 模式確保全域唯一實例，防止進程堆疊。
     """
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(MCPClientManager, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
 
     def __init__(self, config_path: str = ".agents/mcp_servers.json"):
+        if getattr(self, "_initialized", False):
+            return
         self.config_path = Path(config_path)
         self.registry: MCPToolRegistry = MCPToolRegistry()
         self._client: Optional[MultiServerMCPClient] = None
         self._status: Dict[str, ServerStatus] = {}
         # 暫存 client 物件便於 lifecycle 管理
         self._raw_clients: List[Any] = []
+        self._initialized = True
 
     def _load_config(self) -> dict:
         """讀取 mcp_servers.json，並替換 ${VAR} 環境變數，落實安全策略。"""
@@ -197,25 +204,12 @@ class MCPClientManager:
     async def _deduplicate_server_process(self, server_name: str) -> None:
         """
         主動防禦：清空該 Server 名稱的所有舊實例。
-        透過 OS 指紋校驗防呆，解決 Timeout 後 Zombie 堆疊問題。
-        避免紀錄 cmdline 以防 API Key 洩漏。
         """
         import psutil
-        try:
-            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-                try:
-                    cmdline_list = proc.info.get('cmdline')
-                    if not cmdline_list: 
-                        continue
-                    cmdline = " ".join(cmdline_list).lower()
-                    name = (proc.info.get('name') or '').lower()
-                    
-                    if name in ["node.exe", "python.exe", "node", "python"]:
-                        # 嚴格條件匹配：確保只殺掉符合名稱的 MCP server
-                        if server_name.lower() in cmdline:
-                            proc.terminate()
-                            logger.info(f"[MCP Lifecycle] Successfully terminated orphaned '{server_name}' instance (PID: {proc.pid})")
-                except (psutil.NoSuchProcess, psutil.AccessDenied):
-                    pass
-        except Exception as e:
-            logger.debug(f"[MCP Lifecycle] Deduplication verification failed for {server_name}: {str(e)}")
+        from src.core.reaper import AgentReaper
+        
+        # 呼叫專門的 Reaper 執行單例強制檢查
+        reaper = AgentReaper(dry_run=False)
+        reaper.reap()
+        
+        logger.info(f"[MCP Lifecycle] Global cleanup finished for '{server_name}'")

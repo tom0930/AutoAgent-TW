@@ -29,7 +29,8 @@ class AgentReaper:
     SINGLETON_MARKERS = [
         "notebooklm-mcp",
         "context7-mcp",
-        "mcp-router"
+        "mcp-router",
+        "pyrefly"
     ]
     
     def __init__(self, dry_run=False):
@@ -53,16 +54,10 @@ class AgentReaper:
     def is_target(self, p_info):
         if not p_info:
             return False
-        name = p_info["name"]
-        cmdline = p_info["cmdline"]
-        
-        # Check basic process name
-        if name not in ["node.exe", "python.exe", "node", "python"]:
-            return False
-            
-        # Check markers
+        # Check markers first - if it has a marker, we don't care about the name
+        # This allows capturing standalone .exe like pyrefly.exe
         for marker in self.TARGET_MARKERS:
-            if marker in cmdline or marker in name:
+            if marker in p_info["cmdline"] or marker in p_info["name"]:
                 return True
         return False
 
