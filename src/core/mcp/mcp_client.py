@@ -92,6 +92,10 @@ class MCPClientManager:
         """依回退機制嘗試連接單一 MCP 伺服器。"""
         name = server_cfg["name"]
         last_error = "Unknown error"
+        
+        # 主動防禦：啟動前去重 (Pre-Flight Deduplication)
+        await self._deduplicate_server_process(name)
+        
         for attempt in range(MAX_RETRIES):
             try:
                 # 實務上在此呼叫 langchain_mcp_adapters 的初始化邏輯
@@ -112,6 +116,10 @@ class MCPClientManager:
                 last_error = str(e)
                 wait = 2 ** attempt
                 logger.warning(f"[MCP] Failed to connect '{name}' (Attempt {attempt+1}/{MAX_RETRIES}): {e}. Retrying in {wait}s...")
+                
+                # 生命週期封裝：強制終止因 Timeout 或 Crash 半掛起的進程
+                await self._deduplicate_server_process(name)
+                
                 await asyncio.sleep(wait)
         
         # 最終失敗紀錄
@@ -185,3 +193,29 @@ class MCPClientManager:
             }
             for s in self._status.values()
         ]
+
+    async def _deduplicate_server_process(self, server_name: str) -> None:
+        """
+        主動防禦：清空該 Server 名稱的所有舊實例。
+        透過 OS 指紋校驗防呆，解決 Timeout 後 Zombie 堆疊問題。
+        避免紀錄 cmdline 以防 API Key 洩漏。
+        """
+        import psutil
+        try:
+            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                try:
+                    cmdline_list = proc.info.get('cmdline')
+                    if not cmdline_list: 
+                        continue
+                    cmdline = " ".join(cmdline_list).lower()
+                    name = (proc.info.get('name') or '').lower()
+                    
+                    if name in ["node.exe", "python.exe", "node", "python"]:
+                        # 嚴格條件匹配：確保只殺掉符合名稱的 MCP server
+                        if server_name.lower() in cmdline:
+                            proc.terminate()
+                            logger.info(f"[MCP Lifecycle] Successfully terminated orphaned '{server_name}' instance (PID: {proc.pid})")
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+        except Exception as e:
+            logger.debug(f"[MCP Lifecycle] Deduplication verification failed for {server_name}: {str(e)}")

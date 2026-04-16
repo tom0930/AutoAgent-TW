@@ -13,8 +13,18 @@ class MCPToolRegistry:
     _tools: dict[str, BaseTool] = field(default_factory=dict)
     _tool_to_server: dict[str, str] = field(default_factory=dict)
 
+    def unregister_server(self, server_name: str) -> None:
+        """卸載指定伺服器的所有工具，支援熱重載 (Hot-Swap)"""
+        keys_to_remove = [k for k, v in self._tool_to_server.items() if v == server_name]
+        for k in keys_to_remove:
+            self._tools.pop(k, None)
+            self._tool_to_server.pop(k, None)
+
     def register(self, server_name: str, tools: list[BaseTool]) -> None:
         """將多個工具註冊到指定伺服器的命名空間中"""
+        # 第一步：確保單例註冊 (Singleton Enforcement)
+        self.unregister_server(server_name)
+        
         for tool in tools:
             # 建立具備命名空間的工具名稱
             namespaced_name = f"{server_name}::{tool.name}"
