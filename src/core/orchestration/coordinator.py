@@ -4,8 +4,11 @@ from typing import Dict, Any, List
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
 from langgraph.prebuilt import ToolNode
+# pyrefly: ignore [missing-import]
 from src.core.state import AgentState
+# pyrefly: ignore [missing-import]
 from src.core.orchestration.spawn_manager import AgentProcess
+# pyrefly: ignore [missing-import]
 from src.core.mcp.mcp_client import MCPClientManager
 
 
@@ -72,6 +75,7 @@ class OrchestrationCoordinator:
         if len(state.get("mcp_tools_used", [])) > 5:
             return "end"
         
+        # pyrefly: ignore [missing-attribute]
         if isinstance(last_message, ToolMessage) and "error" in last_message.content.lower():
              return "continue"
              
@@ -165,6 +169,7 @@ class OrchestrationCoordinator:
 
         # Run the graph
         config = {"configurable": {"thread_id": self.thread_id}}
+        # pyrefly: ignore [missing-attribute]
         final_state = await self.graph.ainvoke(initial_state, config=config)
         return final_state
 

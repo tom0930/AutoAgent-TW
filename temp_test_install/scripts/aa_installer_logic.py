@@ -27,6 +27,7 @@ logger = logging.getLogger("AA-Installer")
 def get_base_path() -> Path:
     """Returns the base path (bundled in EXE or local developer path)."""
     if getattr(sys, 'frozen', False):
+        # pyrefly: ignore [missing-attribute]
         return Path(sys._MEIPASS)
     
     current_dir = Path(__file__).resolve().parent

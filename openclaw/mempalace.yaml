@@ -1,0 +1,110 @@
+wing: openclaw
+rooms:
+- name: apps
+  description: Files from apps/
+  keywords:
+  - apps
+  - apps
+- name: design
+  description: Files from assets/
+  keywords:
+  - design
+  - assets
+- name: bin
+  description: Files from bin/
+  keywords:
+  - bin
+  - bin
+- name: dist_runtime
+  description: Files from dist-runtime/
+  keywords:
+  - dist_runtime
+  - dist-runtime
+- name: documentation
+  description: Files from docs/
+  keywords:
+  - documentation
+  - docs
+- name: extensions
+  description: Files from extensions/
+  keywords:
+  - extensions
+  - extensions
+- name: git_hooks
+  description: Files from git-hooks/
+  keywords:
+  - git_hooks
+  - git-hooks
+- name: packages
+  description: Files from packages/
+  keywords:
+  - packages
+  - packages
+- name: patches
+  description: Files from patches/
+  keywords:
+  - patches
+  - patches
+- name: testing
+  description: Files from qa/
+  keywords:
+  - testing
+  - qa
+- name: scratch
+  description: Files from scratch/
+  keywords:
+  - scratch
+  - scratch
+- name: scripts
+  description: Files from scripts/
+  keywords:
+  - scripts
+  - scripts
+- name: skills
+  description: Files from skills/
+  keywords:
+  - skills
+  - skills
+- name: src
+  description: Files from src/
+  keywords:
+  - src
+  - src
+- name: swabble
+  description: Files from Swabble/
+  keywords:
+  - swabble
+  - swabble
+- name: temp
+  description: Files from temp/
+  keywords:
+  - temp
+  - temp
+- name: test_fixtures
+  description: Files from test-fixtures/
+  keywords:
+  - test_fixtures
+  - test-fixtures
+- name: frontend
+  description: Files from ui/
+  keywords:
+  - frontend
+  - ui
+- name: vendor
+  description: Files from vendor/
+  keywords:
+  - vendor
+  - vendor
+- name: research
+  description: Files from research/
+  keywords:
+  - research
+  - research
+- name: configuration
+  description: Files from config/
+  keywords:
+  - configuration
+  - config
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []

@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from typing import Any, List, Dict, Optional
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_core.tools import BaseTool
+# pyrefly: ignore [missing-import]
 from src.core.mcp.registry import MCPToolRegistry
 
 logger = logging.getLogger("aa_mcp")
@@ -137,6 +138,7 @@ class MCPClientManager:
                 # 載入工具 (需使用 await，回傳的是 coroutine)
                 tools = await load_mcp_tools(
                     None,
+                    # pyrefly: ignore [bad-argument-type]
                     connection=mcp_config,
                     server_name=cfg.get("name")
                 )

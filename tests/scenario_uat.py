@@ -3,6 +3,7 @@ import sys
 # Set PYTHONPATH
 sys.path.append(os.getcwd())
 
+# pyrefly: ignore [missing-import]
 from src.core.graph import compile_ira_graph
 
 def run_test_scenario(tool_name: str, expected_pending: bool):

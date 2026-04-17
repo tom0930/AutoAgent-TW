@@ -36,6 +36,7 @@
 - [X] Phase 146: Data Specialist & Long-term Memory (mcp3fs) [DONE]
 - [X] Phase 148: Vision Engine Zero-Copy & Standby Architecture [DONE]
 - [X] Phase 149: Resource Extreme Optimization & Process Reaping (v3.2.7 Refinement) [DONE]
+- [X] Phase 152: Type Checker Orchestration (Ty & Pyrefly Shadow Check) [DONE]
 - [X] Phase 138: Windows GUI Automation (RVA & Vision Integration) [DONE]
 - [X] Phase 153: Human-in-the-loop Verification Contracts [DONE]
 - [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]

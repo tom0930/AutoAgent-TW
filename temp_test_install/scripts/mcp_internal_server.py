@@ -6,6 +6,7 @@ AutoAgent-TW Internal MCP Server (FastMCP)
 import json
 from pathlib import Path
 from mcp.server.fastmcp import FastMCP
+# pyrefly: ignore [missing-import]
 import aa_constants
 
 # 初始化 FastMCP 服務器

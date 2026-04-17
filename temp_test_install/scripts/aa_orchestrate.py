@@ -6,6 +6,7 @@ from pathlib import Path
 # Add project root to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
+# pyrefly: ignore [missing-import]
 from src.core.orchestration.coordinator import OrchestrationCoordinator
 import subprocess
 

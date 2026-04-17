@@ -45,6 +45,7 @@ class MCPToolRegistry:
             }
             if verbose:
                 # 取得參數結構
+                # pyrefly: ignore [bad-typed-dict-key]
                 entry["input_schema"] = getattr(tool, "args_schema", None)
             result.append(entry)
         return result

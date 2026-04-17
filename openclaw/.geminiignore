@@ -1,0 +1,59 @@
+# Antigravity Context Defense (ACD) Ignore List
+# Workaround for Token Explosion Crash (800K+ Tokens)
+# Source: z:\openclaw\.planning\phases\1-build-verify\CONTEXT.md
+
+# Package Managers
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+
+# Build & Binaries
+dist/
+dist-runtime/
+bin/
+vendor/
+*.exe
+*.dll
+*.pyd
+*.so
+*.o
+*.a
+*.lib
+*.class
+*.pyc
+__pycache__/
+venv/
+.venv/
+
+# IDE & Project State
+.git/
+.planning/
+.agent-state/
+.artifacts/
+.codex/
+.pi/
+.vscode/
+
+# Assets & Media
+assets/
+docs/images/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.mp4
+*.pdf
+
+# Temp & Scratch
+temp/
+scratch/
+test-fixtures/
+*.log
+
+# 🧪 Special Exclusions: 16,888 檔案縮減策略
+# 排除所有大型第三方套件庫
+packages/
+extensions/antigravity/bin/
+swabble/
+apps/

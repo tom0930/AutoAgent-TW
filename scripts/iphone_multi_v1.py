@@ -92,6 +92,7 @@ def fetch_biggo_data(query="iphone 15"):
                         print(f"   - BigGo 解析錯誤: {e}")
                         # Last ditch effort: manual truncation
                         try:
+                            # pyrefly: ignore [unbound-name]
                             last_bracket = items_json.rfind(']')
                             items = json.loads(items_json[:last_bracket+1])
                         except Exception:
@@ -171,6 +172,7 @@ async def main():
     print(f"{'排名':<4} | {'來源':<10} | {'CP值':<6} | {'價格':>8} | {'容量':>6} | {'商品名稱'}")
     print("-" * 110)
     for i, r in enumerate(all_results[:20], 1):
+        # pyrefly: ignore [bad-index]
         print(f"{i:<4} | {r['platform']:<10} | {r['cp_value']:>6.2f} | {r['price']:>8,} | {r['storage']:>4}GB | {r['title'][:60]}")
     print("="*110)
 

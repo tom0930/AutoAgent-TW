@@ -9,8 +9,11 @@ from threading import Thread
 # Project Root Setup
 sys.path.append(os.getcwd())
 
+# pyrefly: ignore [missing-import]
 from src.core.rva.pyrefly_service import PyReflyService
+# pyrefly: ignore [missing-import]
 from src.core.rva.vision_proxy import VisionProxy
+# pyrefly: ignore [missing-import]
 from src.core.rva.control_plane import VisionControlClient
 
 class TestVisionLifecycle(unittest.TestCase):

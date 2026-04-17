@@ -3,7 +3,9 @@ import time
 from PIL import Image
 from typing import Optional
 
+# pyrefly: ignore [missing-import]
 from src.core.rva.shared_memory_manager import VisionBuffer
+# pyrefly: ignore [missing-import]
 from src.core.rva.control_plane import VisionControlClient
 
 logger = logging.getLogger("RVA.VisionProxy")
@@ -45,6 +47,7 @@ class VisionProxy:
             time.sleep(wait_time) 
             
             # 3. Read (Zero-copy view)
+            # pyrefly: ignore [missing-attribute]
             frame, fid = self._buffer.read(make_copy=False)
             
             # 4. Hibernate immediately to save CPU

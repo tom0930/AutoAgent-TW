@@ -1,0 +1,291 @@
+
+> openclaw@2026.4.11 openclaw Z:\openclaw
+> node scripts/run-node.mjs "plugins" "list"
+
+Plugins (55/100 loaded)
+Source roots:
+  stock: Z:\openclaw\dist-runtime\extensions
+
++--------------+----------+----------+----------+----------------------------------------------------------+-----------+
+| Name         | ID       | Format   | Status   | Source                                                   | Version   |
++--------------+----------+----------+----------+----------------------------------------------------------+-----------+
+| ACPX Runtime | acpx     | openclaw | loaded   | stock:acpx/index.js                                      | 2026.4.11 |
+|              |          |          |          | Embedded ACP runtime backend with plugin-owned session   |           |
+|              |          |          |          | and transport management.                                |           |
+| Active       | active-  | openclaw | disabled | stock:active-memory/index.js                             | 2026.4.11 |
+| Memory       | memory   |          |          | Runs a bounded blocking memory sub-agent before          |           |
+|              |          |          |          | eligible conversational replies and injects relevant     |           |
+|              |          |          |          | memory into prompt context.                              |           |
+| @openclaw/   | alibaba  | openclaw | loaded   | stock:alibaba/index.js                                   | 2026.4.11 |
+| alibaba-     |          |          |          | OpenClaw Alibaba Model Studio video provider plugin      |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | amazon-  | openclaw | loaded   | stock:amazon-bedrock/index.js                            | 2026.4.11 |
+| amazon-      | bedrock  |          |          | OpenClaw Amazon Bedrock provider plugin                  |           |
+| bedrock-     |          |          |          |                                                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | amazon-  | openclaw | loaded   | stock:amazon-bedrock-mantle/index.js                     | 2026.4.11 |
+| amazon-      | bedrock- |          |          | OpenClaw Amazon Bedrock Mantle (OpenAI-compatible)       |           |
+| bedrock-     | mantle   |          |          | provider plugin                                          |           |
+| mantle-      |          |          |          |                                                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | anthropi | openclaw | loaded   | stock:anthropic/index.js                                 | 2026.4.11 |
+| anthropic-   | c        |          |          | OpenClaw Anthropic provider plugin                       |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | anthropi | openclaw | loaded   | stock:anthropic-vertex/index.js                          | 2026.4.11 |
+| anthropic-   | c-vertex |          |          | OpenClaw Anthropic Vertex provider plugin                |           |
+| vertex-      |          |          |          |                                                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | antigrav | openclaw | loaded   | stock:antigravity/index.js                               | 2026.4.11 |
+| antigravity- | ity      |          |          | OpenClaw Antigravity / Google CLI provider plugin        |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | arcee    | openclaw | loaded   | stock:arcee/index.js                                     | 2026.4.11 |
+| arcee-       |          |          |          | OpenClaw Arcee provider plugin                           |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | bluebubb | openclaw | disabled | stock:bluebubbles/index.js                               | 2026.4.11 |
+| bluebubbles  | les      |          |          | OpenClaw BlueBubbles channel plugin                      |           |
+| @openclaw/   | brave    | openclaw | disabled | stock:brave/index.js                                     | 2026.4.11 |
+| brave-plugin |          |          |          | OpenClaw Brave plugin                                    |           |
+| @openclaw/   | browser  | openclaw | loaded   | stock:browser/index.js                                   | 2026.4.11 |
+| browser-     |          |          |          | OpenClaw browser tool plugin                             |           |
+| plugin       |          |          |          |                                                          |           |
+| @openclaw/   | byteplus | openclaw | loaded   | stock:byteplus/index.js                                  | 2026.4.11 |
+| byteplus-    |          |          |          | OpenClaw BytePlus provider plugin                        |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | chutes   | openclaw | loaded   | stock:chutes/index.js                                    | 2026.4.11 |
+| chutes-      |          |          |          | OpenClaw Chutes.ai provider plugin                       |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | cloudfla | openclaw | loaded   | stock:cloudflare-ai-gateway/index.js                     | 2026.4.11 |
+| cloudflare-  | re-ai-   |          |          | OpenClaw Cloudflare AI Gateway provider plugin           |           |
+| ai-gateway-  | gateway  |          |          |                                                          |           |
+| provider     |          |          |          |                                                          |           |
+| Codex        | codex    | openclaw | loaded   | stock:codex/index.js                                     | 2026.4.11 |
+|              |          |          |          | Codex app-server harness and Codex-managed GPT model     |           |
+|              |          |          |          | catalog.                                                 |           |
+| @openclaw/   | comfy    | openclaw | loaded   | stock:comfy/index.js                                     | 2026.4.11 |
+| comfy-       |          |          |          | OpenClaw ComfyUI provider plugin                         |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | copilot- | openclaw | loaded   | stock:copilot-proxy/index.js                             | 2026.4.11 |
+| copilot-     | proxy    |          |          | OpenClaw Copilot Proxy provider plugin                   |           |
+| proxy        |          |          |          |                                                          |           |
+| @openclaw/   | deepgram | openclaw | loaded   | stock:deepgram/index.js                                  | 2026.4.11 |
+| deepgram-    |          |          |          | OpenClaw Deepgram media-understanding provider           |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | deepseek | openclaw | loaded   | stock:deepseek/index.js                                  | 2026.4.11 |
+| deepseek-    |          |          |          | OpenClaw DeepSeek provider plugin                        |           |
+| provider     |          |          |          |                                                          |           |
+| Device       | device-  | openclaw | loaded   | stock:device-pair/index.js                               | 2026.4.11 |
+| Pairing      | pair     |          |          | Generate setup codes and approve device pairing          |           |
+|              |          |          |          | requests.                                                |           |
+| @openclaw/   | diagnost | openclaw | disabled | stock:diagnostics-otel/index.js                          | 2026.4.11 |
+| diagnostics- | ics-otel |          |          | OpenClaw diagnostics OpenTelemetry exporter              |           |
+| otel         |          |          |          |                                                          |           |
+| Diffs        | diffs    | openclaw | disabled | stock:diffs/index.js                                     | 2026.4.11 |
+|              |          |          |          | Read-only diff viewer and file renderer for agents.      |           |
+| @openclaw/   | discord  | openclaw | disabled | stock:discord/index.js                                   | 2026.4.11 |
+| discord      |          |          |          | OpenClaw Discord channel plugin                          |           |
+| @openclaw/   | duckduck | openclaw | disabled | stock:duckduckgo/index.js                                | 2026.4.11 |
+| duckduckgo-  | go       |          |          | OpenClaw DuckDuckGo plugin                               |           |
+| plugin       |          |          |          |                                                          |           |
+| @openclaw/   | elevenla | openclaw | disabled | stock:elevenlabs/index.js                                | 2026.4.11 |
+| elevenlabs-  | bs       |          |          | OpenClaw ElevenLabs speech plugin                        |           |
+| speech       |          |          |          |                                                          |           |
+| @openclaw/   | exa      | openclaw | disabled | stock:exa/index.js                                       | 2026.4.11 |
+| exa-plugin   |          |          |          | OpenClaw Exa plugin                                      |           |
+| @openclaw/   | fal      | openclaw | loaded   | stock:fal/index.js                                       | 2026.4.11 |
+| fal-provider |          |          |          | OpenClaw fal provider plugin                             |           |
+| @openclaw/   | feishu   | openclaw | disabled | stock:feishu/index.js                                    | 2026.4.11 |
+| feishu       |          |          |          | OpenClaw Feishu/Lark channel plugin (community           |           |
+|              |          |          |          | maintained by @m1heng)                                   |           |
+| @openclaw/   | firecraw | openclaw | disabled | stock:firecrawl/index.js                                 | 2026.4.11 |
+| firecrawl-   | l        |          |          | OpenClaw Firecrawl plugin                                |           |
+| plugin       |          |          |          |                                                          |           |
+| @openclaw/   | firework | openclaw | loaded   | stock:fireworks/index.js                                 | 2026.4.11 |
+| fireworks-   | s        |          |          | OpenClaw Fireworks provider plugin                       |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | github-  | openclaw | loaded   | stock:github-copilot/index.js                            | 2026.4.11 |
+| github-      | copilot  |          |          | OpenClaw GitHub Copilot provider plugin                  |           |
+| copilot-     |          |          |          |                                                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | google   | openclaw | loaded   | stock:google/index.js                                    | 2026.4.11 |
+| google-      |          |          |          | OpenClaw Google plugin                                   |           |
+| plugin       |          |          |          |                                                          |           |
+| @openclaw/   | googlech | openclaw | disabled | stock:googlechat/index.js                                | 2026.4.11 |
+| googlechat   | at       |          |          | OpenClaw Google Chat channel plugin                      |           |
+| @openclaw/   | groq     | openclaw | loaded   | stock:groq/index.js                                      | 2026.4.11 |
+| groq-        |          |          |          | OpenClaw Groq media-understanding provider               |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | huggingf | openclaw | loaded   | stock:huggingface/index.js                               | 2026.4.11 |
+| huggingface- | ace      |          |          | OpenClaw Hugging Face provider plugin                    |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | imessage | openclaw | disabled | stock:imessage/index.js                                  | 2026.4.11 |
+| imessage     |          |          |          | OpenClaw iMessage channel plugin                         |           |
+| @openclaw/   | irc      | openclaw | disabled | stock:irc/index.js                                       | 2026.4.11 |
+| irc          |          |          |          | OpenClaw IRC channel plugin                              |           |
+| @openclaw/   | kilocode | openclaw | loaded   | stock:kilocode/index.js                                  | 2026.4.11 |
+| kilocode-    |          |          |          | OpenClaw Kilo Gateway provider plugin                    |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | kimi     | openclaw | loaded   | stock:kimi-coding/index.js                               | 2026.4.11 |
+| kimi-        |          |          |          | OpenClaw Kimi provider plugin                            |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | line     | openclaw | disabled | stock:line/index.js                                      | 2026.4.11 |
+| line         |          |          |          | OpenClaw LINE channel plugin                             |           |
+| @openclaw/   | litellm  | openclaw | loaded   | stock:litellm/index.js                                   | 2026.4.11 |
+| litellm-     |          |          |          | OpenClaw LiteLLM provider plugin                         |           |
+| provider     |          |          |          |                                                          |           |
+| LLM Task     | llm-task | openclaw | disabled | stock:llm-task/index.js                                  | 2026.4.11 |
+|              |          |          |          | Generic JSON-only LLM tool for structured tasks          |           |
+|              |          |          |          | callable from workflows.                                 |           |
+| Lobster      | lobster  | openclaw | disabled | stock:lobster/index.js                                   | 2026.4.11 |
+|              |          |          |          | Typed workflow tool with resumable approvals.            |           |
+| @openclaw/   | matrix   | openclaw | disabled | stock:matrix/index.js                                    | 2026.4.11 |
+| matrix       |          |          |          | OpenClaw Matrix channel plugin                           |           |
+| @openclaw/   | mattermo | openclaw | disabled | stock:mattermost/index.js                                | 2026.4.11 |
+| mattermost   | st       |          |          | OpenClaw Mattermost channel plugin                       |           |
+| @openclaw/   | memory-  | openclaw | loaded   | stock:memory-core/index.js                               | 2026.4.11 |
+| memory-core  | core     |          |          | OpenClaw core memory search plugin                       |           |
+| @openclaw/   | memory-  | openclaw | disabled | stock:memory-lancedb/index.js                            | 2026.4.11 |
+| memory-      | lancedb  |          |          | OpenClaw LanceDB-backed long-term memory plugin with     |           |
+| lancedb      |          |          |          | auto-recall/capture                                      |           |
+| Memory Wiki  | memory-  | openclaw | disabled | stock:memory-wiki/index.js                               | 2026.4.11 |
+|              | wiki     |          |          | Persistent wiki compiler and Obsidian-friendly           |           |
+|              |          |          |          | knowledge vault for OpenClaw.                            |           |
+| @openclaw/   | microsof | openclaw | disabled | stock:microsoft/index.js                                 | 2026.4.11 |
+| microsoft-   | t        |          |          | OpenClaw Microsoft speech plugin                         |           |
+| speech       |          |          |          |                                                          |           |
+| @openclaw/   | microsof | openclaw | loaded   | stock:microsoft-foundry/index.js                         | 2026.4.11 |
+| microsoft-   | t-       |          |          | OpenClaw Microsoft Foundry provider plugin               |           |
+| foundry      | foundry  |          |          |                                                          |           |
+| @openclaw/   | minimax  | openclaw | loaded   | stock:minimax/index.js                                   | 2026.4.11 |
+| minimax-     |          |          |          | OpenClaw MiniMax provider and OAuth plugin               |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | mistral  | openclaw | loaded   | stock:mistral/index.js                                   | 2026.4.11 |
+| mistral-     |          |          |          | OpenClaw Mistral provider plugin                         |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | moonshot | openclaw | loaded   | stock:moonshot/index.js                                  | 2026.4.11 |
+| moonshot-    |          |          |          | OpenClaw Moonshot provider plugin                        |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | msteams  | openclaw | disabled | stock:msteams/index.js                                   | 2026.4.11 |
+| msteams      |          |          |          | OpenClaw Microsoft Teams channel plugin                  |           |
+| @openclaw/   | nextclou | openclaw | disabled | stock:nextcloud-talk/index.js                            | 2026.4.11 |
+| nextcloud-   | d-talk   |          |          | OpenClaw Nextcloud Talk channel plugin                   |           |
+| talk         |          |          |          |                                                          |           |
+| @openclaw/   | nostr    | openclaw | disabled | stock:nostr/index.js                                     | 2026.4.11 |
+| nostr        |          |          |          | OpenClaw Nostr channel plugin for NIP-04 encrypted DMs   |           |
+| @openclaw/   | nvidia   | openclaw | loaded   | stock:nvidia/index.js                                    | 2026.4.11 |
+| nvidia-      |          |          |          | OpenClaw NVIDIA provider plugin                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | ollama   | openclaw | loaded   | stock:ollama/index.js                                    | 2026.4.11 |
+| ollama-      |          |          |          | OpenClaw Ollama provider plugin                          |           |
+| provider     |          |          |          |                                                          |           |
+| OpenProse    | open-    | openclaw | disabled | stock:open-prose/index.js                                | 2026.4.11 |
+|              | prose    |          |          | OpenProse VM skill pack with a /prose slash command.     |           |
+| @openclaw/   | openai   | openclaw | loaded   | stock:openai/index.js                                    | 2026.4.11 |
+| openai-      |          |          |          | OpenClaw OpenAI provider plugins                         |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | opencode | openclaw | loaded   | stock:opencode/index.js                                  | 2026.4.11 |
+| opencode-    |          |          |          | OpenClaw OpenCode Zen provider plugin                    |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | opencode | openclaw | loaded   | stock:opencode-go/index.js                               | 2026.4.11 |
+| opencode-go- | -go      |          |          | OpenClaw OpenCode Go provider plugin                     |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | openrout | openclaw | loaded   | stock:openrouter/index.js                                | 2026.4.11 |
+| openrouter-  | er       |          |          | OpenClaw OpenRouter provider plugin                      |           |
+| provider     |          |          |          |                                                          |           |
+| OpenShell    | openshel | openclaw | disabled | stock:openshell/index.js                                 | 2026.4.11 |
+| Sandbox      | l        |          |          | Sandbox backend powered by OpenShell with mirrored       |           |
+|              |          |          |          | local workspaces and SSH-based command execution.        |           |
+| @openclaw/   | perplexi | openclaw | disabled | stock:perplexity/index.js                                | 2026.4.11 |
+| perplexity-  | ty       |          |          | OpenClaw Perplexity plugin                               |           |
+| plugin       |          |          |          |                                                          |           |
+| Phone        | phone-   | openclaw | loaded   | stock:phone-control/index.js                             | 2026.4.11 |
+| Control      | control  |          |          | Arm/disarm high-risk phone node commands (camera/screen/ |           |
+|              |          |          |          | writes) with an optional auto-expiry.                    |           |
+| @openclaw/   | qa-      | openclaw | disabled | stock:qa-channel/index.js                                | 2026.4.11 |
+| qa-channel   | channel  |          |          | OpenClaw QA synthetic channel plugin                     |           |
+| @openclaw/   | qa-lab   | openclaw | disabled | stock:qa-lab/index.js                                    | 2026.4.11 |
+| qa-lab       |          |          |          | OpenClaw QA lab plugin with private debugger UI and      |           |
+|              |          |          |          | scenario runner                                          |           |
+| @openclaw/   | qianfan  | openclaw | loaded   | stock:qianfan/index.js                                   | 2026.4.11 |
+| qianfan-     |          |          |          | OpenClaw Qianfan provider plugin                         |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | qqbot    | openclaw | disabled | stock:qqbot/index.js                                     | 2026.4.11 |
+| qqbot        |          |          |          | OpenClaw QQ Bot channel plugin                           |           |
+| @openclaw/   | qwen     | openclaw | loaded   | stock:qwen/index.js                                      | 2026.4.11 |
+| qwen-        |          |          |          | OpenClaw Qwen Cloud provider plugin                      |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | runway   | openclaw | loaded   | stock:runway/index.js                                    | 2026.4.11 |
+| runway-      |          |          |          | OpenClaw Runway video provider plugin                    |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | searxng  | openclaw | disabled | stock:searxng/index.js                                   | 2026.4.11 |
+| searxng-     |          |          |          | OpenClaw SearXNG plugin                                  |           |
+| plugin       |          |          |          |                                                          |           |
+| @openclaw/   | sglang   | openclaw | loaded   | stock:sglang/index.js                                    | 2026.4.11 |
+| sglang-      |          |          |          | OpenClaw SGLang provider plugin                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | signal   | openclaw | disabled | stock:signal/index.js                                    | 2026.4.11 |
+| signal       |          |          |          | OpenClaw Signal channel plugin                           |           |
+| @openclaw/   | slack    | openclaw | disabled | stock:slack/index.js                                     | 2026.4.11 |
+| slack        |          |          |          | OpenClaw Slack channel plugin                            |           |
+| @openclaw/   | stepfun  | openclaw | loaded   | stock:stepfun/index.js                                   | 2026.4.11 |
+| stepfun-     |          |          |          | OpenClaw StepFun provider plugin                         |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | synology | openclaw | disabled | stock:synology-chat/index.js                             | 2026.4.11 |
+| synology-    | -chat    |          |          | Synology Chat channel plugin for OpenClaw                |           |
+| chat         |          |          |          |                                                          |           |
+| @openclaw/   | syntheti | openclaw | loaded   | stock:synthetic/index.js                                 | 2026.4.11 |
+| synthetic-   | c        |          |          | OpenClaw Synthetic provider plugin                       |           |
+| provider     |          |          |          |                                                          |           |
+| Talk Voice   | talk-    | openclaw | loaded   | stock:talk-voice/index.js                                | 2026.4.11 |
+|              | voice    |          |          | Manage Talk voice selection (list/set).                  |           |
+| @openclaw/   | tavily   | openclaw | disabled | stock:tavily/index.js                                    | 2026.4.11 |
+| tavily-      |          |          |          | OpenClaw Tavily plugin                                   |           |
+| plugin       |          |          |          |                                                          |           |
+| @openclaw/   | telegram | openclaw | disabled | stock:telegram/index.js                                  | 2026.4.11 |
+| telegram     |          |          |          | OpenClaw Telegram channel plugin                         |           |
+| Thread       | thread-  | openclaw | disabled | stock:thread-ownership/index.js                          | 2026.4.11 |
+| Ownership    | ownershi |          |          | Prevents multiple agents from responding in the same     |           |
+|              | p        |          |          | Slack thread. Uses HTTP calls to the slack-forwarder     |           |
+|              |          |          |          | ownership API.                                           |           |
+| @openclaw/   | tlon     | openclaw | disabled | stock:tlon/index.js                                      | 2026.4.11 |
+| tlon         |          |          |          | OpenClaw Tlon/Urbit channel plugin                       |           |
+| @openclaw/   | together | openclaw | loaded   | stock:together/index.js                                  | 2026.4.11 |
+| together-    |          |          |          | OpenClaw Together provider plugin                        |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | twitch   | openclaw | disabled | stock:twitch/index.js                                    | 2026.4.11 |
+| twitch       |          |          |          | OpenClaw Twitch channel plugin                           |           |
+| @openclaw/   | venice   | openclaw | loaded   | stock:venice/index.js                                    | 2026.4.11 |
+| venice-      |          |          |          | OpenClaw Venice provider plugin                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | vercel-  | openclaw | loaded   | stock:vercel-ai-gateway/index.js                         | 2026.4.11 |
+| vercel-ai-   | ai-      |          |          | OpenClaw Vercel AI Gateway provider plugin               |           |
+| gateway-     | gateway  |          |          |                                                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | vllm     | openclaw | loaded   | stock:vllm/index.js                                      | 2026.4.11 |
+| vllm-        |          |          |          | OpenClaw vLLM provider plugin                            |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | voice-   | openclaw | disabled | stock:voice-call/index.js                                | 2026.4.11 |
+| voice-call   | call     |          |          | OpenClaw voice-call plugin                               |           |
+| @openclaw/   | volcengi | openclaw | loaded   | stock:volcengine/index.js                                | 2026.4.11 |
+| volcengine-  | ne       |          |          | OpenClaw Volcengine provider plugin                      |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | vydra    | openclaw | loaded   | stock:vydra/index.js                                     | 2026.4.11 |
+| vydra-       |          |          |          | OpenClaw Vydra media provider plugin                     |           |
+| provider     |          |          |          |                                                          |           |
+| Webhooks     | webhooks | openclaw | disabled | stock:webhooks/index.js                                  | 2026.4.11 |
+|              |          |          |          | Authenticated inbound webhooks that bind external        |           |
+|              |          |          |          | automation to OpenClaw TaskFlows.                        |           |
+| @openclaw/   | whatsapp | openclaw | disabled | stock:whatsapp/index.js                                  | 2026.4.11 |
+| whatsapp     |          |          |          | OpenClaw WhatsApp channel plugin                         |           |
+| @openclaw/   | xai      | openclaw | loaded   | stock:xai/index.js                                       | 2026.4.11 |
+| xai-plugin   |          |          |          | OpenClaw xAI plugin                                      |           |
+| @openclaw/   | xiaomi   | openclaw | loaded   | stock:xiaomi/index.js                                    | 2026.4.11 |
+| xiaomi-      |          |          |          | OpenClaw Xiaomi provider plugin                          |           |
+| provider     |          |          |          |                                                          |           |
+| @openclaw/   | zai      | openclaw | loaded   | stock:zai/index.js                                       | 2026.4.11 |
+| zai-provider |          |          |          | OpenClaw Z.AI provider plugin                            |           |
+| @openclaw/   | zalo     | openclaw | disabled | stock:zalo/index.js                                      | 2026.4.11 |
+| zalo         |          |          |          | OpenClaw Zalo channel plugin                             |           |
+| @openclaw/   | zalouser | openclaw | disabled | stock:zalouser/index.js                                  | 2026.4.11 |
+| zalouser     |          |          |          | OpenClaw Zalo Personal Account plugin via native zca-js  |           |
+|              |          |          |          | integration                                              |           |
++--------------+----------+----------+----------+----------------------------------------------------------+-----------+

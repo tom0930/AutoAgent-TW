@@ -7,6 +7,7 @@ import asyncio
 import signal
 import logging
 import sys
+# pyrefly: ignore [missing-import]
 from src.core.mcp.mcp_client import MCPClientManager
 
 # 設定日誌

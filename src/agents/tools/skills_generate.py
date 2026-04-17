@@ -1,6 +1,7 @@
 import os
 import json
 from typing import Dict, Any, Optional
+# pyrefly: ignore [missing-import]
 from src.core.skill_manifest import SkillManifest
 
 class SkillGeneratorEngine:

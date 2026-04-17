@@ -9,7 +9,9 @@ from pywinauto import Desktop, Application
 from imagehash import dhash
 from PIL import Image
 
+# pyrefly: ignore [missing-import]
 from src.core.rva.vision_client import GeminiVisionClient
+# pyrefly: ignore [missing-import]
 from src.core.rva.rva_audit import RVAAuditLogger
 
 # 設置日誌
@@ -87,8 +89,10 @@ class RVAEngine:
         # 1. UIA 嘗試
         element = self.find_by_uia(target_name)
         if element:
+            # pyrefly: ignore [missing-attribute]
             coords = element.rectangle()
             self.audit.log_action("click_uia", {"target": target_name, "rect": str(coords)})
+            # pyrefly: ignore [missing-attribute]
             element.click_input()
             return True
 
@@ -130,5 +134,6 @@ if __name__ == "__main__":
     engine = RVAEngine()
     print("Capturing full screen...")
     img = engine.capture_screen()
+    # pyrefly: ignore [missing-attribute]
     img.save("scratch/rva_test_full.png")
     print(f"Screen changed? {engine.has_screen_changed()}")

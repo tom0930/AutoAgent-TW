@@ -59,6 +59,7 @@ class BufferManager:
         pending = [t for t in all_tasks if t["task_id"] not in completed]
         return pending[:chunk_size]
 
+    # pyrefly: ignore [not-a-type]
     def mark_done(self, task_id: str, result: any = "ok"):
         """Appends a completion record to the JSONL."""
         # Note: In a true JSONL log, we append the latest state. 

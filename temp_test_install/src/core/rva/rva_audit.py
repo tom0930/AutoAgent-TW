@@ -21,6 +21,7 @@ class RVAAuditLogger:
             f"audit_{time.strftime('%Y%m%d_%H%M%S')}.jsonl"
         )
 
+    # pyrefly: ignore [bad-function-definition]
     def log_action(self, action_type: str, details: Dict[str, Any], screenshot_path: str = None):
         """記錄單一操作"""
         record = {

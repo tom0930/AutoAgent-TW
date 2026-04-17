@@ -101,6 +101,7 @@ class GeminiVisionClient:
                 if "bbox" in data and data["bbox"]:
                     return VisionCoordinate(**data)
             except Exception as e:
+                # pyrefly: ignore [unbound-name]
                 logger.error(f"RVA: Gemini Vision API error: {e} | Content: {content[:100] if 'content' in locals() else 'None'}")
         
         return None

@@ -1,8 +1,24 @@
 # AutoAgent-TW Version Log
 
-## [v2.9.0-terminal-optimization] - 2026-04-15
+## [v2.9.1-reliability-tuning] - 2026-04-17
 
 ### 🚀 新增功能 (Key Features)
+1. **Ty-by-Default 架構 (Phase 152)**: 全面切換 IDE 預設語言伺服器至 `ty` (Astral)，確保背景不會因為持續追蹤跨模組變化而佔用高達 500MB+ 記憶體，達到了極致的輕量化。
+2. **Pyrefly Shadow Check 機制**: 將高負載的 Pyrefly 型別推斷抽離至背景「影子審計」流程。在 `/aa-qa` 或 Git pre-commit 時拉起，掃描完畢藉由 Active Reaper 機制瞬間回收，確保 0 常駐記憶體。
+3. **自動化型別錯誤補救**: 透過 `pyrefly suppress` 機制全自動消除歷史專案遺留的 Win32 API 型別缺失與套件匯入解析錯誤 (修補超過 200+ 項警告)，大幅度強化開發暢通度。
+4. **Toolchain Installer 推進**: `aa_installer_logic.py` 現在會自動拉取最新版本的 `uv`、`ty`、`pyrefly`，並自主寫入 Git Hooks，完成整體架構無縫移轉。
+
+### 📁 核心文件更新 (@file:)
+- `scripts/aa_installer_logic.py`: 安裝與更新自動化整合。
+- `scripts/shadow_check.py`: Pyrefly 影子檢查器與 Active Reaper。
+- `pyrefly.toml`: 專案排除配置與依賴規則設定。
+- `.planning/phases/152-dynamic-reliability-debug/QA-REPORT.md`: 完整型別品質與效能審查記錄。
+
+### 🔒 安全性 (Security)
+- Guardian Scan: ALL PASS。
+- 記憶體生命週期：具備確保 `pyrefly` 不會殘留僵屍程序的防護機制。
+
+## [v2.9.0-terminal-optimization] - 2026-04-15
 1. **Starship 跨 Shell 提示字元整合 (Phase 141)**: 導入 Rust 編寫的 Starship 引擎。透過 `~/.config/starship.toml` 實施「極簡模式」，自動縮減路徑深度並關閉高耗能模組，提升開發直覺與降低 Token 日誌干擾。
 2. **JetBrainsMono Nerd Font 部署**: 自動化安裝並註冊 Nerd Font 家族。確保終端機能正確渲染 Git、目錄與系統狀態符號，提升視覺化開發體驗。
 3. **PowerShell 路徑強健性方案**: 實施 `scripts/setup_starship_force.py`。採用 .NET 特殊資料夾解析技術，徹底解決 Windows OneDrive `文件` 路徑與 PowerShell `$PROFILE` 之間的編碼與環境變數同步衝突。

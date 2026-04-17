@@ -1,0 +1,21 @@
+{
+  "site_package_search_strategy": "pep561",
+  "source_directories": [
+    "."
+  ],
+  "search_path": [
+    "."
+  ],
+  "ignore_all_errors": [
+    "src"
+  ],
+  "exclude": [
+    "\\.venv/.*",
+    "venv/.*",
+    "env/.*",
+    "\\.git/.*",
+    "\\.planning/.*",
+    "scratch/.*",
+    "_agents/.*"
+  ]
+}

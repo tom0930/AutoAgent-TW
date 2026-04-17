@@ -10,6 +10,7 @@ root_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_dir / "scripts"))
 sys.path.append(str(root_dir / ".agents" / "skills" / "status-notifier" / "scripts"))
 
+# pyrefly: ignore [missing-import]
 import status_updater
 
 def simulate_update(i):

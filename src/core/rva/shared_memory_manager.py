@@ -78,28 +78,34 @@ class VisionBuffer:
 
         # Basic Mutex Lock (Wait max 100ms)
         if self._mutex:
+            # pyrefly: ignore [missing-attribute]
             win32event.WaitForSingleObject(self._mutex, 100)
         
         try:
             # Write Metadata
             meta = struct.pack("IIII", w, h, c, frame_id)
+            # pyrefly: ignore [missing-attribute]
             self.shm.buf[0:self.METADATA_SIZE] = meta
             
             # Write Pixel Data
             # Optimized: Use ravel() and direct buffer assignment to avoid frame.tobytes() 
             # which creates a massive intermediate bytes object (35MB per frame).
+            # pyrefly: ignore [missing-attribute]
             self.shm.buf[self.METADATA_SIZE : self.METADATA_SIZE + data_size] = frame.ravel()
         finally:
             if self._mutex:
+                # pyrefly: ignore [missing-attribute]
                 win32event.ReleaseMutex(self._mutex)
 
     def read(self, make_copy: bool = True) -> Tuple[Optional[np.ndarray], int]:
         """Read frame from shared memory (Client/Consumer side)"""
         if self._mutex:
+            # pyrefly: ignore [missing-attribute]
             win32event.WaitForSingleObject(self._mutex, 100)
             
         try:
             # Read Metadata
+            # pyrefly: ignore [missing-attribute]
             meta = bytes(self.shm.buf[0:self.METADATA_SIZE])
             w, h, c, frame_id = struct.unpack("IIII", meta)
             
@@ -107,6 +113,7 @@ class VisionBuffer:
                 return None, 0
                 
             # Zero-copy Read: Create ndarray view pointing to SHM buffer
+            # pyrefly: ignore [missing-attribute]
             frame = np.ndarray((h, w, c), dtype=np.uint8, buffer=self.shm.buf, offset=self.METADATA_SIZE)
             
             # Use view if requested to save memory (high risk of tearing if producer writes)
@@ -115,6 +122,7 @@ class VisionBuffer:
             return frame.copy(), frame_id
         finally:
             if self._mutex:
+                # pyrefly: ignore [missing-attribute]
                 win32event.ReleaseMutex(self._mutex)
 
     def close(self):

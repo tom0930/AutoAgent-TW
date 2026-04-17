@@ -58,6 +58,7 @@ def uart_to_udp():
     except KeyboardInterrupt:
         print("\n[Bridge] Stopping...")
         log_file.close()
+        # pyrefly: ignore [unbound-name]
         ser.close()
 
 

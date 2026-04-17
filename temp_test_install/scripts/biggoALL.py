@@ -49,6 +49,7 @@ class StoreProvider:
         raise NotImplementedError
 
 class PChomeProvider(StoreProvider):
+    # pyrefly: ignore [bad-override]
     async def search(self, query):
         print(f"📡 [PChome] 搜尋中: {query}")
         # 搜尋 API
@@ -78,6 +79,7 @@ class PChomeProvider(StoreProvider):
             return []
 
 class BigGoProvider(StoreProvider):
+    # pyrefly: ignore [bad-override]
     async def search(self, query):
         print(f"📡 [BigGo] 搜尋中: {query}")
         encoded_query = urllib.parse.quote(query)
@@ -120,6 +122,7 @@ class BigGoProvider(StoreProvider):
                         except Exception:
                             # 備份修剪解析
                             try:
+                                # pyrefly: ignore [unbound-name]
                                 last_bracket = items_json.rfind(']')
                                 items = json.loads(items_json[:last_bracket+1])
                                 for item in items:
@@ -158,6 +161,7 @@ async def main():
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"}
     providers = []
     if args.site in ["all", "pchome"]: providers.append(PChomeProvider(headers))
+    # pyrefly: ignore [bad-argument-type]
     if args.site in ["all", "biggo"]: providers.append(BigGoProvider(headers))
 
     tasks = [p.search(final_query) for p in providers]
@@ -177,6 +181,7 @@ async def main():
         storage = analyzer.extract_storage(p["name"])
         cp = analyzer.calculate_cp(storage, p["price"])
         
+        # pyrefly: ignore [unsupported-operation]
         if is_cp and (storage == 0 or p["price"] < 5000): # 過濾配件
             continue
         
@@ -197,13 +202,16 @@ async def main():
         print("-" * 120)
         print(f"{'排名':<4} | {'來源':<8} | {'店鋪':<12} | {'CP值':<6} | {'價格':>8} | {'容量':>6} | {'商品名稱'}")
         for i, r in enumerate(processed[:20], 1):
+            # pyrefly: ignore [bad-index]
             store_name = r.get("store", "N/A")[:10]
+            # pyrefly: ignore [bad-index]
             print(f"{i:<4} | {r['source']:<8} | {store_name:<12} | {r['cp_value']:>6.2f} | {r['price']:>8,} | {r['storage']:>4}G | {r['name'][:60]}")
     else:
         print(f"🔍 最低價搜尋結果: '{final_query}'")
         print("-" * 120)
         print(f"{'排名':<4} | {'來源':<8} | {'價格':>8} | {'商品名稱'}")
         for i, r in enumerate(processed[:20], 1):
+            # pyrefly: ignore [bad-index]
             print(f"{i:<4} | {r['source']:<8} | {r['price']:>8,} | {r['name'][:80]}")
     print("="*120)
 

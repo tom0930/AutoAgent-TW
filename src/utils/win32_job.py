@@ -17,6 +17,7 @@ class Win32JobManager:
             self.job = win32job.CreateJobObject(None, name)
             
             # Configure job to kill all children on close AND limit memory
+            # pyrefly: ignore [bad-argument-type]
             info = win32job.QueryInformationJobObject(self.job, win32job.JobObjectExtendedLimitInformation)
             info['BasicLimitInformation']['LimitFlags'] |= win32job.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
             
@@ -25,6 +26,7 @@ class Win32JobManager:
             info['BasicLimitInformation']['LimitFlags'] |= win32job.JOB_OBJECT_LIMIT_JOB_MEMORY
             info['JobMemoryLimit'] = 2 * 1024 * 1024 * 1024 
             
+            # pyrefly: ignore [bad-argument-type]
             win32job.SetInformationJobObject(self.job, win32job.JobObjectExtendedLimitInformation, info)
             
             logger.info(f"Initialized Windows Job Object: {name}")

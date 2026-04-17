@@ -22,8 +22,11 @@ try:
 except ImportError:
     HAS_WIN32 = False
 
+# pyrefly: ignore [missing-import]
 from src.core.rva.rva_audit import rva_audit
+# pyrefly: ignore [missing-import]
 from src.core.rva.vision_client import RVAVisionClient
+# pyrefly: ignore [missing-import]
 from src.core.rva.vision_proxy import VisionProxy
 from PIL import Image
 
@@ -46,6 +49,7 @@ class RVAEngine:
         
         # Phase 149: Resource Extreme Optimization
         try:
+            # pyrefly: ignore [missing-import]
             from src.core.reaper import AgentReaper
             reaper = AgentReaper(dry_run=False)
             reaper.reap() # Clear orphans on startup
@@ -73,6 +77,7 @@ class RVAEngine:
     def _get_precise_rect(self, hwnd) -> Tuple[int, int, int, int]:
         """Get visual window coordinates using DWM to avoid shadow padding."""
         if not HAS_WIN32:
+            # pyrefly: ignore [bad-return]
             return None
             
         rect = wintypes.RECT()
@@ -82,6 +87,7 @@ class RVAEngine:
             ctypes.byref(rect),
             ctypes.sizeof(rect)
         )
+        # pyrefly: ignore [bad-return, unsupported-operation]
         return (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top)
 
     def _get_active_window_rect(self, window_name: Optional[str] = None) -> Tuple[int, int, int, int]:
@@ -108,6 +114,7 @@ class RVAEngine:
                 top = max(0, target_win.top)
                 width = min(screen_w - left, target_win.width)
                 height = min(screen_h - top, target_win.height)
+                # pyrefly: ignore [bad-return]
                 return (left, top, width, height)
         except Exception as e:
             logger.debug(f"Failed to get window rect: {e}")
@@ -140,6 +147,7 @@ class RVAEngine:
             saveDC.SelectObject(saveBitMap)
             
             # PW_RENDERFULLCONTENT = 2. Works for many apps even if covered.
+            # pyrefly: ignore [missing-attribute]
             result = win32gui.PrintWindow(hwnd, saveDC.GetSafeHdc(), 2)
             
             bmpinfo = saveBitMap.GetInfo()

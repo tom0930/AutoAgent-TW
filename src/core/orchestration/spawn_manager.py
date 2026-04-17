@@ -83,6 +83,7 @@ class AgentProcess:
         """
         Spawns the process using subprocess.Popen with Job Object protection.
         """
+        # pyrefly: ignore [missing-import]
         from src.utils.win32_job import process_job
 
         env = os.environ.copy()

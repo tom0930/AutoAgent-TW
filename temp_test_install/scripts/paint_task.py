@@ -3,6 +3,7 @@ import logging
 import os
 import time
 from pywinauto import Application
+# pyrefly: ignore [missing-import]
 from src.core.rva.rva_engine import RVAEngine
 
 logging.basicConfig(level=logging.INFO)

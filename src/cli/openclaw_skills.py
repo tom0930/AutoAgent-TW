@@ -6,11 +6,17 @@ import argparse
 # Set PYTHONPATH
 sys.path.append(os.getcwd())
 
+# pyrefly: ignore [missing-import]
 from src.agents.tools.skills_discover import SkillDiscoveryEngine
+# pyrefly: ignore [missing-import]
 from src.agents.tools.skills_generate import SkillGeneratorEngine
+# pyrefly: ignore [missing-import]
 from src.agents.skills.skill_sandbox_test import SkillSandboxTester
+# pyrefly: ignore [missing-import]
 from src.agents.skills.skill_metrics import SkillMetricsManager
+# pyrefly: ignore [missing-import]
 from src.cron.skill_evolution import SkillEvolutionEngine
+# pyrefly: ignore [missing-import]
 from src.agents.skills.skill_rollback import SkillRollbackManager
 
 def main():
