@@ -1,6 +1,7 @@
 import os
 import json
 from typing import List, Dict, Any, Optional
+# pyrefly: ignore [missing-import]
 from src.core.skill_manifest import SkillManifest
 
 class SkillDiscoveryEngine:
@@ -68,6 +69,7 @@ class SkillDiscoveryEngine:
         # Simple match logic
         results = []
         for item in remote_catalog:
+            # pyrefly: ignore [missing-attribute]
             if intent.lower() in item["name"].lower() or intent.lower() in item["description"].lower():
                 item["source"] = "clawhub"
                 results.append(item)

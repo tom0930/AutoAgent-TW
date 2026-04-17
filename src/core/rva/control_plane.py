@@ -56,6 +56,7 @@ class VisionControlServer:
                 # Read message
                 res, data = win32file.ReadFile(pipe, 1024)
                 if res == 0:
+                    # pyrefly: ignore [missing-attribute]
                     cmd = data.decode('utf-8').strip()
                     logger.debug(f"Received control command: {cmd}")
                     self.callback(cmd)

@@ -94,6 +94,7 @@ class AgentReaper:
         for p in all_targets:
             is_orphan = False
             try:
+                # pyrefly: ignore [bad-argument-type, unsupported-operation]
                 parent = psutil.Process(p['ppid'])
                 if not parent.is_running():
                     is_orphan = True
@@ -101,21 +102,26 @@ class AgentReaper:
                 is_orphan = True
             
             if is_orphan:
+                # pyrefly: ignore [unsupported-operation]
                 logger.warning(f"Reaping Orphan Tree: PID {p['pid']} ({p['name']})")
                 if not self.dry_run:
+                    # pyrefly: ignore [unsupported-operation]
                     self.kill_proc_tree(p['pid'])
                     reaped_count += 1
 
         # 2. Active Deduplication: Kill redundant singletons
         for marker in self.SINGLETON_MARKERS:
             # Match against BOTH cmdline and name for robust detection
+            # pyrefly: ignore [unsupported-operation]
             matched = [p for p in all_targets if marker in p['cmdline'] or marker in p['name'].lower()]
             if len(matched) > 1:
                 matched.sort(key=lambda x: x['create_time'], reverse=True)
+                # pyrefly: ignore [unsupported-operation]
                 newest_pid = matched[0]['pid']
                 to_kill = matched[1:]
                 
                 for p in to_kill:
+                    # pyrefly: ignore [unsupported-operation]
                     if p['pid'] != newest_pid:
                         logger.warning(f"Industrial Deduplication {marker}: Killing tree for PID {p['pid']}")
                         if not self.dry_run:

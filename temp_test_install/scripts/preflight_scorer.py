@@ -29,6 +29,7 @@ class PreflightScorer:
                 found.append(kw)
         
         risk = len(found) * 1.5
+        # pyrefly: ignore [bad-assignment]
         self.score += min(risk, 4)
         if found:
             self.details.append(f"Detected external dependencies: {found}")
@@ -44,6 +45,7 @@ class PreflightScorer:
             self.score += 3
             self.details.append(f"High context span: {count} files touched.")
         elif count > 2:
+            # pyrefly: ignore [bad-assignment]
             self.score += 1.5
 
     def calc_skill_gap(self):

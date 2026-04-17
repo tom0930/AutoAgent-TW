@@ -34,6 +34,7 @@ def extract_biggo_products(html):
                     print(f"JSON parsing failed: {e}")
                     # Try manual truncation logic
                     print("Attempting manual truncation...")
+                    # pyrefly: ignore [unbound-name]
                     last_bracket = items_json.rfind(']')
                     if last_bracket != -1:
                         try:

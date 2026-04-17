@@ -4,6 +4,7 @@ import time
 
 # Ensure scripts root is in path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# pyrefly: ignore [missing-import]
 from utils.buffer_manager import BufferManager
 
 def run_test():

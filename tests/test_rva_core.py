@@ -1,6 +1,8 @@
 import unittest
 import os
+# pyrefly: ignore [missing-import]
 from src.core.rva.rva_engine import RVAEngine
+# pyrefly: ignore [missing-import]
 from src.core.rva.vision_client import GeminiVisionClient
 
 class TestRVACore(unittest.TestCase):

@@ -22,6 +22,7 @@ from pathlib import Path
 
 # 導入 Phase 128 記憶體哨兵
 try:
+    # pyrefly: ignore [missing-import]
     from auto_summarizer import MemorySentinel
 except ImportError:
     MemorySentinel = None
@@ -165,6 +166,7 @@ def estimate_tokens(source_size_bytes: int) -> int:
     return source_size_bytes // 3
 
 
+# pyrefly: ignore [bad-function-definition]
 def run_guard(workspace_path: str = None):
     """主進入點：執行完整 Context Guard 流程。"""
     # 強制 UTF-8 輸出，避免 Windows cp950 編碼 crash

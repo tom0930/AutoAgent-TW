@@ -37,11 +37,13 @@ class SkillRollbackManager:
         archive_dir = os.path.join(skill_path, "archive")
         
         if not os.path.exists(archive_dir):
+            # pyrefly: ignore [bad-return]
             return False, "No archive found for this skill."
             
         if not target_version_dir:
             # Pick latest
             versions = sorted(os.listdir(archive_dir))
+            # pyrefly: ignore [bad-return]
             if not versions: return False, "No versions found in archive."
             target_version_dir = os.path.join(archive_dir, versions[-1])
             
@@ -65,6 +67,7 @@ class SkillRollbackManager:
             else:
                 shutil.copy2(s, d)
                 
+        # pyrefly: ignore [bad-return]
         return True, f"Successfully rolled back '{skill_name}' to archived version."
 
 if __name__ == "__main__":

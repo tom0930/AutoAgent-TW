@@ -22,7 +22,9 @@ logger = logging.getLogger("PyRefly.Service")
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+# pyrefly: ignore [missing-import]
 from src.core.rva.shared_memory_manager import VisionBuffer
+# pyrefly: ignore [missing-import]
 from src.core.rva.control_plane import VisionControlServer
 
 class PyReflyService:

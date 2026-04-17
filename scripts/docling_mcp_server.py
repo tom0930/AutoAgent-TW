@@ -12,6 +12,7 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("docling")
 
 try:
+    # pyrefly: ignore [missing-import]
     from docling.document_converter import DocumentConverter
     CONVERTER = DocumentConverter()
 except ImportError:

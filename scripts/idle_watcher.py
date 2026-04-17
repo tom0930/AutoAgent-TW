@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent / "utils"))
+# pyrefly: ignore [missing-import]
 from state_lock import StateLock
 
 class IdleWatcher:

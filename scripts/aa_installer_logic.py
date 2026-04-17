@@ -27,6 +27,7 @@ logger = logging.getLogger("AA-Installer")
 def get_base_path() -> Path:
     """Returns the base path (bundled in EXE or local developer path)."""
     if getattr(sys, 'frozen', False):
+        # pyrefly: ignore [missing-attribute]
         return Path(sys._MEIPASS)
     
     current_dir = Path(__file__).resolve().parent
@@ -213,6 +214,34 @@ def main() -> None:
             subprocess.run([str(python_exe), "-m", "pip", "install", "--upgrade", "pip"], check=True, capture_output=True)
             subprocess.run([str(python_exe), "-m", "pip", "install", "-r", str(req_file)], check=True)
         
+        # 3.5 Toolchain Setup (uv, ty, pyrefly, pre-commit)
+        logger.info("Setting up Python type-checker toolchain (Ty & Pyrefly)...")
+        subprocess.run([str(python_exe), "-m", "pip", "install", "uv"], check=False, capture_output=True)
+        
+        logger.info("Installing Ty (Astral) [Fast Provider]...")
+        subprocess.run([str(python_exe), "-m", "uv", "tool", "install", "ty"], check=False, capture_output=True)
+        
+        logger.info("Installing Pyrefly (Meta) [Shadow Checker]...")
+        subprocess.run([str(python_exe), "-m", "uv", "tool", "install", "pyrefly"], check=False, capture_output=True)
+
+        git_dir = target_dir / ".git"
+        if git_dir.exists():
+            hooks_dir = git_dir / "hooks"
+            hooks_dir.mkdir(exist_ok=True)
+            pre_commit_path = hooks_dir / "pre-commit"
+            hook_script = f'''#!/bin/sh
+# AutoAgent-TW Shadow Check Hook
+echo "[AutoAgent Guard] Running Shadow Check via Pyrefly..."
+if [ -f "scripts/shadow_check.py" ]; then
+    python scripts/shadow_check.py --action check --kill-after
+else
+    echo "⚠️ scripts/shadow_check.py not found. Skipping shadow check."
+fi
+'''
+            with pre_commit_path.open("w", encoding="utf-8", newline='\n') as f:
+                f.write(hook_script)
+            logger.info("✅ Installed Git Pre-commit Hook for Shadow Check.")
+
         # 4. OpenClaw
         deploy_openclaw(target_dir)
         

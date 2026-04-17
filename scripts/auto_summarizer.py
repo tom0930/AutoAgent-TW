@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+# pyrefly: ignore [missing-import]
 import tiktoken
 
 # 設定日誌

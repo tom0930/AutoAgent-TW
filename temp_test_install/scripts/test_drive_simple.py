@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 sys.path.append(os.path.join(os.getcwd(), 'scripts'))
 
 try:
+    # pyrefly: ignore [missing-import]
     from kb_gdrive_sync import GDriveSync
 except ImportError:
     print("❌ 找不到 kb_gdrive_sync.py，請確保在專案根目錄執行此腳本。")

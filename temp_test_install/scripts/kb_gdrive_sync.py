@@ -5,8 +5,11 @@ import io
 import subprocess
 
 try:
+    # pyrefly: ignore [missing-import]
     from google.oauth2 import service_account
+    # pyrefly: ignore [missing-import]
     from googleapiclient.discovery import build
+    # pyrefly: ignore [missing-import]
     from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
     GDRIVE_AVAILABLE = True
 except ImportError:

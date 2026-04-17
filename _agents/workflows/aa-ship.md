@@ -45,3 +45,7 @@ description: Ship Phase N / 出貨階段 N 與 PR 生成。
 1. 提示 Phase N 已完成。
 2. 推薦執行 `/aa-discuss N+1` 進入下一階段討論。
 3. 交互模式下為使用者產出總結信息。
+
+### Step 8: 系統資源回收 (Active Reaper)
+// turbo
+1. 執行 `python scripts/shadow_check.py --action kill` 強制回收記憶體與殘留進程。

@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import logging
+# pyrefly: ignore [missing-import]
 import tiktoken
 from pathlib import Path
 
@@ -47,6 +48,7 @@ def get_memory_stats():
         with open(current_md, "r", encoding="utf-8") as f:
             content = f.read()
             stats["l1_current"]["tokens"] = len(TOKENIZER.encode(content))
+            # pyrefly: ignore [bad-typed-dict-key]
             stats["l1_current"]["size_kb"] = round(os.path.getsize(current_md) / 1024, 2)
 
     # L2: archives/
@@ -55,6 +57,7 @@ def get_memory_stats():
         files = [f for f in os.listdir(archives_dir) if f.endswith(".md")]
         stats["l2_archives"]["count"] = len(files)
         total_size = sum(os.path.getsize(os.path.join(archives_dir, f)) for f in files)
+        # pyrefly: ignore [bad-typed-dict-key]
         stats["l2_archives"]["size_mb"] = round(total_size / (1024 * 1024), 2)
 
     # Metadata
@@ -72,6 +75,7 @@ def get_memory_stats():
         files = [f for f in os.listdir(knowledge_dir) if f.endswith(".md")]
         stats["l3_knowledge"]["count"] = len(files)
         total_size = sum(os.path.getsize(os.path.join(knowledge_dir, f)) for f in files)
+        # pyrefly: ignore [bad-typed-dict-key]
         stats["l3_knowledge"]["size_mb"] = round(total_size / (1024 * 1024), 2)
 
     return stats

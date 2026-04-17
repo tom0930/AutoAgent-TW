@@ -11,9 +11,11 @@ import logging
 import argparse
 import subprocess
 from dotenv import load_dotenv
+# pyrefly: ignore [missing-import]
 from kb_gdrive_sync import GDriveSync, RcloneSync
 
 try:
+    # pyrefly: ignore [missing-import]
     import google.generativeai as genai
 except ImportError:
     genai = None

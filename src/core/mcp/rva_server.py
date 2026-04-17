@@ -8,7 +8,9 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
+# pyrefly: ignore [missing-import]
 from src.core.rva.rva_engine import RVAEngine
+# pyrefly: ignore [missing-import]
 from src.core.rva.rva_audit import rva_audit
 
 mcp = FastMCP("RVA_Windows_GUI")

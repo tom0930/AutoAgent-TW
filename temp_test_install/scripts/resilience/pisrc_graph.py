@@ -107,6 +107,7 @@ def human_interrupt(state: AgentState):
 def compile_pisrc_graph(memory_saver):
     from langgraph.graph import StateGraph, START, END
     
+    # pyrefly: ignore [bad-specialization]
     workflow = StateGraph(AgentState)
     
     workflow.add_node("task_executor", task_executor)
