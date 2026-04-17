@@ -257,13 +257,22 @@ fi
         if (target_dir / "venv").exists():
             vault_marker = target_dir / "mempalace.yaml"
             if not vault_marker.exists():
-                logger.info("Initializing MemPalace Memory Vault...")
-                # Use -m to ensure venv context
-                try:
-                    subprocess.run([str(python_exe), "-m", "mempalace", "--palace", str(target_dir), "init", str(target_dir)], check=True, capture_output=True)
-                    logger.info("✅ MemPalace initialized.")
-                except Exception as e:
-                    logger.warning(f"MemPalace init failed: {e}")
+                do_init = True
+                if not args.auto:
+                    print("\n[?] MemPalace provides long-term memory for AI agents (requires localized database).")
+                    user_choice = input("Do you want to initialize MemPalace Memory Vault now? (y/N): ").lower()
+                    do_init = (user_choice == 'y')
+                
+                if do_init:
+                    logger.info("Initializing MemPalace Memory Vault...")
+                    # Use -m to ensure venv context
+                    try:
+                        subprocess.run([str(python_exe), "-m", "mempalace", "--palace", str(target_dir), "init", str(target_dir)], check=True, capture_output=True)
+                        logger.info("✅ MemPalace initialized.")
+                    except Exception as e:
+                        logger.warning(f"MemPalace init failed: {e}")
+                else:
+                    logger.info("MemPalace initialization skipped by user.")
             else:
                 logger.info("MemPalace Memory Vault verified (already exists).")
             
