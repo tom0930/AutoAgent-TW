@@ -255,11 +255,17 @@ fi
         
         # 7. Memory System (MemPalace)
         if (target_dir / "venv").exists():
-            logger.info("Initializing MemPalace Memory Vault...")
-            # Use -m to ensure venv context
-            try:
-                subprocess.run([str(python_exe), "-m", "mempalace", "--palace", str(target_dir), "init", str(target_dir)], check=True, capture_output=True)
-            except: pass
+            vault_marker = target_dir / "mempalace.yaml"
+            if not vault_marker.exists():
+                logger.info("Initializing MemPalace Memory Vault...")
+                # Use -m to ensure venv context
+                try:
+                    subprocess.run([str(python_exe), "-m", "mempalace", "--palace", str(target_dir), "init", str(target_dir)], check=True, capture_output=True)
+                    logger.info("✅ MemPalace initialized.")
+                except Exception as e:
+                    logger.warning(f"MemPalace init failed: {e}")
+            else:
+                logger.info("MemPalace Memory Vault verified (already exists).")
             
         print("\n" + "✅" * 20)
         print("🎉 INSTALLATION COMPLETE!")
