@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 import pytest
 import asyncio
 import subprocess
@@ -5,6 +6,7 @@ import os
 import time
 # pyrefly: ignore [missing-import]
 from src.core.rva.gui_control import PywinautoController
+# pyrefly: ignore [missing-import]
 from src.core.rva.rva_engine import RVAEngine
 
 @pytest.fixture

@@ -59,6 +59,7 @@ def test_sensitive_blacklist():
     
     # Mocking is hard with pywinauto objects, 
     # but we can verify the _is_sensitive logic if we expose it or use regex tests
+    # pyrefly: ignore [missing-import]
     from src.core.rva.gui_control import SENSITIVE_TITLE_PATTERNS
     import re
     

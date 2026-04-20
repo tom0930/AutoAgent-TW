@@ -55,6 +55,7 @@ class VisionBuffer:
                 
                 self.shm = shared_memory.SharedMemory(name=name, create=True, size=self.MAX_BUFFER_SIZE)
                 if win32event:
+                    # pyrefly: ignore [bad-argument-type]
                     self._mutex = win32event.CreateMutex(None, False, self.mutex_name)
             else:
                 self.shm = shared_memory.SharedMemory(name=name)
