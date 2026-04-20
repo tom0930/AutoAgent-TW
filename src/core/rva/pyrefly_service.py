@@ -49,6 +49,7 @@ class PyReflyService:
         """Uses a Windows Mutex to ensure only one service runs."""
         if not win32event: return True
         try:
+            # pyrefly: ignore [bad-argument-type]
             self._mutex = win32event.CreateMutex(None, False, self.mutex_name)
             last_error = win32api.GetLastError()
             if last_error == winerror.ERROR_ALREADY_EXISTS:

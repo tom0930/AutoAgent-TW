@@ -33,6 +33,7 @@ class VisionControlServer:
                 win32file.GENERIC_READ | win32file.GENERIC_WRITE,
                 0, None, win32file.OPEN_EXISTING, 0, None
             )
+            # pyrefly: ignore [bad-argument-type]
             win32file.CloseHandle(handle)
         except:
             pass
@@ -47,6 +48,7 @@ class VisionControlServer:
                     win32pipe.PIPE_TYPE_MESSAGE | win32pipe.PIPE_READMODE_MESSAGE | win32pipe.PIPE_WAIT,
                     1, 65536, 65536,
                     0,
+                    # pyrefly: ignore [bad-argument-type]
                     None
                 )
                 
@@ -80,8 +82,11 @@ class VisionControlClient:
             )
             
             # Use message mode
+            # pyrefly: ignore [bad-argument-type]
             win32pipe.SetNamedPipeHandleState(handle, win32pipe.PIPE_READMODE_MESSAGE, None, None)
+            # pyrefly: ignore [bad-argument-type]
             win32file.WriteFile(handle, command.encode('utf-8'))
+            # pyrefly: ignore [bad-argument-type]
             win32file.CloseHandle(handle)
             return True
         except pywintypes.error as e:
