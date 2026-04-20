@@ -25,24 +25,27 @@ def test_controller_notepad_basics(notepad_app):
     
     # 2. Test typing and reading
     try:
-        # Increase timeout for the first successful hit
-        success = ctrl.find_and_click(win_title, control_type="Edit", timeout=5.0)
+        # Notepad 2e uses 'Pane' for the edit area, standard uses 'Edit'
+        success = ctrl.find_and_click(win_title, control_type="Edit", timeout=3.0)
+        if not success:
+            print("Trying 'Pane' fallback for Notepad 2e...")
+            success = ctrl.find_and_click(win_title, control_type="Pane", timeout=2.0)
         
         if success:
-            print("✓ Successfully clicked Notepad Edit area")
+            print("✓ Successfully clicked Notepad editing area")
             # Try to read
             text = ctrl.read_text(win_title, control_type="Edit")
-            print(f"✓ Initial Text: '{text}'")
+            if not text:
+                text = ctrl.read_text(win_title, control_type="Pane")
+            print(f"✓ Initial Text: '{text[:50]}...'")
         else:
-            print("FAILED to find Edit component via UIA")
-            # Fallback to win32 in test if uia is being weird
-            success = ctrl.find_and_click(win_title, control_type="Edit")
+            print("FAILED to find Edit or Pane component via UIA")
 
     except Exception as e:
         print(f"Error during test: {e}")
         success = False
 
-    assert success, "Should be able to find and click a component in Notepad"
+    assert success, "Should be able to find and click a component in Notepad (Edit or Pane)"
     
     # 3. Test read_text (should be empty initially)
     text = ctrl.read_text(win_title, control_type="Edit")
