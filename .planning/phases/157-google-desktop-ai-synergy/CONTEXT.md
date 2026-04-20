@@ -1,258 +1,444 @@
-# Phase 157: Google Search Desktop App — Visual-Cognitive Synergy Deep Analysis (v2)
+# Phase 157: Google Desktop AI + pywinauto v2.3 — GUI Control & Vision-Cognitive Upgrade
 
-> **Phase**: 157 | **Status**: Discuss Complete | **Date**: 2026-04-19
+> **Phase**: 157 | **Status**: Discuss Complete (v3) | **Date**: 2026-04-20
+> **Input Artifact**: `tests/autogui.md` (pywinauto + py_inspect 架構全面升級)
+> **Supersedes**: Phase 157 v2 (2026-04-19)
 
 ---
 
 ## 0. 意圖挖掘 (Intent Mining)
 
-Tom 明確提出 4 個核心問題維度：
+Tom 在 Phase 157 v2 基礎上，進一步提供了 `autogui.md` 具體架構升級方案。核心需求：
 
-1. **視覺判斷 (Visual Judgment)** — 該 App 能否強化 Agent 的「看」的能力？
-2. **GUI 控制 (GUI Control)** — 如何程式化操控該 App？有無 API？
-3. **Context Awareness 優化** — 如何利用該 App 提升 Agent 的情境感知？
-4. **其它** — 額外的整合機會（Chrome Skills, Auto Browse, Generative UI）。
+1. **視覺判斷** → 用 pywinauto UIA 取代脆弱的 pyautogui 座標定位
+2. **GUI 控制** → 用 `Application(backend="uia")` + `WindowSpecification` + `wait_until` 做企業級穩定控制
+3. **Context Awareness** → 從 Polling 進化到 **UIA Event-Driven** 監聽
+4. **其他** → py_inspect 開發效率、Google Desktop App 整合路徑
 
 ---
 
-## 1. 視覺判斷強化 (Visual Judgment Enhancement)
+## 1. 現狀痛點分析 (Current Pain Points)
 
-### 1.1 Google Desktop App 的視覺能力矩陣
+### 1.1 現有 RVA Engine 代碼審計 (`src/core/rva/rva_engine.py`)
 
-| 能力 | 目前 RVA (Phase 138) | Google Desktop App | 增幅評估 |
+| 層面 | 現狀 | 問題 | 嚴重度 |
 |:---|:---|:---|:---|
-| **OCR 文字辨識** | Tesseract / Local LLM | Google Lens (雲端) | ★★★★★ 顯著提升 |
-| **UI 元件辨識** | pywinauto UIA + Fallback Vision | Google Lens 視覺搜尋 | ★★★☆☆ 輔助補充 |
-| **硬體/電路圖辨識** | 無 (靠 LLM 猜測) | Lens + Knowledge Graph | ★★★★★ 從零到有 |
-| **錯誤碼語意** | LLM 推理 (有幻覺風險) | Gemini + Web Knowledge | ★★★★☆ 降低幻覺 |
-| **即時翻譯** | 無 | Lens 即時翻譯 | ★★★★★ 新能力 |
+| **GUI 操控** | `pyautogui.click(x, y)` 座標驅動 | DPI/解析度/主題變動即壞 | 🔴 CRITICAL |
+| **等待策略** | `time.sleep(0.8)` / `asyncio.sleep(1.2)` | 固定延遲，不確定性高 | 🔴 CRITICAL |
+| **UIA 快速路徑** | `_try_uia_fast_path()` 存在但功能薄弱 | 僅搜 Button，無 TreeView/DataGrid | 🟡 MEDIUM |
+| **截圖方式** | `pyautogui.screenshot()` + `PrintWindow` | 需獲得焦點，遮擋時不穩 | 🟡 MEDIUM |
+| **開發效率** | 手動猜座標 / trial-and-error | 無 Inspector 工具輔助 | 🟡 MEDIUM |
 
-### 1.2 實作方式：「雙眼架構 (Dual-Eye Architecture)」
+### 1.2 `autogui.md` 提出的解法映射
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  AutoAgent-TW Agent                                  │
-│                                                      │
-│  ┌──────────────┐     ┌──────────────────────────┐  │
-│  │ Eye-1 (Fast) │     │ Eye-2 (Deep/Authoritative)│  │
-│  │ Local Vision  │     │ Google Desktop Lens       │  │
-│  │ pywinauto+LLM │     │ Alt+Space → Screen Share  │  │
-│  │ ~100ms latency│     │ ~2-5s latency             │  │
-│  └──────┬───────┘     └──────────┬───────────────┘  │
-│         │                        │                    │
-│         └────────┬───────────────┘                    │
-│                  ▼                                    │
-│         ┌────────────────┐                            │
-│         │ Confidence Gate │                            │
-│         │ Eye-1 conf > 0.85 → use Eye-1              │
-│         │ Eye-1 conf ≤ 0.85 → escalate to Eye-2      │
-│         └────────────────┘                            │
-└─────────────────────────────────────────────────────┘
+autogui.md 解法          →  對應現有問題
+─────────────────────────────────────────────────
+pywinauto.Application()  →  取代 pyautogui 座標
+WindowSpecification      →  取代 FindWindow + guesswork  
+wait_until()             →  取代 time.sleep()
+py_inspect               →  取代手動猜 auto_id
+UIA Event Hook           →  取代 5 秒 polling
 ```
-
-**核心邏輯**：Eye-1 (本地) 先行判斷。當信心度不足時，自動升級至 Eye-2 (Google Lens)，取得「權威答案」。
-
-### 1.3 適用場景
-
-- **FPGA IDE (Vivado/Vitis)**：辨識 TreeView 節點、Bitstream 編譯狀態、Report 錯誤碼
-- **SDK 開發 (T024_main.c)**：辨識暫存器名稱、Register Address 的 Hex 值
-- **Docklight / UART Monitor**：辨識串列通訊封包 hex dump 的語意
 
 ---
 
-## 2. GUI 控制 (How to Control)
+## 2. 視覺判斷強化 (Visual Judgment Enhancement)
 
-### 2.1 三層控制策略
+### 2.1 雙眼架構 v2.3 (Dual-Eye with pywinauto Core)
 
-| 層級 | 方法 | 工具 | 穩定性 | 延遲 |
-|:---|:---|:---|:---|:---|
-| **L1: 鍵盤快捷鍵** | `Alt+Space` 呼出 → 輸入查詢 → 回車 | pywinauto / pyautogui | ★★★★☆ | ~500ms |
-| **L2: Screen Share** | `Alt+Space` → 點擊螢幕分享按鈕 → 選擇視窗 | Playwright + CDP 或 pywinauto | ★★★☆☆ | ~2s |
-| **L3: Gemini API (Computer Use)** | 直接調用 `gemini-2.5-computer-use` API | Google Gen AI Python SDK | ★★★★★ | ~1-3s |
+```
+┌──────────────────────────────────────────────────────────┐
+│  AutoAgent-TW Agent (Phase 157 v2.3)                      │
+│                                                            │
+│  ┌────────────────────┐   ┌──────────────────────────┐   │
+│  │ Eye-0 (Structural) │   │ Eye-1 (Visual)            │   │
+│  │ pywinauto UIA       │   │ Local LLM / VisionProxy   │   │
+│  │ 直接讀取控制項       │   │ 截圖 + Gemini 解析        │   │
+│  │ ~10ms latency       │   │ ~100-500ms latency        │   │
+│  │ ★★★★★ 穩定性     │   │ ★★★☆☆ 穩定性           │   │
+│  └─────────┬──────────┘   └──────────┬───────────────┘   │
+│            │                          │                     │
+│            │  ┌───────────────────────┘                     │
+│            ▼  ▼                                             │
+│  ┌──────────────────┐   ┌──────────────────────────┐      │
+│  │ Confidence Gate   │   │ Eye-2 (Authority)         │      │
+│  │                   │   │ Google Desktop Lens        │      │
+│  │ Eye-0 found? → ✓ │   │ Alt+Space Screen Share     │      │
+│  │ Eye-0 miss →Eye-1 │   │ ~2-5s latency              │      │
+│  │ Eye-1 < 0.85→Eye2 │   │ 最後手段 / HITL 確認       │      │
+│  └──────────────────┘   └──────────────────────────┘      │
+└──────────────────────────────────────────────────────────┘
+```
 
-### 2.2 推薦方案：L1 + L3 混合
+**核心變更**：新增 **Eye-0 (Structural)** 作為最高優先級。pywinauto UIA 能在 **10ms** 內直接讀取控制項文字、狀態、位置，完全不需截圖。
+
+### 2.2 升級後的能力矩陣
+
+| 能力 | Phase 138 (舊) | Phase 157 v2.3 (新) | 增幅 |
+|:---|:---|:---|:---|
+| **UI 元件辨識** | pyautogui 座標 + Vision fallback | pywinauto UIA 直接讀取 | ★★★★★ |
+| **Vivado TreeView** | 截圖猜 → 幻覺風險 | `.TreeView.get_items()` 直接拉文字 | ★★★★★ |
+| **Google Overlay** | `sleep(0.8)` 不穩定 | `wait('visible')` 確定性等待 | ★★★★★ |
+| **高 DPI 支援** | `SetProcessDpiAwareness` 有但脆弱 | UIA 後端原生支援 | ★★★★☆ |
+| **開發效率** | 手寫座標 trial-and-error | py_inspect 點擊 → 自動產生程式碼 | ★★★★★ |
+
+---
+
+## 3. GUI 控制架構 (How to Control)
+
+### 3.1 三層控制策略（更新版）
+
+| 層級 | 方法 | 工具 | 穩定性 | 延遲 | 適用場景 |
+|:---|:---|:---|:---|:---|:---|
+| **L0: UIA 直接控制** | `WindowSpecification` + `auto_id` | pywinauto (backend="uia") | ★★★★★ | ~10ms | 所有有 UIA 元件的 App |
+| **L1: Google Overlay** | `Desktop().window(title_re=...)` + `wait` | pywinauto 穩定呼叫 | ★★★★☆ | ~800ms | Google Desktop App |
+| **L2: Vision Fallback** | 截圖 → Gemini/LLM 解析 → 座標點擊 | RVAVisionClient | ★★★☆☆ | ~1-3s | 無 UIA 元件的 legacy App |
+| **L3: Gemini Computer Use** | API 直接呼叫 | Google Gen AI SDK | ★★★★★ | ~1-3s | 完全程式化自動化 |
+
+### 3.2 核心升級代碼：PywinautoController
 
 ```python
-# === L1: 鍵盤模擬呼叫 Google Desktop App ===
-import pyautogui
-import time
+# src/core/rva/gui_control.py (新模組)
 
-def invoke_google_desktop_search(query: str):
-    """透過 Alt+Space 呼出 Google Desktop App 並輸入查詢"""
-    pyautogui.hotkey('alt', 'space')
-    time.sleep(0.8)  # 等待 overlay 出現
-    pyautogui.typewrite(query, interval=0.02)
-    pyautogui.press('enter')
-    time.sleep(2.0)  # 等待 Gemini 回應
-    # 截圖讀取結果
-    screenshot = pyautogui.screenshot()
-    return screenshot
+from pywinauto import Application, Desktop
+from pywinauto.timings import wait_until
+import logging
 
-# === L3: Gemini Computer Use API (推薦用於自動化) ===
-from google import genai
+logger = logging.getLogger("RVA.GUIControl")
 
-def analyze_screen_with_gemini(screenshot_bytes: bytes, task: str):
-    """使用 Gemini Computer Use API 分析螢幕截圖"""
-    client = genai.Client()
-    response = client.models.generate_content(
-        model="gemini-2.5-flash-preview-04-17",
-        contents=[
-            {"role": "user", "parts": [
-                {"text": task},
-                {"inline_data": {
-                    "mime_type": "image/png",
-                    "data": screenshot_bytes
-                }}
-            ]}
-        ],
-        config={"tools": [{"computer_use": {}}]}
-    )
-    return response
+class PywinautoController:
+    """L0/L1 層：pywinauto UIA 控制器"""
+    
+    def __init__(self, backend: str = "uia"):
+        self.backend = backend
+    
+    # === L0: 通用控制項操作 ===
+    
+    def find_and_click(self, window_title_re: str, 
+                       control_title_re: str = None,
+                       auto_id: str = None,
+                       control_type: str = None,
+                       timeout: float = 5.0) -> bool:
+        """用 UIA 精確定位並點擊控制項（取代 pyautogui 座標）"""
+        try:
+            desktop = Desktop(backend=self.backend)
+            win = desktop.window(title_re=window_title_re)
+            win.wait('visible', timeout=timeout)
+            
+            kwargs = {}
+            if control_title_re: kwargs['title_re'] = control_title_re
+            if auto_id: kwargs['auto_id'] = auto_id
+            if control_type: kwargs['control_type'] = control_type
+            
+            element = win.child_window(**kwargs)
+            if element.exists(timeout=timeout):
+                element.click_input()
+                return True
+            return False
+        except Exception as e:
+            logger.debug(f"UIA click failed: {e}")
+            return False
+
+    def read_control_text(self, window_title_re: str,
+                          auto_id: str = None,
+                          control_type: str = None) -> str:
+        """直接讀取控制項文字（不需截圖 + OCR）"""
+        try:
+            desktop = Desktop(backend=self.backend)
+            win = desktop.window(title_re=window_title_re)
+            
+            kwargs = {}
+            if auto_id: kwargs['auto_id'] = auto_id
+            if control_type: kwargs['control_type'] = control_type
+            
+            element = win.child_window(**kwargs)
+            return element.window_text() if element.exists(timeout=2) else ""
+        except Exception as e:
+            logger.debug(f"UIA read failed: {e}")
+            return ""
+    
+    # === L1: Google Desktop App 專用 ===
+
+    def invoke_google_desktop(self, query: str, 
+                              use_lens: bool = False) -> bool:
+        """穩定呼叫 Google Desktop Overlay（取代 pyautogui.hotkey）"""
+        try:
+            desktop = Desktop(backend=self.backend)
+            
+            # 嘗試找已存在的 overlay
+            try:
+                overlay = desktop.window(
+                    title_re=r".*Google.*|Search|Gemini.*",
+                    timeout=1
+                )
+                overlay.wait('visible', timeout=2)
+            except Exception:
+                # Fallback: 用 pyautogui 觸發 Alt+Space
+                import pyautogui
+                pyautogui.hotkey('alt', 'space')
+                overlay = desktop.window(
+                    title_re=r".*Google.*",
+                    timeout=5
+                )
+                overlay.wait('visible', timeout=5)
+            
+            # 找到 Edit 控制項，輸入查詢
+            edit = overlay.child_window(control_type="Edit")
+            if edit.exists(timeout=3):
+                edit.set_focus()
+                edit.set_edit_text(query)
+            
+            # Lens 模式
+            if use_lens:
+                lens_btn = overlay.child_window(
+                    title_re=r"Lens|視覺搜尋|Screen",
+                    control_type="Button"
+                )
+                if lens_btn.exists(timeout=2):
+                    lens_btn.click_input()
+            
+            # 送出
+            overlay.type_keys('{ENTER}')
+            
+            # 等待回應（用 wait_until 取代 sleep）
+            wait_until(10, 0.5, 
+                lambda: overlay.child_window(
+                    control_type="Text",
+                    title_re=r".*"
+                ).exists())
+            
+            return True
+        except Exception as e:
+            logger.error(f"Google Desktop invoke failed: {e}")
+            return False
+    
+    # === Vivado/Vitis 專用 ===
+    
+    def get_vivado_tree_items(self) -> list:
+        """直接讀取 Vivado Project Explorer TreeView 節點"""
+        try:
+            app = Application(backend=self.backend).connect(
+                title_re=r".*Vivado.*"
+            )
+            tree = app.window(
+                title_re=r".*Project.*"
+            ).child_window(control_type="Tree")
+            
+            if tree.exists(timeout=3):
+                return [item.text() for item in tree.get_items()]
+            return []
+        except Exception as e:
+            logger.debug(f"Vivado tree read failed: {e}")
+            return []
+    
+    def get_vivado_errors(self) -> list:
+        """讀取 Vivado Messages/Errors DataGrid"""
+        try:
+            app = Application(backend=self.backend).connect(
+                title_re=r".*Vivado.*"
+            )
+            messages = app.window(
+                title_re=r".*Messages.*|.*Errors.*"
+            ).child_window(control_type="DataGrid")
+            
+            if messages.exists(timeout=3):
+                return [row.texts() for row in messages.items()]
+            return []
+        except Exception as e:
+            logger.debug(f"Vivado error read failed: {e}")
+            return []
 ```
 
-### 2.3 GUI 控制的關鍵約束
+### 3.3 RVA Engine 升級路徑
+
+```diff
+# src/core/rva/rva_engine.py 修改摘要
+
++ from src.core.rva.gui_control import PywinautoController
+
+  class RVAEngine:
+      def __init__(self):
+          self.vision_client = RVAVisionClient()
+          self.vision_proxy = VisionProxy()
++         self.gui = PywinautoController()  # 新增 L0/L1 控制器
+  
+      def _try_uia_fast_path(self, target, action_type) -> bool:
+-         # 現有：僅搜 Button，功能薄弱
+-         element = app.child_window(title_re=f".*{target}.*",
+-                                    control_type="Button")
++         # 升級：完整 UIA 搜索 (Button + TreeItem + DataItem + ...)
++         return self.gui.find_and_click(
++             window_title_re=r".*",  # active window
++             control_title_re=f".*{target}.*",
++             timeout=1.0
++         )
+```
+
+---
+
+## 4. Context Awareness 優化
+
+### 4.1 從 Polling 到 Event-Driven
+
+**現狀** (`rva_engine.py`): 無主動監控。Agent 完全被動等待用戶指令。
+
+**目標**: UIA Event-Driven → 僅在「有意義的事件」發生時才觸發分析。
+
+```python
+# src/core/rva/context_monitor.py (新模組概念)
+
+import comtypes
+from pywinauto import Desktop
+import logging
+
+logger = logging.getLogger("RVA.ContextMonitor")
+
+class ContextMonitor:
+    """Event-Driven 情境監控器"""
+    
+    def __init__(self):
+        self.handlers = {}
+    
+    def register_window_change_handler(self, callback):
+        """監聽焦點視窗變化"""
+        self.handlers['focus_change'] = callback
+    
+    def poll_smart(self, interval: float = 2.0):
+        """
+        Smart Polling: 用 pywinauto wait_until 取代 sleep-loop。
+        只在狀態真正變化時才觸發 callback。
+        
+        Note: 完整 UIA Event Hook 需要 comtypes + IUIAutomation,
+        此處先用 pywinauto 原生 wait 作為穩定替代。
+        """
+        desktop = Desktop(backend="uia")
+        last_title = ""
+        
+        while True:
+            try:
+                current = desktop.active_window()
+                title = current.window_text() if current else ""
+                
+                if title != last_title:
+                    last_title = title
+                    if 'focus_change' in self.handlers:
+                        self.handlers['focus_change'](title)
+                
+                import time
+                time.sleep(interval)
+            except Exception as e:
+                logger.debug(f"Monitor cycle error: {e}")
+```
+
+### 4.2 多源情境融合（更新版）
+
+| 情境來源 | 提供者 | 資訊類型 | 觸發方式 |
+|:---|:---|:---|:---|
+| **控制項狀態** | pywinauto UIA (Eye-0) | 按鈕文字、TreeView 節點、DataGrid 行 | **即時讀取** (~10ms) |
+| **視窗焦點** | ContextMonitor | 當前 active window title | **Event-Driven** |
+| **螢幕像素** | VisionProxy (Eye-1) | UI 佈局、顏色狀態 | **On-demand** |
+| **語意理解** | Google Lens (Eye-2) | 品牌辨識、型號查找 | **升級觸發** |
+| **外部知識** | Gemini API (L3) | 錯誤碼含義、最佳實踐 | **On-demand** |
+| **歷史記憶** | MemPalace | 過往決策、已知問題 | **自動注入** |
+
+---
+
+## 5. 其他整合機會 (Additional)
+
+### 5.1 py_inspect 開發工作流
+
+```bash
+# 一鍵啟動 Inspector
+pip install pywinauto[inspect] PyQt5
+python -m pywinauto.inspector
+
+# 工作流：
+# 1. 打開目標 App (Vivado / Google Desktop / Docklight)
+# 2. py_inspect 中點擊目標元件
+# 3. 右側顯示 title / class_name / auto_id / control_type
+# 4. 點「Copy Code」→ 直接貼入 gui_control.py
+```
+
+### 5.2 注意事項（來自研究）
+
+> [!IMPORTANT]
+> **py_inspect 是原型工具**。生產環境建議優先用 Microsoft `Inspect.exe` (Windows SDK)。
+> `Inspect.exe` 需切到 UIA 模式才能看到 pywinauto 可用的屬性。
 
 > [!WARNING]
-> Google Desktop App **沒有公開的開發者 API**。
-> 鍵盤模擬 (L1) 是唯一的非官方入口。
-> **正式自動化建議走 Gemini API (L3)**，繞過 GUI 直接調用雲端能力。
+> **pywinauto 不原生支援 Event Hook**。
+> `wait()` / `wait_not()` 是官方推薦的同步方式，
+> 真正的 UIA Event subscription 需 `comtypes` + `IUIAutomation`。
+> Phase 157 先用 Smart Polling，後續可升級。
+
+### 5.3 Chrome Skills / Auto Browse / Generative UI
+
+(維持 v2 版本內容不變 — 詳見 Section 4 of v2)
 
 ---
 
-## 3. Context Awareness 優化
+## 6. 資安威脅建模 (STRIDE Analysis)
 
-### 3.1 情境感知三階段模型
-
-```mermaid
-graph LR
-    A[Screen Capture] --> B{Context Classifier}
-    B -->|Code Editor| C[Code Semantic Analysis]
-    B -->|Terminal/UART| D[Log Pattern Matching]
-    B -->|Hardware IDE| E[Component Recognition]
-    B -->|Unknown| F[Google Lens Fallback]
-    
-    C --> G[Action Generator]
-    D --> G
-    E --> G
-    F --> G
-    
-    G --> H[Agent Decision Engine]
-```
-
-### 3.2 多源情境融合 (Multi-Source Context Fusion)
-
-| 情境來源 | 提供者 | 資訊類型 | 整合策略 |
+| 威脅 | 描述 | 風險 | 緩解 |
 |:---|:---|:---|:---|
-| **IDE 狀態** | pywinauto UIA | 打開的檔案、游標位置、錯誤列表 | 直接讀取 (最快) |
-| **螢幕像素** | Local Vision (Eye-1) | UI 佈局、按鈕位置、顏色狀態 | 截圖 → LLM 解析 |
-| **語意理解** | Google Lens (Eye-2) | 品牌辨識、型號查找、文字翻譯 | 升級觸發 |
-| **外部知識** | Gemini + Web Search | 錯誤碼含義、最佳實踐、API 文檔 | Screen Share → 問答 |
-| **歷史記憶** | MemPalace | 過往決策、已知問題、用戶偏好 | 自動檢索注入 |
-
-### 3.3 優化方向：Proactive Context Injection
-
-**現狀**：Agent 被動等待用戶指令 → 才去「看」螢幕。
-
-**目標**：Agent 主動監控螢幕變化 → 預判下一步操作。
-
-```
-[每 5 秒] Screen Diff → 變化 > 閾值？
-    ├── YES → 觸發 Eye-1 分析
-    │         ├── 識別到編譯成功 → 自動觸發燒錄流程
-    │         ├── 識別到錯誤對話框 → 自動截圖 + 查詢修復方案
-    │         └── 識別到新 UART 輸出 → 自動解析並對照預期值
-    └── NO  → 繼續監控
-```
-
----
-
-## 4. 其他整合機會 (Additional Opportunities)
-
-### 4.1 Chrome Auto Browse — AI 瀏覽器代理
-
-- **能力**：自動開啟多個分頁、爬取內容、生成摘要報告
-- **AutoAgent 應用**：
-  - 自動查找 FPGA Datasheet
-  - 批量下載 IP Core 文檔
-  - 自動填寫硬體採購表單
-
-### 4.2 Chrome Skills — 可重複的自動化工作流
-
-- **能力**：將重複的 Gemini 提示存為一鍵 Skill
-- **AutoAgent 應用**：
-  - `/compare-datasheets` — 跨分頁比較兩個 FPGA 規格書
-  - `/extract-register-map` — 從 PDF 提取暫存器映射表
-  - 可在 `chrome://skills/browse` 管理
-
-### 4.3 Generative UI — 動態生成互動工具
-
-- **能力**：Google Search 能即時「生成」互動式小工具
-- **AutoAgent 應用**：
-  - 輸入「compare DDR4 vs DDR5 timing parameters」→ 自動生成可互動的比較表
-  - 為 Debug 產出動態的 Register Map 瀏覽器
-
-### 4.4 WebMCP 協定 (2026 新標準)
-
-- **能力**：網站可暴露結構化「工具」給 AI Agent，取代脆弱的 Screen Scraping
-- **AutoAgent 應用**：未來若 Vivado/Vitis 的 Web 介面支援 WebMCP，Agent 可直接與之對話
-
----
-
-## 5. 資安威脅建模 (STRIDE Analysis)
-
-| 威脅 | 描述 | 風險等級 | 緩解策略 |
-|:---|:---|:---|:---|
-| **S (Spoofing)** | 假 Google Desktop overlay 竊取憑證 | 🔴 HIGH | 驗證進程簽章 + HITL 確認 |
-| **T (Tampering)** | 惡意 UI 截圖注入誤導 Agent 決策 | 🟡 MEDIUM | Eye-1/Eye-2 交叉驗證 |
-| **R (Repudiation)** | Agent 操作無法追溯 | 🟡 MEDIUM | 全操作截圖 + MemPalace 日誌 |
-| **I (Info Disclosure)** | 螢幕截圖含敏感資料上傳至 Google Cloud | 🔴 HIGH | Zone 分類 + 敏感區域遮罩 |
-| **D (DoS)** | Google API Rate Limit 導致 Agent 卡死 | 🟡 MEDIUM | Eye-1 本地優先 + 429 降級策略 |
-| **E (Elevation)** | Agent 透過 Computer Use API 取得額外系統權限 | 🔴 HIGH | Sandbox 執行 + 最小權限原則 |
-
-### 資安鐵律
+| **S** | 假 Overlay 竊取憑證 | 🔴 | 驗證進程簽章 + HITL |
+| **T** | 惡意 UI 注入誤導 Agent | 🟡 | Eye-0/Eye-1 交叉驗證 |
+| **R** | Agent 操作無法追溯 | 🟡 | rva_audit + MemPalace 日誌 |
+| **I** | 截圖含敏感資料上傳 | 🔴 | Zone 分類 + 敏感區域遮罩 |
+| **D** | API Rate Limit 卡死 | 🟡 | Eye-0 本地優先 + 429 降級 |
+| **E** | Computer Use API 權限提升 | 🔴 | Sandbox + 最小權限 |
 
 > [!CAUTION]
-> **禁止在 Screen Share 模式下暴露以下視窗**：
-> - `.env` 檔案 / API Key 管理工具
-> - 密碼管理器 / SSH 私鑰
-> - 客戶端原始碼（未公開專案）
+> **pywinauto UIA 可讀取任何視窗的文字** — 包含密碼欄位。
+> 必須在 gui_control.py 中加入 **Sensitive Control Blacklist**，
+> 禁止讀取 `PasswordBox` / `PasswordEdit` 類型控制項。
 
 ---
 
-## 6. 架構選型 — 兩方案對比
+## 7. 架構選型最終決策
 
-### 方案 A：「Google Desktop App 原生路線」
-
-```
-優點: 零 API 成本、最新 Google 能力、Screen Share 體驗佳
-缺點: 無公開 API、GUI 自動化脆弱、依賴 Google 帳號登入狀態
-適用: 手動輔助 + HITL 場景
-```
-
-### 方案 B：「Gemini API Computer Use 路線」(推薦)
+### ✅ 推薦方案：「pywinauto UIA Core + Dual-Eye Fallback」
 
 ```
-優點: 完全可程式化、穩定 SDK、支援 Sandbox、有 HITL Safety
-缺點: API 成本 (但 Flash 模型極便宜)、需自行截圖
-適用: 全自動化 Agent 流程
-```
-
-### 方案 C：「混合路線 — A + B 聯動」(最佳)
-
-```
-日常操作 → Gemini API (方案 B) 自動執行
-遇到低信心度 → 升級觸發 Google Desktop Lens (方案 A) 做「權威確認」
+日常 GUI 操控 → Eye-0 (pywinauto UIA)        [~10ms, 最穩定]
+Eye-0 找不到元件 → Eye-1 (Vision + LLM)     [~100-500ms]
+Eye-1 信心度 < 0.85 → Eye-2 (Google Lens)   [~2-5s, 權威確認]
+完全程式化場景 → L3 (Gemini Computer Use API) [~1-3s]
 敏感操作 → HITL 確認 (Phase 153 合約引擎)
 ```
 
+### 新模組清單
+
+| 檔案 | 用途 | 優先級 |
+|:---|:---|:---|
+| `src/core/rva/gui_control.py` | **[NEW]** PywinautoController 核心 | P0 |
+| `src/core/rva/context_monitor.py` | **[NEW]** Event-Driven 情境監控 | P1 |
+| `src/core/rva/rva_engine.py` | **[MODIFY]** 整合 gui_control | P0 |
+
 ---
 
-## 7. DoD (Definition of Done) — 更新版
+## 8. DoD (Definition of Done) — 最終版
 
-- [ ] **DOD-1**: 完成 Google Desktop App 安裝並驗證 `Alt+Space` 功能可用
-- [ ] **DOD-2**: 完成 L1 鍵盤模擬 PoC (pyautogui → Google Desktop 查詢 → 截圖回收)
-- [ ] **DOD-3**: 完成 Gemini Computer Use API PoC (截圖 → API → 動作指令)
-- [ ] **DOD-4**: 完成 Eye-1/Eye-2 信心度閘門原型
-- [ ] **DOD-5**: 完成 STRIDE 緩解措施的 Minimum Viable 實作
-- [ ] **DOD-6**: 驗證「FPGA 電路圖辨識」場景端到端可行性
-- [ ] **DOD-7**: 驗證 Chrome Skills 在 AutoAgent 工作流中的可用性
+- [ ] **DOD-0**: 安裝 `pywinauto[inspect]` + `PyQt5` 到 aa venv
+- [ ] **DOD-1**: 用 py_inspect / Inspect.exe 驗證 Google Desktop Overlay 的 UIA 元件
+- [ ] **DOD-2**: 完成 `gui_control.py` 模組 (find_and_click + read_control_text + invoke_google_desktop)
+- [ ] **DOD-3**: 完成 `rva_engine.py` 升級 (整合 PywinautoController，替換 pyautogui 路徑)
+- [ ] **DOD-4**: 用 pywinauto 重寫 Vivado 至少 2 個場景 (TreeView + Error DataGrid)
+- [ ] **DOD-5**: 完成 `context_monitor.py` Smart Polling 原型
+- [ ] **DOD-6**: 新增 Sensitive Control Blacklist (防止讀取密碼欄位)
+- [ ] **DOD-7**: 端到端驗證：Google Desktop Overlay 查詢 → 結果回收 → Dual-Eye 判斷
+- [ ] **DOD-8**: 端到端驗證：FPGA 電路圖辨識場景
+
+---
+
+## 9. 編排策略 (Orchestration)
+
+### Wave 並行化可行
+
+```
+Wave 1 (基礎)：DOD-0 + DOD-1 (安裝 + Inspector 驗證)
+Wave 2 (核心)：DOD-2 + DOD-3 (gui_control + rva_engine 升級) [可並行]
+Wave 3 (擴展)：DOD-4 + DOD-5 (Vivado 場景 + Context Monitor)
+Wave 4 (驗證)：DOD-6 + DOD-7 + DOD-8 (安全 + E2E 測試)
+```
