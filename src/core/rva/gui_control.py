@@ -68,7 +68,8 @@ class PywinautoController:
         for backend in [self._primary_backend, "win32" if self._primary_backend == "uia" else "uia"]:
             try:
                 desktop = Desktop(backend=backend)
-                win = desktop.window(title_re=title_re)
+                # Use found_index=0 to resolve ambiguity (ElementAmbiguousError)
+                win = desktop.window(title_re=title_re, found_index=0)
                 win.wait('visible', timeout=timeout)
                 self._cache.set(title_re, win)
                 logger.debug(f"Resolved window [{title_re}] using {backend} backend")
@@ -84,19 +85,30 @@ class PywinautoController:
                        auto_id: Optional[str] = None,
                        control_type: Optional[str] = None,
                        title_re: Optional[str] = None,
+                       class_name: Optional[str] = None,
                        timeout: float = 3.0,
-                       max_retries: int = 2) -> bool:
+                       max_retries: int = 2,
+                       **extra_kwargs) -> bool:
         """Locate and click element with retry and security audit."""
         for attempt in range(max_retries):
             try:
                 win = self._get_window(window_title_re)
                 
-                kwargs = {}
+                kwargs = extra_kwargs.copy()
                 if auto_id: kwargs['auto_id'] = auto_id
                 if control_type: kwargs['control_type'] = control_type
                 if title_re: kwargs['title_re'] = title_re
+                if class_name: kwargs['class_name'] = class_name
                 
                 element = win.child_window(**kwargs)
+                if not element.exists(timeout=timeout):
+                    # Fallback for Scintilla editors (e.g. Notepad 2e, Notepad++) if we were looking for Edit
+                    if kwargs.get('control_type') == 'Edit':
+                        element = win.child_window(class_name='Scintilla')
+                        if not element.exists(timeout=0.5):
+                            logger.debug(f"Element [{kwargs}] and Scintilla fallback not found in attempt {attempt+1}")
+                            continue
+
                 if element.exists(timeout=timeout):
                     # Security check
                     if self._is_sensitive(element):
@@ -107,8 +119,6 @@ class PywinautoController:
                     element.click_input()
                     logger.info(f"✓ Clicked element [{kwargs}] in window [{window_title_re}]")
                     return True
-                else:
-                    logger.debug(f"Element [{kwargs}] not found in attempt {attempt+1}")
             except Exception as e:
                 logger.debug(f"Attempt {attempt+1}/{max_retries} failed: {e}")
                 time.sleep(0.4)
@@ -119,16 +129,23 @@ class PywinautoController:
     def read_text(self, window_title_re: str,
                   auto_id: Optional[str] = None,
                   control_type: Optional[str] = None,
-                  title_re: Optional[str] = None) -> str:
+                  title_re: Optional[str] = None,
+                  class_name: Optional[str] = None,
+                  **extra_kwargs) -> str:
         """Directly read control text (Eye-0) with security masking."""
         try:
             win = self._get_window(window_title_re, timeout=3.0)
-            kwargs = {}
+            kwargs = extra_kwargs.copy()
             if auto_id: kwargs['auto_id'] = auto_id
             if control_type: kwargs['control_type'] = control_type
             if title_re: kwargs['title_re'] = title_re
+            if class_name: kwargs['class_name'] = class_name
             
             element = win.child_window(**kwargs)
+            if not element.exists(timeout=1.0): # Faster check for initial
+                if kwargs.get('control_type') == 'Edit':
+                    element = win.child_window(class_name='Scintilla')
+            
             if element.exists(timeout=2):
                 if self._is_sensitive(element):
                     logger.info(f"Read sensitive control - returning [REDACTED]")

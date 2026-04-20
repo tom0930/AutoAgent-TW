@@ -20,32 +20,27 @@ def notepad_app():
 
 def test_controller_notepad_basics(notepad_app):
     ctrl = PywinautoController(primary_backend="uia")
-    # 1. Test window resolution
-    win_title = r".*Notepad.*|.*\u8a18\u4e8b\u672c.*"
+    # 1. Test window resolution - Use direct title for Notepad 2e
+    win_title = r".*Notepad 2e.*"
     
     # 2. Test typing and reading
     try:
-        # Notepad 2e uses 'Pane' for the edit area, standard uses 'Edit'
-        success = ctrl.find_and_click(win_title, control_type="Edit", timeout=3.0)
-        if not success:
-            print("Trying 'Pane' fallback for Notepad 2e...")
-            success = ctrl.find_and_click(win_title, control_type="Pane", timeout=2.0)
+        # For Notepad 2e, target 'Scintilla' class area
+        success = ctrl.find_and_click(win_title, class_name="Scintilla", timeout=5.0)
         
         if success:
-            print("✓ Successfully clicked Notepad editing area")
+            print("✓ Successfully clicked Notepad Scintilla area")
             # Try to read
-            text = ctrl.read_text(win_title, control_type="Edit")
-            if not text:
-                text = ctrl.read_text(win_title, control_type="Pane")
+            text = ctrl.read_text(win_title, class_name="Scintilla")
             print(f"✓ Initial Text: '{text[:50]}...'")
         else:
-            print("FAILED to find Edit or Pane component via UIA")
+            print("FAILED to find Scintilla component via UIA")
 
     except Exception as e:
         print(f"Error during test: {e}")
         success = False
 
-    assert success, "Should be able to find and click a component in Notepad (Edit or Pane)"
+    assert success, "Should be able to find and click Scintilla in Notepad 2e"
     
     # 3. Test read_text (should be empty initially)
     text = ctrl.read_text(win_title, control_type="Edit")
