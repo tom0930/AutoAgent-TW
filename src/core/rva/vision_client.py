@@ -136,3 +136,37 @@ Return ONLY valid JSON:
         except Exception as e:
             logger.error(f"Failed to query Vision Client: {e}")
             return None
+    async def reason_from_image(self, image: Image.Image, question: str) -> str:
+        """
+        Ask a semantic question about the UI state based on the image.
+        Used for general 'AI Vision-based' reasoning.
+        """
+        b64_img = self.prepare_image(image)
+        
+        prompt = f"""
+You are a senior UI analyst and robotic automation expert.
+Visual context: A screenshot of a desktop application.
+Task: {question}
+
+Return a concise, factual summary or the specific answer needed for automation.
+"""
+        payload = {
+            "contents": [{
+                "parts": [
+                    {"text": prompt},
+                    {"inline_data": {"mime_type": "image/png", "data": b64_img}}
+                ]
+            }]
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                resp = await client.post(self.bridge_url, json=payload)
+                if resp.status_code != 200:
+                    return f"Vision Error: {resp.status_code}"
+                
+                data = resp.json()
+                text = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                return text.strip()
+        except Exception as e:
+            return f"Vision Exception: {str(e)}"

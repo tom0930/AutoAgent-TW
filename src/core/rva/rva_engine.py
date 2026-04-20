@@ -32,6 +32,8 @@ from src.core.rva.vision_proxy import VisionProxy
 from src.core.rva.gui_control import PywinautoController
 # pyrefly: ignore [missing-import]
 from src.core.rva.context_monitor import ContextMonitor
+# pyrefly: ignore [missing-import]
+from src.core.rva.google_app import GoogleAppController
 from PIL import Image
 
 logger = logging.getLogger("RVA.Engine")
@@ -53,6 +55,7 @@ class RVAEngine:
         # Phase 157: Industrial GUI Controller
         self.gui = PywinautoController(primary_backend="uia" if use_uia else "win32")
         self.monitor = ContextMonitor(self.gui)
+        self.google_ctrl = GoogleAppController(self.gui)
         
         # Phase 149: Resource Extreme Optimization
         try:
@@ -285,3 +288,18 @@ class RVAEngine:
         
         rva_audit.log_action("rva_click", {"target": target, "coords": [global_x, global_y]}, "SUCCESS", "Resolved via Vision")
         return True
+
+    def query_google_ai(self, query: str) -> Optional[str]:
+        """Phase 158: Synergy with Google Desktop App for external reasoning."""
+        logger.info(f"Synergizing with Google App: {query}")
+        if not self.google_ctrl.is_running():
+            logger.warning("Google App not running. Synergic query failed.")
+            return None
+        
+        if self.google_ctrl.perform_search(query):
+            # Wait for search results and AI response
+            import time
+            time.sleep(8) 
+            content = self.google_ctrl.extract_content()
+            return content
+        return None
