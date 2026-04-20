@@ -28,6 +28,10 @@ from src.core.rva.rva_audit import rva_audit
 from src.core.rva.vision_client import RVAVisionClient
 # pyrefly: ignore [missing-import]
 from src.core.rva.vision_proxy import VisionProxy
+# pyrefly: ignore [missing-import]
+from src.core.rva.gui_control import PywinautoController
+# pyrefly: ignore [missing-import]
+from src.core.rva.context_monitor import ContextMonitor
 from PIL import Image
 
 logger = logging.getLogger("RVA.Engine")
@@ -43,9 +47,12 @@ pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.5  # Add a default pause between operations
 
 class RVAEngine:
-    def __init__(self):
+    def __init__(self, use_uia: bool = True):
         self.vision_client = RVAVisionClient()
         self.vision_proxy = VisionProxy()
+        # Phase 157: Industrial GUI Controller
+        self.gui = PywinautoController(primary_backend="uia" if use_uia else "win32")
+        self.monitor = ContextMonitor(self.gui)
         
         # Phase 149: Resource Extreme Optimization
         try:
@@ -168,153 +175,83 @@ class RVAEngine:
             logger.debug(f"Robust capture failed for '{window_name}': {e}")
             return None
 
-    def _try_uia_fast_path(self, target: str, action_type: str) -> bool:
+    async def perform_action(self, target: str, action_type: str = "click", verify: bool = False, 
+                             window_name: Optional[str] = None, wait_for_window: bool = False,
+                             timeout: float = 10.0) -> bool:
         """
-        Attempt to use pywinauto UIAutomation backend.
-        Return True if successful, False to trigger Vision Fallback.
+        Industrial RVA entry point.
+        Supports:
+        - wait_for_window: Pre-action synchronization
+        - verify: Vision-based post-action validation
         """
-        try:
-            desktop = Desktop(backend="uia")
-            # If we know the window name, target it specifically
-            # Fallback to active window if none provided
-            app = desktop.active_window()
-            
-            # Search for buttons in all windows if active one doesn't have it
-            # (Note: In a true industrial engine, we'd cache the HWND here)
-            element = None
-            # Zero-copy Read: Create ndarray view pointing to SHM buffer
-            try:
-                # Try search for target button in the active window first
-                element = app.child_window(title_re=f".*{target}.*", control_type="Button", found_index=0)
-                if not element.exists(timeout=0.2):
-                    # Try list items or checkboxes too
-                    element = app.child_window(title_re=f".*{target}.*", found_index=0)
-            except Exception:
-                pass
-
-            if element and element.exists(timeout=0.5):
-                if action_type == "click":
-                    element.click_input()
-                elif action_type == "double_click":
-                    element.double_click_input()
-                return True
-            return False
-        except ImportError:
-            logger.debug("pywinauto not installed, skipping UIA fast path.")
-            return False
-        except Exception as e:
-            logger.debug(f"UIA fast path missed for '{target}': {e}")
-            return False
-
-    def focus_window(self, window_name: str) -> bool:
-        """Force the target window to the foreground."""
-        try:
-            if HAS_WIN32:
-                hwnd = win32gui.FindWindow(None, window_name)
-                if hwnd:
-                    # Restore if minimized
-                    if win32gui.IsIconic(hwnd):
-                        win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-                    win32gui.SetForegroundWindow(hwnd)
-                    win32gui.BringWindowToTop(hwnd)
-                    win32gui.UpdateWindow(hwnd)
-                    import time
-                    time.sleep(0.5)
-                    return True
-            
-            # Fallback
-            wins = gw.getWindowsWithTitle(window_name)
-            if wins:
-                wins[0].activate()
-                return True
-        except Exception as e:
-            logger.debug(f"Focus window failed for '{window_name}': {e}")
-        return False
-
-    async def perform_action(self, target: str, action_type: str = "click", verify: bool = False, window_name: Optional[str] = None) -> bool:
-        """
-        Execute RVA operation with UIA -> Vision fallback strategy.
-        If verify=True, it will snap pre/post images and use Vision Judge to confirm.
-        """
-        logger.info(f"RVA Action requested: {action_type} on '{target}' (Verify={verify}, Window={window_name})")
+        logger.info(f"RVA Action requested: {action_type} on '{target}' (Wait={wait_for_window}, Window={window_name})")
         rva_audit.start_action()
-        
-        if window_name:
-            self.focus_window(window_name)
 
         try:
+            # Phase 157: Synchronization layer
+            if wait_for_window and window_name:
+                if not self.monitor.wait_for_window(window_name, timeout=timeout):
+                    return False
+
+            if window_name:
+                self.gui.focus_window(window_name)
+
             # 1. Pre-capture if verification is needed
             before_snap = None
-            
             if verify:
-                # Robust attempt for occluded windows first
-                if window_name:
-                    before_snap = self._capture_occluded_window(window_name)
-                
-                # Fallback to standard capture if robust failed or no window name
-                if not before_snap:
-                    safe_rect = self._get_active_window_rect(window_name)
-                    before_snap = pyautogui.screenshot(region=safe_rect)
-                    
+                # Optimized capture
+                safe_rect = self._get_active_window_rect(window_name)
+                before_snap = pyautogui.screenshot(region=safe_rect)
                 self._save_debug_image(before_snap, f"before_{target}")
 
-            # 2. Attempt Core Action
+            # 2. Execute Core (UIA -> Vision fallback)
             success = await self._execute_core(target, action_type, window_name)
             if not success:
                 return False
 
             # 3. Post-capture and Verify
             if verify and before_snap:
-                await asyncio.sleep(1.2) # Wait for UI to render change
-                
-                after_snap = None
-                if window_name:
-                    after_snap = self._capture_occluded_window(window_name)
-                
-                if not after_snap:
-                    safe_rect = self._get_active_window_rect(window_name)
-                    after_snap = pyautogui.screenshot(region=safe_rect)
-                
+                await asyncio.sleep(1.0)
+                safe_rect = self._get_active_window_rect(window_name)
+                after_snap = pyautogui.screenshot(region=safe_rect)
                 self._save_debug_image(after_snap, f"after_{target}")
                 
                 judgment = await self.vision_client.verify_action_result(
                     before_snap, after_snap, f"Successful {action_type} on {target}"
                 )
                 
-                if judgment.get("success"):
-                    logger.info(f"Vision Verification: PASSED for '{target}'.")
-                    rva_audit.log_action("rva_verify", {"target": target}, "PASSED", judgment.get("reason", ""))
-                    return True
-                else:
-                    logger.warning(f"Vision Verification: FAILED for '{target}'. Reason: {judgment.get('reason')}")
-                    # Attempt Self-Repair if offset is suggested
-                    dx, dy = judgment.get("dx", 0), judgment.get("dy", 0)
-                    if dx != 0 or dy != 0:
-                        logger.info(f"Self-Repair: Adjusting by ({dx}, {dy}) and retrying...")
-                        pyautogui.moveRel(dx, dy)
-                        pyautogui.click() 
-                        return True
+                if not judgment.get("success"):
+                    logger.warning(f"Vision Verification FAILED: {judgment.get('reason')}")
                     return False
+                logger.info("Vision Verification PASSED.")
 
             return True
 
         except pyautogui.FailSafeException:
-            logger.critical("RVA FAILSAFE TRIGGERED! Mouse moved to corner.")
-            rva_audit.log_action("rva_click", {"target": target}, "FAILSAFE", "User triggered FailSafe")
+            logger.critical("RVA FAILSAFE TRIGGERED!")
             raise
         except Exception as e:
-            logger.error(f"RVA Engine crashed: {e}")
-            rva_audit.log_action("rva_click", {"target": target}, "ERROR", str(e))
+            logger.error(f"RVA Action failed: {e}")
             return False
         finally:
             rva_audit.end_action()
 
     async def _execute_core(self, target: str, action_type: str, window_name: Optional[str] = None) -> bool:
         """Core execution logic (UIA -> Vision)."""
-        if self._try_uia_fast_path(target, action_type):
-            rva_audit.log_action("rva_click", {"target": target}, "SUCCESS", "Resolved via UIA")
-            return True
+        # Eye-0: Industrial UIA Path
+        if window_name:
+            # Using the new controller's robust search
+            if self.gui.find_and_click(window_name, title_re=f".*{target}.*", timeout=1.0):
+                rva_audit.log_action(f"rva_{action_type}", {"target": target}, "SUCCESS", "Resolved via UIA")
+                return True
+            
+            # Additional check for common buttons/elements by control_type
+            for c_type in ["Button", "ListItem", "MenuItem", "CheckBox"]:
+                if self.gui.find_and_click(window_name, control_type=c_type, title_re=f".*{target}.*", timeout=0.1):
+                    rva_audit.log_action(f"rva_{action_type}", {"target": target}, "SUCCESS", f"Resolved via UIA ({c_type})")
+                    return True
 
+        # Eye-1: Vision Fallback (Coordinate-based)
         safe_rect = self._get_active_window_rect(window_name)
         left, top, width, height = safe_rect
 
