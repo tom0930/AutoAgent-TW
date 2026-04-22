@@ -37,3 +37,10 @@ AutoAgent-TW 目前的 RVA (Robotic Visual Automation) 引擎依賴 `pywinauto` 
   1. AutoCLI Rust Binary 的自動下載與環境配置。
   2. 開發 `autocli-skill` 作為 AI 調用介面。
   3. 安全白名單防護層 (Context Guard) 升級，阻擋非開發用途的網域抓取。
+  4. 執行 POC 測試矩陣 (定義於 `tests/autocli.md`) 進行效能與沙箱驗證。
+
+## 6. 測試與驗證策略 (Verification Plan)
+為了確保 AutoCLI 符合我們在 Stealth Mode (Phase 158.5) 中立下的嚴格標準，已於 `tests/autocli.md` 制定測試矩陣。核心驗收標準包含：
+- **效能指標**：冷啟動時間 < 100ms，執行期 RAM 波動 < 50MB。
+- **資料指標**：成功掛載 Browser Session 並無頭獲取目標網站 (如 GitHub PR) 的純淨 JSON。
+- **資安指標**：有效攔截對非開發相關網域 (如 banking) 的爬取行為，確保沙箱邊界完整。
