@@ -19,7 +19,8 @@
 | M31 | Industrial Core (UIA + Logic) | ✅ DONE |
 | M32 | Vision Fallback Logic | ✅ DONE |
 | M33 | Google Desktop App Synergy | ✅ DONE |
-| M34 | Industrial Tooling Integration | 🚀 NEXT |
+| M34 | Industrial Tooling Integration | ✅ DONE |
+| M35 | Extreme Resource Optimization | 🚀 NEXT |
 
 ## 最近完成事項
 - **Phase 157**: Industrial RVA Engine v4 (v3.2.9)
@@ -33,6 +34,13 @@
   - **強韌性**: 整合 Google Search/Gemini Overlay 作為外部推理源。
   - **安全性**: 實施視窗自動最小化與位置管理，防止遮擋寫代碼區域。
   - **驗證**: 完成 Synergy E2E 測試，確保可控搜尋與內容擷取。
+
+- **Phase 158.5: IDE Memory Stealth Mode (v3.3.1)**
+  - **核心架構**: 將 Pyrefly LSP 從常駐 Daemon 轉換為 "One-Shot CLI" 模式。
+  - **強韌性**: 實作 `exe.disabled` 鎖定機制，防止 Antigravity IDE 自動重啟重型擴充。
+  - **優化**: 記憶體佔用從 4GB+ 降至 < 200MB。
+  - **自動化**: 整合 `shadow_check.py` 支援按需自動重啟與靜默清理。
+  - **驗證**: 通過 E2E 型別檢查測試，驗證 100% 記憶體回收。
 
 ## 下一步 Roadmap
 - **Phase 159: Vivado/Vitis RVA Upgrade (FPGA Tooling Automation)**

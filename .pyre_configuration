@@ -16,6 +16,10 @@
     "\\.git/.*",
     "\\.planning/.*",
     "scratch/.*",
-    "_agents/.*"
+    "_agents/.*",
+    "artifacts/.*",
+    "data/.*",
+    "logs/.*",
+    "temp/.*"
   ]
 }
