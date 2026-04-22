@@ -44,3 +44,7 @@
 
 ## 下一步 Roadmap
 - **Phase 159: Vivado/Vitis RVA Upgrade (FPGA Tooling Automation)**
+
+- **Phase 159.2: Security Hardening & Documentation (v3.3.1)**
+  - **核心架構**: 更新 SECURITY.md，將 Phase 158.5 的 IDE Stealth Mode 定義為受控安全邊界。
+  - **強韌性**: 紀錄針對 Shadow Check 併發操作的 Lock 預防策略。
