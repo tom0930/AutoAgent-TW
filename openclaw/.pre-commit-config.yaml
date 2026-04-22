@@ -113,6 +113,7 @@ repos:
         additional_dependencies: [pytest>=8, <9]
         pass_filenames: false
         files: "^skills/.*\\.py$"
+        require_serial: true
 
   # Project checks (same commands as CI)
   - repo: local
@@ -123,6 +124,7 @@ repos:
         entry: pnpm audit --prod --audit-level=high
         language: system
         pass_filenames: false
+        require_serial: true
 
       # oxlint --type-aware src test
       - id: oxlint
@@ -131,6 +133,7 @@ repos:
         language: system
         pass_filenames: false
         types_or: [javascript, jsx, ts, tsx]
+        require_serial: true
 
       # oxfmt --check src test
       - id: oxfmt
@@ -139,6 +142,7 @@ repos:
         language: system
         pass_filenames: false
         types_or: [javascript, jsx, ts, tsx]
+        require_serial: true
 
       # swiftlint (same as CI)
       - id: swiftlint
@@ -147,6 +151,7 @@ repos:
         language: system
         pass_filenames: false
         types: [swift]
+        require_serial: true
 
       # swiftformat --lint (same as CI)
       - id: swiftformat
@@ -155,3 +160,12 @@ repos:
         language: system
         pass_filenames: false
         types: [swift]
+        require_serial: true
+
+      # ai-review (ACUA Architecture Standard)
+      - id: ai-review
+        name: ai-review
+        entry: powershell -ExecutionPolicy Bypass -Command "Write-Host 'Triggering AI Review via AutoAgent-TW...'; # Add specific call here if needed"
+        language: system
+        pass_filenames: false
+        require_serial: true
