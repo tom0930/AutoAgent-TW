@@ -1,7 +1,7 @@
 # 專案狀態 (STATE): v3.3.0
 
-- **總進度**: Phase 158 (v3.3.0)
-- **當前階段**: 158 (Google Desktop AI Synergy) - ✅ DONE
+- **總進度**: Phase 160 (v3.3.2)
+- **當前階段**: 160 (AutoCLI Integration) - 🛠️ IN_PROGRESS
 - **專案模式**: Multi-Agent Orchestration (Sub-Agent Mode)
 - **最後更新日期**: 2026-04-20
 
@@ -48,3 +48,7 @@
 - **Phase 159.2: Security Hardening & Documentation (v3.3.1)** - ✅ DONE
   - **核心架構**: 更新 SECURITY.md，將 Phase 158.5 的 IDE Stealth Mode 定義為受控安全邊界。
   - **強韌性**: 紀錄針對 Shadow Check 併發操作的 Lock 預防策略。
+
+- **Phase 160: AutoCLI Integration (v3.3.2)** - 🛠️ IN_PROGRESS
+  - **目標**: 整合 nashsu/AutoCLI (Rust) 作為 Eye-2 Web 抓取引擎。
+  - **狀態**: 已完成領域研究 (RESEARCH.md) 與實作計畫 (PLAN.md)。
