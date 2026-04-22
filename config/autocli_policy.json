@@ -1,0 +1,22 @@
+{
+    "whitelist": [
+        "github.com",
+        "wikipedia.org",
+        "arxiv.org",
+        "python.org",
+        "rust-lang.org",
+        "google.com",
+        "bing.com",
+        "duckduckgo.com"
+    ],
+    "blacklist": [
+        "doubleclick.net",
+        "adservice.google.com",
+        "facebook.com",
+        "twitter.com",
+        "x.com"
+    ],
+    "max_memory_mb": 50,
+    "stealth_mode": true,
+    "user_agent_stealth": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
