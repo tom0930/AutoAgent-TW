@@ -1,4 +1,22 @@
 # AutoAgent-TW Version Log
+ 
+## [v3.3.1-acua-hardening] - 2026-04-22
+ 
+### 🚀 新增功能 (Key Features)
+1. **ACUA 架構實施 (Phase 159 Pre-requisites)**: 完成 Antigravity-Centric Unified Architecture (ACUA) 的初期部署。透過排除 redundant AI 代理 (Claude Dev / Roo-Cline) 並統一由 Antigravity 進行資源調度。
+2. **Git Hook 序列化 (Serial Guard)**: 升級 `openclaw/.pre-commit-config.yaml` 配合 `require_serial: true` 規約。解決在 Intel/AMD 低功耗 CPU 下進行大規模提交時，併發 Node/Python 進程引發的記憶體膨脹 (OOM) 與檔案鎖爭奪問題。
+3. **環境自動收割器 (Shadow Reaper)**: 整合 `kill_zombies.py` 至 `/aa-ship` 與 Git Commit 流程。每次代碼交付後會自動掃描並終止 orphaned processes，確保 IDE 長時間運行的穩定性。
+4. **ai-review Hook 預埋**: 在 Pre-commit 管道中正式預埋 `ai-review` 鉤子，為 Phase 159 的 FPGA 代碼自動化審核鋪平道路。
+ 
+### 📁 核心文件更新 (@file:)
+- `openclaw/.pre-commit-config.yaml`: 序列化 Hooks 與 ai-review 預埋。
+- `scripts/memory_monitor.py`: 新增動態 RAM 佔用審計與快照功能。
+- `ROADMAP.md`: 更新 Phase 159 開發進度與環境整備狀態。
+ 
+### 🔒 安全性 (Security)
+- **Zero-Trust Tooling**: 移除非受控第三方擴充套件，收斂 MCP 存取點。
+- **Memory Recovery**: 驗證透過 `Stop-Process` 硬回收有效性，系統基準佔用由 4.5GB+ 降至 ~3.2GB。
+ 
 
 ## [v2.9.1-reliability-tuning] - 2026-04-17
 
