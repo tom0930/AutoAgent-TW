@@ -35,9 +35,9 @@ AutoCLI is a high-performance Rust executable that extracts structured informati
 
 ## Setup
 
-AutoCLI should be located in the `bin/` directory. Verify with:
+AutoCLI is located in the `bin/` directory. Access it via the relative path:
 ```bash
-autocli --version
+./bin/autocli --version
 ```
 
 ## Common Commands
@@ -46,27 +46,27 @@ autocli --version
 
 ```bash
 # Basic fetch (returns structured JSON)
-autocli fetch https://github.com/nashsu/AutoCLI
+./bin/autocli read https://github.com/nashsu/AutoCLI --format json
 
 # Fetch using existing browser profile (bypass login)
-autocli fetch https://github.com/nashsu/AutoCLI --profile "Default"
+./bin/autocli read https://github.com/nashsu/AutoCLI --format json --profile "Default"
 ```
 
 ### Manage Adapters
 
 ```bash
-# List available AI Adapters (autocli.ai)
-autocli adapter list
+# Search for existing AI Adapters
+./bin/autocli search github.com
 
-# Update adapters
-autocli adapter update
+# Explore a website for adapter generation
+./bin/autocli generate https://example.com
 ```
 
 ### Browser Control
 
 ```bash
 # List active browser targets
-autocli target list
+./bin/autocli target list
 ```
 
 ## JSON Output
