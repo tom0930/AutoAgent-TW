@@ -66,6 +66,9 @@ secrets/
 *creds.json
 *.json.key
 
+# === Chrome Extension (不應提交) ===
+bin/extension/
+
 # === Phase 130 資源連結 ===
 antigravity/
 
