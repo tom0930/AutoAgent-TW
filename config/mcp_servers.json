@@ -1,0 +1,24 @@
+{
+  "servers": {
+    "filesystem": {
+      "name": "Filesystem MCP",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+      "enabled": true
+    },
+    "memory": {
+      "name": "Memory MCP",
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "src.core.mcp.memory_server"],
+      "enabled": false
+    }
+  },
+  "security": {
+    "tool_whitelist": [],
+    "allowed_servers": [],
+    "rate_limit_per_minute": 100
+  },
+  "version": "1.0.0"
+}

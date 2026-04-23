@@ -1,0 +1,22 @@
+{
+  "plugins": [
+    {
+      "name": "example-plugin",
+      "version": "1.0.0",
+      "enabled": false,
+      "description": "Example plugin template"
+    }
+  ],
+  "security": {
+    "require_signature": false,
+    "block_unsigned": false,
+    "allowed_permissions": [
+      "file:read",
+      "file:write",
+      "network:http",
+      "network:https",
+      "system:info"
+    ]
+  },
+  "version": "1.0.0"
+}

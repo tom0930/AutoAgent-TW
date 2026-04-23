@@ -1,2 +1,14 @@
-# Phase 153 Refactor: Empty __init__ to prevent circular imports during MCP discovery
-# Use absolute imports from child modules directly.
+"""
+AI Harness MCP Package
+"""
+from .hub import MCPHub, MCPTool, MCPToolCall, MCPToolResult, MCPTransport, MCPTransportBase
+
+__version__ = "1.0.0"
+__all__ = [
+    "MCPHub",
+    "MCPTool",
+    "MCPToolCall",
+    "MCPToolResult",
+    "MCPTransport",
+    "MCPTransportBase",
+]
