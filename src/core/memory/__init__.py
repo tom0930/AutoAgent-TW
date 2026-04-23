@@ -15,7 +15,7 @@ Layer 2.5: Knowledge Graph
 - Validity windows
 - Entity resolution
 
-Layer 3: Reranking Pipeline - Planned
+Layer 3: Reranking Pipeline
 - Hybrid Search + Temporal + KG Boost
 - Token Compression
 """
@@ -50,6 +50,26 @@ from .kg import (
     RelationQuery,
 )
 
+from .rerank import (
+    Reranker,
+    RerankConfig,
+    RerankResult,
+    BM25,
+    TemporalScorer,
+    KGBooster,
+    rerank_search_results,
+)
+
+from .compress import (
+    TokenCompressor,
+    CompressionConfig,
+    CompressionResult,
+    TokenEstimator,
+    StructureParser,
+    compress_content,
+    estimate_tokens,
+)
+
 __all__ = [
     # Working Memory
     "WorkingMemory",
@@ -75,4 +95,20 @@ __all__ = [
     "ValidityWindow",
     "EntityQuery",
     "RelationQuery",
+    # Reranking
+    "Reranker",
+    "RerankConfig",
+    "RerankResult",
+    "BM25",
+    "TemporalScorer",
+    "KGBooster",
+    "rerank_search_results",
+    # Compression
+    "TokenCompressor",
+    "CompressionConfig",
+    "CompressionResult",
+    "TokenEstimator",
+    "StructureParser",
+    "compress_content",
+    "estimate_tokens",
 ]
