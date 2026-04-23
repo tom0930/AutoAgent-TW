@@ -20,7 +20,29 @@ from .orchestration.coordinator import OrchestrationCoordinator
 from .orchestration.spawn_manager import AgentProcess
 
 # ── Hybrid Palace Memory ─────────────────────────────────────────────────────
-from .memory import WorkingMemory, WorkingMemoryConfig, FlushEvent
+from .memory import (
+    WorkingMemory,
+    WorkingMemoryConfig,
+    FlushEvent,
+    # Palace Index
+    PalaceIndex,
+    PalaceConfig,
+    Wing,
+    Room,
+    Drawer,
+    WingType,
+    SearchResult,
+    # Knowledge Graph
+    KnowledgeGraph,
+    KGConfig,
+    Entity,
+    Relation,
+    EntityType,
+    RelationType,
+    ValidityWindow,
+    EntityQuery,
+    RelationQuery,
+)
 
 __version__ = "1.0.0"
 
@@ -62,4 +84,22 @@ __all__ = [
     "WorkingMemory",
     "WorkingMemoryConfig",
     "FlushEvent",
+    # Palace Index
+    "PalaceIndex",
+    "PalaceConfig",
+    "Wing",
+    "Room",
+    "Drawer",
+    "WingType",
+    "SearchResult",
+    # Knowledge Graph
+    "KnowledgeGraph",
+    "KGConfig",
+    "Entity",
+    "Relation",
+    "EntityType",
+    "RelationType",
+    "ValidityWindow",
+    "EntityQuery",
+    "RelationQuery",
 ]
