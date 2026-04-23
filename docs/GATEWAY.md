@@ -1,0 +1,74 @@
+# AI Harness Gateway 使用手冊
+
+## 快速開始
+
+```bash
+# 啟動 Gateway
+python src/core/harness_gateway.py start
+
+# 查看狀態
+python src/core/harness_gateway.py status
+
+# 停止 Gateway
+python src/core/harness_gateway.py stop
+
+# 前台執行
+python src/core/harness_gateway.py run
+```
+
+## 配置
+
+編輯 `config/harness.toml`:
+
+```toml
+[gateway]
+version = "1.0.0"
+log_level = "INFO"
+auto_restart = true
+restart_delay = 5
+
+[services]
+memory = { enabled = true, priority = 1 }
+vision = { enabled = true, priority = 2 }
+mcp = { enabled = true, priority = 3 }
+cron = { enabled = true, priority = 4 }
+security = { enabled = true, priority = 0 }
+```
+
+## 架構
+
+```
+┌────────────────────────────────────────────┐
+│              Harness Gateway               │
+├────────────────────────────────────────────┤
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐    │
+│  │ Security│  │ Memory  │  │ Vision  │    │
+│  │Sentinel │  │ Service │  │ Engine  │    │
+│  └────┬────┘  └────┬────┘  └────┬────┘    │
+│  ┌────┴────────────┴────────────┴────┐    │
+│  │           Event Queue             │    │
+│  └────┬────────────┬────────────┬────┘    │
+│  ┌────┴────┐  ┌────┴────┐  ┌────┴────┐    │
+│  │   MCP   │  │  Cron   │  │ Worker  │    │
+│  │   Hub   │  │Scheduler│  │ Thread  │    │
+│  └─────────┘  └─────────┘  └─────────┘    │
+└────────────────────────────────────────────┘
+```
+
+## 服務清單
+
+| 服務 | 功能 | 優先級 |
+|------|------|--------|
+| Security Sentinel | 安全監控 | 0 |
+| MemPalace Service | 記憶體管理 | 1 |
+| Vision Engine | 螢幕截圖/控制 | 2 |
+| MCP Hub | MCP 伺服器路由 | 3 |
+| Cron Scheduler | 排程任務 | 4 |
+
+## 日誌
+
+日誌位於 `logs/gateway.log`。
+
+---
+
+*最後更新：2026-04-23*

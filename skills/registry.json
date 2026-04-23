@@ -1,0 +1,10 @@
+{
+  "skills": [
+    {
+      "name": "example-automation",
+      "path": "examples/automation",
+      "enabled": true
+    }
+  ],
+  "version": "1.0.0"
+}
