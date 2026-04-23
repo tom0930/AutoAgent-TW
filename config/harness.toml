@@ -1,0 +1,30 @@
+{
+  "harness": {
+    "version": "1.0.0",
+    "log_level": "INFO",
+    "auto_restart": true,
+    "restart_delay": 5
+  },
+  "services": {
+    "memory": {
+      "enabled": true,
+      "priority": 1
+    },
+    "vision": {
+      "enabled": true,
+      "priority": 2
+    },
+    "mcp": {
+      "enabled": true,
+      "priority": 3
+    },
+    "cron": {
+      "enabled": true,
+      "priority": 4
+    },
+    "security": {
+      "enabled": true,
+      "priority": 0
+    }
+  }
+}
