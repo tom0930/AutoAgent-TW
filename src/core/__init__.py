@@ -42,6 +42,22 @@ from .memory import (
     ValidityWindow,
     EntityQuery,
     RelationQuery,
+    # Reranking
+    Reranker,
+    RerankConfig,
+    RerankResult,
+    BM25,
+    TemporalScorer,
+    KGBooster,
+    rerank_search_results,
+    # Compression
+    TokenCompressor,
+    CompressionConfig,
+    CompressionResult,
+    TokenEstimator,
+    StructureParser,
+    compress_content,
+    estimate_tokens,
 )
 
 __version__ = "1.0.0"
@@ -102,4 +118,20 @@ __all__ = [
     "ValidityWindow",
     "EntityQuery",
     "RelationQuery",
+    # Reranking
+    "Reranker",
+    "RerankConfig",
+    "RerankResult",
+    "BM25",
+    "TemporalScorer",
+    "KGBooster",
+    "rerank_search_results",
+    # Compression
+    "TokenCompressor",
+    "CompressionConfig",
+    "CompressionResult",
+    "TokenEstimator",
+    "StructureParser",
+    "compress_content",
+    "estimate_tokens",
 ]
