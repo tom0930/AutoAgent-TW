@@ -1,12 +1,13 @@
 """
-AI Harness Node Package
+AI Harness Cron Scheduler Package
 """
-from .pairing import NodePairing, DevicePairing, DeviceType, PairingStatus
+from .scheduler import CronScheduler, CronJob, JobRun, JobKind, JobStatus
 
 __version__ = "1.0.0"
 __all__ = [
-    "NodePairing",
-    "DevicePairing",
-    "DeviceType",
-    "PairingStatus",
+    "CronScheduler",
+    "CronJob",
+    "JobRun",
+    "JobKind",
+    "JobStatus",
 ]

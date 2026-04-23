@@ -1,4 +1,4 @@
 """
-AI Harness MCP Hub
+AI Harness Cron Package (legacy root-level redirect)
+All cron functionality is now in src.core.cron.*
 """
-__version__ = "1.0.0"
