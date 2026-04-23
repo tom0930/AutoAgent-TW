@@ -19,6 +19,9 @@ from .node.pairing import NodePairing, DevicePairing, DeviceType, PairingStatus
 from .orchestration.coordinator import OrchestrationCoordinator
 from .orchestration.spawn_manager import AgentProcess
 
+# ── Hybrid Palace Memory ─────────────────────────────────────────────────────
+from .memory import WorkingMemory, WorkingMemoryConfig, FlushEvent
+
 __version__ = "1.0.0"
 
 __all__ = [
@@ -55,4 +58,8 @@ __all__ = [
     # Phase 3
     "OrchestrationCoordinator",
     "AgentProcess",
+    # Hybrid Palace Memory
+    "WorkingMemory",
+    "WorkingMemoryConfig",
+    "FlushEvent",
 ]
