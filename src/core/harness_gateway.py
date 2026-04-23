@@ -51,7 +51,7 @@ class HarnessGateway:
         self.running = False
         self.services: Dict[str, Service] = {}
         self.event_queue: queue.Queue = queue.Queue()
-        self.start_time = 0
+        self.start_time: float = 0.0  # Will be set in start()
         
         # 初始化日誌
         self.log_path = self.workspace / "logs" / "gateway.log"
@@ -157,7 +157,7 @@ class HarnessGateway:
         self.logger.info(f"Workspace: {self.workspace}")
         self.logger.info("=" * 60)
         
-        self.start_time = time.time()
+        self.start_time: float = time.time()
         self.running = True
         
         # 初始化所有服務

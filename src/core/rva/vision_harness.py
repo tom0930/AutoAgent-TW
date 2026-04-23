@@ -175,10 +175,10 @@ class VisionHarness:
         ctypes.windll.user32.GetWindowRect(hwnd, ctypes.byref(rect))
         
         region = ScreenRegion(
-            x=rect.left,
-            y=rect.top,
-            width=rect.right - rect.left,
-            height=rect.bottom - rect.top
+            x=int(rect.left),   # type: ignore[arg-type]
+            y=int(rect.top),    # type: ignore[arg-type]
+            width=int(rect.right - rect.left),   # type: ignore[operator]
+            height=int(rect.bottom - rect.top)   # type: ignore[operator]
         )
         
         return self.screenshot(region)
