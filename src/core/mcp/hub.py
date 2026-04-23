@@ -47,21 +47,17 @@ class MCPToolCall:
     
     def __post_init__(self):
         if not self.call_id:
-            self.call_id = f"call_{uuid.uuid4().hex[:12]}"
+            self.call_id = f"call_{uuid.uuid4().hex[:12]}"  # type: ignore[assignment]
 
 
 @dataclass
 class MCPToolResult:
     """MCP Tool 呼叫結果"""
-    call_id: str
+    call_id: str | None
     success: bool
     result: Any = None
     error: Optional[str] = None
     execution_time_ms: float = 0
-
-    def __post_init__(self):
-        if self.call_id is None:
-            self.call_id = "unknown"
 
 
 class MCPTransportBase(ABC):
@@ -130,11 +126,11 @@ class StdioTransport(MCPTransportBase):
             content = json.dumps(message, ensure_ascii=False)
             content_bytes = (content + '\n').encode('utf-8')
             
-            self.process.stdin.write(content_bytes)
-            self.process.stdin.flush()
+            self.process.stdin.write(content_bytes)  # type: ignore[union-attr]
+            self.process.stdin.flush()  # type: ignore[union-attr]
             
             # 讀取回應
-            line = self.process.stdout.readline()
+            line = self.process.stdout.readline()  # type: ignore[union-attr]
             if not line:
                 raise RuntimeError("No response from MCP server")
             
@@ -149,7 +145,7 @@ class StdioTransport(MCPTransportBase):
         
         # 使用 select 檢查是否有資料可讀
         if select.select([self.process.stdout], [], [], 0.1)[0]:
-            line = self.process.stdout.readline()
+            line = self.process.stdout.readline()  # type: ignore[union-attr]
             if line:
                 return json.loads(line.decode('utf-8'))
         
