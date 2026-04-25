@@ -36,30 +36,47 @@ def check_url_safety(url: str) -> bool:
     """
     Validates URL against domain whitelist/blacklist.
     Returns True if safe, False otherwise.
+
+    Handles three URL forms:
+      - Full URL:  https://github.com/user/repo
+      - Bare host: github.com/user/repo  (no scheme)
+      - IP:port:   192.168.1.1:8080/path
     """
     policy = load_policy()
     try:
-        domain = urlparse(url).netloc.lower()
+        # Primary: try standard parser
+        parsed = urlparse(url)
+        domain = parsed.netloc.lower()
+
+        # Fallback: no scheme — treat entire string as domain:port/path
         if not domain:
-            # Handle cases like "github.com" without scheme
-            domain = url.split('/')[0].lower()
-        
-        # Check blacklist first
+            # Strip leading // which urlparse tolerates but ignores
+            fallback = url.lstrip("/").split("/")[0]
+            # Handle user:pass@host:port format
+            if "@" in fallback:
+                fallback = fallback.split("@")[-1]
+            domain = fallback.lower()
+
+        if not domain:
+            return False
+
+        # Check blacklist first (broader match)
         for blocked in policy.get("blacklist", []):
             if blocked in domain:
                 return False
-        
-        # Check whitelist
+
+        # Check whitelist (exact or subdomain match)
         for allowed in policy.get("whitelist", []):
-            if allowed in domain:
+            # Allow exact match OR subdomain (e.g. "github.com" matches "api.github.com")
+            if allowed == domain or domain.endswith("." + allowed):
                 return True
-        
-        # Default to False if whitelist exists but domain not in it
+
+        # If a whitelist is defined, default-deny
         if policy.get("whitelist"):
             return False
-            
+
         return True
-    except:
+    except Exception:
         return False
 
 if __name__ == "__main__":

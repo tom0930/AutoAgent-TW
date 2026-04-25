@@ -359,13 +359,14 @@ Examples:
             print("=== Active Sub-Agents ===")
             if not _ACTIVE_SUBAGENTS:
                 print("  (none)")
-            for pid, proc in list(_ACTIVE_SUBAGENTS.items()):
-                name = getattr(proc, "config", None)
-                if name:
-                    name = getattr(name, "name", str(name))
-                else:
-                    name = str(proc)
-                print(f"  PID {pid}: {name}")
+            for proc in list(_ACTIVE_SUBAGENTS):
+                # proc is an AgentProcess instance; access via attribute
+                name = getattr(proc, "task_name", "?")
+                aid = getattr(proc, "agent_id", "?")
+                status = getattr(proc, "status", "?")
+                progress = getattr(proc, "progress", 0)
+                icon = "🟢" if status == "running" else "⚫"
+                print(f"  {icon} [{aid}] {name} — {progress}% ({status})")
             return 0
 
         if cmd == "tools":
@@ -685,7 +686,51 @@ Examples:
 
     def _cmd_session(self, args) -> int:
         """Session commands."""
-        print(f"Session command: {getattr(args, 'session_command', '')}")
+        cmd = getattr(args, "session_command", "")
+        try:
+            from src.core.session_manager import SessionManager
+            workspace_path = Path(args.workspace)
+            sm = SessionManager(workspace=str(workspace_path))
+        except ImportError:
+            print("❌ SessionManager not available")
+            return 1
+
+        if cmd == "list":
+            sessions = sm.list_sessions()
+            print(f"=== Sessions ({len(sessions)}) ===")
+            if not sessions:
+                print("  (none)")
+            for s in sessions:
+                sid = s.get("id", "?")[:12]
+                label = s.get("label", "-")
+                status = s.get("status", "?")
+                print(f"  [{status:10s}] {sid} — {label}")
+            return 0
+
+        if cmd == "show":
+            import json
+            sid = getattr(args, "session_id", None)
+            if not sid:
+                print("❌ session_id required")
+                return 1
+            data = sm.get_session(sid)
+            if not data:
+                print(f"❌ Session not found: {sid}")
+                return 1
+            print(json.dumps(data, indent=2, ensure_ascii=False))
+            return 0
+
+        if cmd == "delete":
+            sid = getattr(args, "session_id", None)
+            force = getattr(args, "force", False)
+            if not sid:
+                print("❌ session_id required")
+                return 1
+            sm.delete_session(sid, force=force)
+            print(f"✓ Deleted: {sid}")
+            return 0
+
+        print("用法：aa-harness session [list|show|delete]")
         return 0
 
     def _cmd_cron(self, args) -> int:
@@ -700,7 +745,63 @@ Examples:
 
     def _cmd_node(self, args) -> int:
         """Node commands."""
-        print(f"Node command: {getattr(args, 'node_command', '')}")
+        cmd = getattr(args, "node_command", "")
+        try:
+            from src.core.node.pairing import NodePairingManager
+            mgr = NodePairingManager()
+        except ImportError:
+            print("❌ NodePairingManager not available")
+            return 1
+
+        if cmd == "list":
+            devices = mgr.list_devices()
+            print(f"=== Paired Devices ({len(devices)}) ===")
+            if not devices:
+                print("  (none — run 'aa-harness node pair <code>' to pair)")
+            for d in devices:
+                name = d.get("name", "?")
+                did = d.get("id", "?")[:8]
+                online = d.get("online", False)
+                icon = "🟢" if online else "⚫"
+                print(f"  {icon} {name} ({did})")
+            return 0
+
+        if cmd == "describe":
+            import json
+            did = getattr(args, "device_id", None)
+            if not did:
+                print("❌ device_id required")
+                return 1
+            info = mgr.describe(did)
+            if not info:
+                print(f"❌ Device not found: {did}")
+                return 1
+            print(json.dumps(info, indent=2, ensure_ascii=False))
+            return 0
+
+        if cmd == "pair":
+            code = getattr(args, "code", None)
+            if not code:
+                print("❌ pairing code required")
+                return 1
+            result = mgr.pair(code)
+            if result:
+                print(f"✓ Paired: {result}")
+            else:
+                print("❌ Pairing failed — check code and try again")
+                return 1
+            return 0
+
+        if cmd == "remove":
+            did = getattr(args, "device_id", None)
+            if not did:
+                print("❌ device_id required")
+                return 1
+            mgr.remove(did)
+            print(f"✓ Removed: {did}")
+            return 0
+
+        print("用法：aa-harness node [list|describe|pair|remove]")
         return 0
 
     def _cmd_vision(self, args) -> int:

@@ -157,7 +157,7 @@ class HarnessGateway:
         self.logger.info(f"Workspace: {self.workspace}")
         self.logger.info("=" * 60)
         
-        self.start_time: float = time.time()
+        self.start_time = time.time()
         self.running = True
         
         # 初始化所有服務
@@ -218,10 +218,74 @@ class HarnessGateway:
             self.services[service_id] = service
     
     def _init_service_module(self, service_id: str):
-        """初始化具體服務模組"""
-        # 根據 service_id 初始化對應模組
-        # 這裡是鉤子，實際實作在各服務模組中
-        pass
+        """
+        Initialize concrete service module based on service_id.
+        Routes to the appropriate subsystem init function.
+        Returns the initialized service instance, or raises on failure.
+        """
+        init_map = {
+            "security": self._init_security,
+            "memory":   self._init_memory,
+            "vision":   self._init_vision,
+            "mcp":      self._init_mcp,
+            "cron":     self._init_cron,
+        }
+
+        fn = init_map.get(service_id)
+        if fn is None:
+            raise ValueError(f"Unknown service_id: {service_id}")
+        return fn()
+
+    def _init_security(self):
+        """Initialize the Security Sentinel service."""
+        # Future: load guardian hooks, context_guard, token_killer
+        self.logger.debug("Security Sentinel: no-op (hooks auto-registered)")
+
+    def _init_memory(self):
+        """Initialize the MemPalace memory service."""
+        try:
+            # pyrefly: ignore [missing-import]
+            from src.core.memory.palace import MemoryPalace
+            palace = MemoryPalace(workspace=str(self.workspace))
+            self.logger.debug(f"MemoryPalace initialized: {palace}")
+            return palace
+        except ImportError:
+            self.logger.warning("MemoryPalace not available — memory service skipped")
+            raise
+
+    def _init_vision(self):
+        """Initialize the Vision/RVA service."""
+        try:
+            # pyrefly: ignore [missing-import]
+            from src.core.rva import RVAEngine
+            engine = RVAEngine(workspace=str(self.workspace))
+            self.logger.debug(f"RVAEngine initialized: {engine}")
+            return engine
+        except ImportError:
+            self.logger.warning("RVAEngine not available — vision service skipped")
+            raise
+
+    def _init_mcp(self):
+        """Initialize the MCP Hub service."""
+        try:
+            from src.core.mcp.hub import MCPHub
+            hub = MCPHub()
+            self.logger.debug(f"MCPHub initialized: {hub}")
+            return hub
+        except ImportError:
+            self.logger.warning("MCPHub not available — mcp service skipped")
+            raise
+
+    def _init_cron(self):
+        """Initialize the Cron Scheduler service."""
+        try:
+            from src.core.cron.scheduler import CronScheduler
+            scheduler = CronScheduler(workspace=str(self.workspace))
+            self.logger.debug(f"CronScheduler initialized: {scheduler}")
+            return scheduler
+        except ImportError:
+            self.logger.warning("CronScheduler not available — cron service skipped")
+            raise
     
     def _worker(self):
         """背景工作執行緒"""

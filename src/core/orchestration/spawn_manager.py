@@ -79,16 +79,20 @@ class AgentProcess:
         with open(self.state_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
-    def spawn(self, command: list, env_ovrides: Optional[dict] = None):
+    def spawn(self, command: list, env_overrides: Optional[dict] = None):
         """
         Spawns the process using subprocess.Popen with Job Object protection.
+
+        Args:
+            command: List of command arguments to execute.
+            env_overrides: Optional dict of environment variables to override/extend.
         """
         # pyrefly: ignore [missing-import]
         from src.utils.win32_job import process_job
 
         env = os.environ.copy()
-        if env_ovrides:
-            env.update(env_ovrides)
+        if env_overrides:
+            env.update(env_overrides)
 
         # Add AGENT_ID and inheritance values to env
         env["AA_SUBAGENT_ID"] = self.agent_id
