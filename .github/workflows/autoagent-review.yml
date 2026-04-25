@@ -1,0 +1,39 @@
+name: AutoAgent-TW AI Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: 'Phase to execute'
+        required: false
+        default: '129'
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          grep -vE "pywinauto|pyautogui|mss" requirements.txt > requirements_headless.txt
+          pip install -r requirements_headless.txt
+
+      - name: Run AutoAgent AI Review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AA_HEADLESS: "1"
+          AA_MAX_LOOPS: "2"
+        run: |
+          python -m src.harness.cli.main --headless agent spawn "Review the latest changes in this PR and suggest improvements."
