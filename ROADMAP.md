@@ -20,6 +20,11 @@
 - **The Global Palace**: Securely sharing "Tunnels" across different projects.
 - **Visual Memory Map**: A 2D/3D visualization of the palace (wings, rooms) to help users explore their own project's history.
 - **Voice Integration**: Ask the AI "What did we decide?" via voice and have it search and narrate the answer.
+- [X] Phase 152: Type Checker Orchestration (Ty & Pyrefly Shadow Check) [DONE]
+- [X] Phase 138: Windows GUI Automation (RVA & Vision Integration) [DONE]
+- [X] Phase 153: Human-in-the-loop Verification Contracts [DONE]
+- [X] Phase 160: AutoCLI Integration (v3.3.2) [DONE]
+- [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
 
 ## Feedback & Ideas
 - **User Preference Mining**: Auto-detect habits and coding style to tailor future suggestions.
