@@ -23,6 +23,12 @@ import logging
 from pathlib import Path
 from typing import Optional, List
 
+# Phase 129: Headless Security
+try:
+    from src.core.security.log_sanitizer import LogSanitizer
+except ImportError:
+    LogSanitizer = None
+
 # Project root
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 
@@ -98,6 +104,11 @@ Examples:
             "--workspace", "-w",
             default=os.getcwd(),
             help="Working directory",
+        )
+        parser.add_argument(
+            "--headless",
+            action="store_true",
+            help="Run in headless mode (no interaction, structured output)",
         )
 
         # Subcommands
@@ -502,6 +513,20 @@ Examples:
             logging.getLogger().setLevel(logging.DEBUG)
 
         self.logger.info(f"Running command: {args.command}")
+
+        # Step 1: Log Sanitization (Phase 129)
+        if LogSanitizer:
+            sanitizer = LogSanitizer()
+            sanitizer.wrap_streams()
+            self.logger.info("Log sanitization active (Zero Trust boundary enabled)")
+
+        # Step 2: Headless Mode Environment (Phase 129)
+        if args.headless:
+            os.environ["AA_HEADLESS"] = "1"
+            # Ensure stdout is unbuffered in headless mode
+            if hasattr(sys.stdout, "reconfigure"):
+                sys.stdout.reconfigure(line_buffering=True)
+            self.logger.info("Running in HEADLESS mode (interactive prompts disabled)")
 
         try:
             return self._dispatch(args)

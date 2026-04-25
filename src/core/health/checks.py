@@ -313,6 +313,15 @@ class HealthChecker:
 
     def check_vision_system(self) -> HealthCheckResult:
         t0 = time.time()
+        # Step 2: Headless Mode (Phase 129)
+        if os.environ.get("AA_HEADLESS") == "1":
+            return HealthCheckResult(
+                name="Vision System",
+                level=HealthLevel.OK,
+                message="Skipped (Headless Mode Active)",
+                duration_ms=(time.time() - t0) * 1000,
+            )
+            
         try:
             from src.core.rva import VisionHarness
             return HealthCheckResult(

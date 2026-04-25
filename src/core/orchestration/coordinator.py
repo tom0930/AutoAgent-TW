@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import os
 from typing import Dict, Any, List
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
@@ -69,10 +70,21 @@ class OrchestrationCoordinator:
         (ReAct / Loop protection)
         """
         last_message = state["messages"][-1]
-        # In a real scenario, we'd check if the tool output is an error or 
-        # if the last message contains complex instructions.
-        # Here we check if we've looped too many times.
-        if len(state.get("mcp_tools_used", [])) > 5:
+        
+        # Step 3: Orchestration Guard (Phase 129)
+        # Prevent runaway agents in headless CI/CD environments.
+        max_loops = 5
+        is_headless = os.environ.get("AA_HEADLESS") == "1"
+        
+        if is_headless:
+            # Default to 3 loops in headless mode unless overridden
+            max_loops = int(os.environ.get("AA_MAX_LOOPS", 3))
+
+        used_tools_count = len(state.get("mcp_tools_used", []))
+        
+        if used_tools_count >= max_loops:
+            if is_headless:
+                print(f"[!] Headless loop limit reached ({max_loops}). Terminating for safety.")
             return "end"
         
         # pyrefly: ignore [missing-attribute]
