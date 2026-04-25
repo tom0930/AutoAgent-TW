@@ -1,11 +1,11 @@
-# Roadmap: v2.3.0 Unified Core (Resilience & Agentic)
+﻿# Roadmap: v2.3.0 Unified Core (Resilience & Agentic)
 
-## ??�?Phase 1.x: Industrial Foundation (v1.7.0 - v1.8.x)
-- [X] Phase 111: aa-gitpush ?�慧交�??��??�步?��?�?[DONE]
+## ??儭?Phase 1.x: Industrial Foundation (v1.7.0 - v1.8.x)
+- [X] Phase 111: aa-gitpush ?箸鈭支????郊?芰?隞?[DONE]
 - [X] Phase 112: EXE Installer & Modular Update Engine [DONE]
-- [X] Phase 114: AutoFix 修核引�? (Innovation & Self-Healing) [DONE]
-- [X] Phase 115: ?�慧?��???Git Hooks ?��? [DONE]
-- [X] Phase 116: aa-Dashboard 一?�整?��?�?[DONE]
+- [X] Phase 114: AutoFix 靽格撘? (Innovation & Self-Healing) [DONE]
+- [X] Phase 115: ?箸????Git Hooks ?游? [DONE]
+- [X] Phase 116: aa-Dashboard 銝?菜??隞?[DONE]
 - [X] Phase 122: OpenClaw Bridge & Standalone Deployment [DONE]
 
 ## ?? Phase 2.x: Agentic Execution (v1.9.0 - v2.1.x)
@@ -16,12 +16,12 @@
 
 ## ?? Phase 3.x: Knowledge & Memory (v2.2.0 - v2.3.x)
 - [X] Phase 128: Persistent Memory System (L1/L2/L3) [DONE]
-- [X] Phase 130: ?��?庫整??(Line -> GDrive -> NLM) [DONE]
+- [X] Phase 130: ?亥?摨急??(Line -> GDrive -> NLM) [DONE]
 - [x] Phase 158: Industrial RVA & Google Synergy - COMPLETED ??(Integrated AI Vision Reasoning)
 - [x] Phase 158.5: IDE Memory Stealth Mode - COMPLETED ? ??(ACUA Environment Optimization)
-- [X] Phase 133: LineBot x GDrive x NLM 實�? [DONE]
+- [X] Phase 133: LineBot x GDrive x NLM 撖虫? [DONE]
 - [X] Phase 135: AutoSkills Library & Intent Bridge [DONE]
-- [X] Phase 136: Dashboard ?�代??(React Integration) [DONE]
+- [X] Phase 136: Dashboard ?曆誨??(React Integration) [DONE]
 - [X] Phase 137: Dashboard Finisher & QA Audit [DONE]
     - [X] Implement 50-entry execution history tracking.
     - [X] Integrate Mermaid.js for dynamic roadmap visualization.
@@ -41,4 +41,6 @@
 - [X] Phase 152: Type Checker Orchestration (Ty & Pyrefly Shadow Check) [DONE]
 - [X] Phase 138: Windows GUI Automation (RVA & Vision Integration) [DONE]
 - [X] Phase 153: Human-in-the-loop Verification Contracts [DONE]
+- [X] Phase 160: AutoCLI Integration (v3.3.2) [DONE]
 - [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
+
