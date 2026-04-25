@@ -49,6 +49,6 @@
   - **核心架構**: 更新 SECURITY.md，將 Phase 158.5 的 IDE Stealth Mode 定義為受控安全邊界。
   - **強韌性**: 紀錄針對 Shadow Check 併發操作的 Lock 預防策略。
 
-- **Phase 160: AutoCLI Integration (v3.3.2)** - 🛠️ IN_PROGRESS
+- **Phase 160: AutoCLI Integration (v3.3.2)** - ✅ QA & REVIEW PASSED
   - **目標**: 整合 nashsu/AutoCLI (Rust) 作為 Eye-2 Web 抓取引擎。
-  - **狀態**: 已完成領域研究 (RESEARCH.md) 與實作計畫 (PLAN.md)。
+  - **狀態**: 已完成開發、測試 (`QA-REPORT.md`) 與架構審查 (`REVIEW-REPORT.md`)。等待 `/aa-ship 160` 進行出貨。
