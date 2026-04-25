@@ -1,39 +1,49 @@
-# PLAN: Phase 129 — Headless Mode + CI/CD Integration
+# PLAN: Phase 129 Headless CI/CD Integration
 
-## 1. 需求拆解與邊界定義
-- [x] Wave 1: 實作狀態鎖定機制 (State Locking) 避免併發衝突。
-- [x] Wave 2: 實作閒置偵測 (Idle Watcher) 決定執行時機。
-- [ ] Wave 3: 開發 `/aa-review` 自動化評審員。
-- [ ] Wave 4: 整合 GitHub Actions 實現完全自動化。
+## 複雜度評估 (Complexity Assessment)
+- **跨度**: 涉及主入口 (`main.py`)、安全模組 (`log_sanitizer.py`)、調度模組 (`coordinator.py`) 與 Docker/CI 設定檔。
+- **複雜度**: 中等 (Medium)。不需要強制拆分為多個 Task 檔案，單一 `PLAN.md` 搭配明確的 Step-by-Step 即可。
 
-## 2. 技術選型
-- **Reviewer Persona**: 採用獨立的 "Security + Architect" Prompt。
-- **Diff Engine**: 使用 `git diff` 提取變更範圍。
-- **Report Format**: 採用 Markdown 表格與 Severity Tags。
+---
 
-## 3. 系統架構圖 (Review Flow)
-```mermaid
-graph TD
-    A[Execute Done] --> B[Run aa-qa]
-    B --> C[Run aa-review]
-    C -->|Approved| D[Ship PR]
-    C -->|Request Changes| E[Run aa-fix]
-    E --> B
-```
+## 執行步驟 (Execution Steps)
 
-## 4. 具體執行步驟 (Wave 3)
-### Task 3.1: 建立 aa-review Skill & Workflow
-- [x] 建立 `C:\Users\TOM\.gemini\antigravity\skills\aa-review\SKILL.md`
-- [x] 建立 `z:\autoagent-TW\_agents\workflows\aa-review.md`
+### Step 1: 實作日誌脫敏 (Log Sanitization)
+- **目標**: 防止 API Keys 在 CI/CD 日誌中外洩。
+- **動作**: 
+  - 建立 `src/core/security/log_sanitizer.py`。
+  - 實作 `LogSanitizer` 類別，使用 Regex 攔截並替換符合 `sk-ant-api*`, `AIzaSy*`, `ghp_*` 格式的字串為 `[REDACTED]`。
+  - 整合至 `src/harness/cli/main.py` 的 `_setup_logging` 中。
+- **UAT**: 在測試中印出包含 Dummy API Key 的字串，確認輸出被替換。
 
-### Task 4.1: 整合 GitHub Actions
-- [x] 建立 `.github/workflows/autoagent_ci.yml`
-- [ ] 測試 Workflow 語法正則
+### Step 2: CLI 支援 `--headless` 標記
+- **目標**: 禁用所有的互動提示與 GUI 相依性。
+- **動作**:
+  - 在 `main.py` 中新增 `--headless` 全域參數。
+  - 確保 `--headless` 開啟時，`PYTHONUNBUFFERED` 被模擬或強制設定。
+  - 傳遞 `headless=True` 到 `OrchestrationCoordinator`，關閉所有的 `input()` 提示。
+- **UAT**: 執行 `aa-harness --headless doctor`，不應出現任何暫停等待。
 
-### Task 4.2: 最終驗證與交付 (Ship)
-- [ ] 執行 `/aa-qa 129`
-- [ ] 執行 `/aa-ship 129`
+### Step 3: 調度器防護 (Orchestration Guard)
+- **目標**: 防止 CI/CD 分鐘數被耗盡。
+- **動作**:
+  - 在 `src/core/orchestration/coordinator.py` 中，當 `headless=True` 時，強制設定 `max_loops = 3` (或從環境變數讀取)。
+  - 若達到 `max_loops` 尚未完成，拋出 `HeadlessTimeoutError` 並回傳 Exit Code `1`。
+- **UAT**: 撰寫 Mock 測試，模擬一個永遠失敗的子代理人，驗證 3 次後自動中斷並退出。
 
-## 5. 測試策略 (UAT)
-- **UAT 4.1**: 模擬 Git Push 觸發 CI，驗證鎖定與審查流程循環。
-- **UAT 4.2**: 驗證非負載期間的 Idle-Watcher 喚醒邏輯。
+### Step 4: 容器化與 CI/CD 範本
+- **目標**: 支援 GitHub Actions。
+- **動作**:
+  - 撰寫根目錄的 `Dockerfile`，使用 `python:3.13-slim`，安裝依賴，並複製專案檔案。設定 ENTRYPOINT 為 `aa-harness --headless`。
+  - 建立 `.github/workflows/autoagent-review.yml` 範本，示範如何觸發 AI 代碼審查。
+- **UAT**: 能成功執行 `docker build -t autoagent-tw .`。
+
+---
+
+## 預期變更文件列表 (Expected File Changes)
+- `[NEW] src/core/security/log_sanitizer.py`
+- `[MODIFY] src/harness/cli/main.py`
+- `[MODIFY] src/core/orchestration/coordinator.py`
+- `[MODIFY] src/core/health/checks.py`
+- `[NEW] Dockerfile`
+- `[NEW] .github/workflows/autoagent-review.yml`
