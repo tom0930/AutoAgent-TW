@@ -1,32 +1,47 @@
-# CONTEXT: Phase 129 — Headless Mode + CI/CD Integration
+# CONTEXT: Phase 129 (Headless CI/CD Integration)
 
-## 🎯 核心目標
-將 AutoAgent-TW 轉變為能完全無人值守執行的自動化代理系統。透過結合 CI/CD 平台（如 GitHub Actions）與專屬的 Headless 標記，實現全自動的 GSD 工作流循環（Discuss -> Plan -> Execute -> Review -> Ship）。
+## 1. 任務目標與意圖 (Objectives & Intent)
+將 AutoAgent-TW 轉型為可在 CI/CD 流水線中全自動執行的無頭 (Headless) 引擎。這將允許我們將 AI 自動修復、自動化審查 (AI Code Review) 與測試整合到 GitHub Actions 或 GitLab CI 中，實現真正的無人值守 (Unattended) 自動化。
 
----
+## 2. 邊界定義與約束 (Boundaries & Constraints)
+### Definition of Done (DoD)
+- 實作 `--headless` 標記，全面禁用任何阻塞式的交互提示 (Interactive Prompts)。
+- 支援標準 Exit Codes：`0` (成功), `1` (失敗), `2` (需人工介入)。
+- 提供官方 GitHub Actions Template (`action.yml`)。
+- 在 `stdout` 輸出結構化日誌 (JSON 或精簡文字)，並確保任何 API Keys 在日誌中被屏蔽 (Masked)。
 
-## ✅ 最終技術決策
+### 非功能性需求 (Non-Functional Requirements)
+- **環境隔離**：在 CI/CD Runner 中無法依賴全域的 Windows GUI 狀態，RVA (GUI Automation) 相關功能需能優雅降級或依賴虛擬顯示 (Xvfb / Headless Browser)。
+- **資源限制**：CI/CD 執行個體通常記憶體有限，必須強制啟用 Stealth Mode (< 50MB 記憶體佔用策略)。
 
-### 1. 如何自動化 (Headless Automation Strategy)
-*   **觸發機制**: 由 GitHub Actions 的 Cron Job（排程定時執行）或特定的 Git Push 觸發。
-*   **執行模式 (`--auto` / `--headless`)**: 執行 `AutoAgent-TW` 工作流時注入 `--auto` 參數。在指令層級，腳本會全面抑制互動式的 `input()` 詢問，採用最高信心度 (Default/Recommended) 的決策，且不開啟任何 GUI 視窗。
-*   **狀態鎖定 (State Locking)**: 運作期間於 `.agent-state/lock` 建立鎖定檔，確保不會有多個 CI Runner 或實例同時寫入，避免發生衝突與上下文覆蓋。
-*   **自動回退 (Auto-Rollback)**: 若 QA 或編譯遭遇無法修復之嚴重錯誤（FAIL 且嘗試修復三次未果），自動觸發 Git Reset 回退至上一個穩定之 Checkpoint。
+## 3. 架構選型與 Trade-off (Architecture & Trade-offs)
 
-### 2. `/aa-review` 無人值守代碼審查機制
-*   **必要性**: **強烈需要**。由於沒有人類在過程中確認代碼，系統必須具備自我審核機制。
-*   **職責**: `/aa-review` 扮演 CI 流程的「自動化審核員」(AI Reviewer)。
-*   **運作邏輯**: 在出貨 (`/aa-ship`) 前置入 `/aa-review`。該指令會讀取 Phase N 的程式碼變更 (Diff) 與 `QA-REPORT.md`，並以不同於開發代理的 Persona 進行防禦性、安全性與效能評估。若 `/aa-review` 退件，流程會退回 `/aa-fix`。
+### 方案 A: Native CLI Headless Mode (原生命令列無頭模式)
+- **說明**：修改現有的 `main.py` 與路由層，攔截所有 `input()` 與 GUI 操作。
+- **優點**：輕量，不改變現有部署邏輯，適合現有 Windows Runner。
+- **缺點**：如果依賴的第三方庫 (如 `pywinauto`) 強制呼叫 Windows API 可能導致 Crash。
 
-### 3. 通知與監控機制 (Notification)
-*   **決策**: **完全移除 LineBot**。
-*   **替代方案**: 所有的狀態回報與異常警告將直接輸出。
-    *   **成功時**: 建立 PR，並在 PR Comment 自動拋出 Phase 執行總結。
-    *   **失敗時**: 透過 GitHub Issues 自動開單，保留詳細錯誤日誌 (`.agent-state/auto-resume.json`) 供日後人工或另一波 Agent `aa-fixgit-issue` 進行修復。
+### 方案 B: Containerized Execution (容器化執行 - 推薦)
+- **說明**：封裝 AutoAgent-TW 為官方 Docker Image (`alpine` 或 `debian-slim` base)，並內建無頭依賴。
+- **優點**：跨平台一致性，完美隔離環境，最適合 GitHub Actions。
+- **缺點**：需要處理 Linux 環境下的路徑與檔案權限問題，且 UIA/Win32 相關的 RVA 引擎將無法在此模式運行。
 
----
+**架構決策**：採用 **混合方案 (Hybrid)**。主程式實作 `--headless` (方案 A) 作為基礎，並同步提供 Linux Docker Image (方案 B) 專門處理純代碼分析與 API 操作。
 
-## ⏱️ 估計與驗證 (UAT Criteria)
-*   **UAT 1 (無人介入執行)**: 在終端機以 `python ./path/to/main --auto` 執行整個 Phase，期間不出現任何阻塞式的輸入要求。
-*   **UAT 2 (狀態鎖定)**: 當系統正在執行任務時，嘗試啟動第二個實例，第二個實例必須被 `.agent-state/lock` 攔截並優雅退出。
-*   **UAT 3 (審查觸發)**: 引發一段已知問題的代碼，驗證 `/aa-review` 能夠準確攔截攔截出貨並回報至日誌。
+## 4. 資安威脅建模 (STRIDE Analysis)
+
+| Threat | Description | Mitigation Strategy |
+| :--- | :--- | :--- |
+| **Spoofing** | 惡意的 CI/CD Pipeline 嘗試偽造身份提交代碼 | 強制依賴 Git Provider 的 OIDC 或短期 Token 進行身份驗證，不長期儲存憑證。 |
+| **Information Disclosure** | CI/CD 日誌 (Logs) 中洩漏 Gemini API Key 或 Git Token | 實作 `LogSanitizer` 中介層，攔截並替換 `stdout` 中的密鑰格式。 |
+| **Denial of Service** | Agent 陷入自我修復死循環，耗盡 CI/CD Action Minutes | 實作絕對的 TTL (Time-To-Live) 與 Max Iterations (例如 `max_loops=3`)。超過即強制 `exit(1)`。 |
+
+## 5. 編排策略與自動化模式 (Orchestration Strategy)
+
+我們將採用 Wave 模式進行並行開發：
+- **Wave 1: Core Headless Flag**: 實作 `--headless`、`LogSanitizer` 與 Exit Code mapping。
+- **Wave 2: Dockerization**: 撰寫 `Dockerfile` 與 `docker-compose.yml`。
+- **Wave 3: CI/CD Templates**: 建立 `.github/workflows/autoagent-review.yml` 範本。
+
+## 6. 後續行動
+- 提交本計畫後，準備執行 `/aa-plan 129` 以產出具體的實作步驟 (PLAN.md)。
