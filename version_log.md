@@ -292,3 +292,17 @@
 - @file:src/core/orchestration/coordinator.py
 - @file:Dockerfile
 - @file:.github/workflows/autoagent-review.yml
+
+---
+
+### Phase 163 (2026-04-27)
+- 導入 Andrej Karpathy 的 AI Coding 核心原則：Surgical Changes, Verification Contracts, Simplicity.
+- 實作 `scripts/diff_scope_check.py` 以確保代碼變更的原子性。
+- 統一 `CONTEXT_RULES.md` 規範。
+
+### Phase 164 (2026-04-27)
+- **子代理語境隔離 (Subagent Isolation)**：實作 Axis 2 架構。
+- 建立專家角色庫 (`subagents.json`, `.agents/personas/`)。
+- 升級 `spawn_manager.py` 支援角色感知環境注入。
+- 實作 `vfs_guard.py` (邏輯 VFS 沙盒) 與 `rtk_prune.py` (角色感知裁剪)。
+- 通過 5 項整合測試，確保權限隔離與 Token 優化有效。

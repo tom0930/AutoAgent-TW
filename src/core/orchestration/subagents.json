@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "roles": {
+    "architect": {
+      "persona": ".agents/personas/architect.md",
+      "whitelist": ["**/*.md", "**/ARCHITECTURE.md", "**/PROJECT.md", "**/CONTEXT.md", "**/*.json"],
+      "rtk_mode": "standard"
+    },
+    "cpp-pro": {
+      "persona": ".agents/personas/cpp-pro.md",
+      "whitelist": ["**/*.cpp", "**/*.h", "**/*.hpp", "**/*.cu", "**/*.tcl", "**/Makefile", "**/CMakeLists.txt", "PROJECT.md"],
+      "rtk_mode": "aggressive"
+    },
+    "security-auditor": {
+      "persona": ".agents/personas/security.md",
+      "whitelist": ["**/*"],
+      "rtk_mode": "sanitized"
+    },
+    "qa-expert": {
+      "persona": ".agents/personas/qa-expert.md",
+      "whitelist": ["tests/**", "**/*.test.*", "**/*.py", "PROJECT.md", "STATE.md"],
+      "rtk_mode": "standard"
+    }
+  },
+  "default_role": "general-helper"
+}
