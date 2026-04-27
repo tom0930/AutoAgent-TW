@@ -1,0 +1,15 @@
+{
+    "id": "7a112724",
+    "parent_id": "main",
+    "task": "Test Task",
+    "status": "pending",
+    "progress": 0,
+    "start_time": "2026-04-27T22:24:29.897142",
+    "budget_tokens": 10000,
+    "risk_limit": 3,
+    "role": "architect",
+    "logs": [
+        "Process initialized."
+    ],
+    "result": null
+}

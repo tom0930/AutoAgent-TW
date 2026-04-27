@@ -1,6 +1,6 @@
-# 撠??€??(STATE): v3.5.1
+# 撠??€??(STATE): v3.5.2
 
-- **蝮賡€脣漲**: Phase 164 (Axis 2: Subagent Isolation) - 📝 PLANNING
+- **蝮賡€脣漲**: Phase 164 (Axis 2: Subagent Isolation) - ✅ DONE
 - **?嗅??挾**: 163 (Karpathy Best Practices) - ✅ DONE
 - **撠?璅∪?**: Multi-Agent Orchestration (Sub-Agent Mode)
 - **?€敺?唳??*: 2026-04-27

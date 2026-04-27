@@ -40,12 +40,14 @@ class AgentProcess:
         parent_id: str = "main",
         budget_tokens: int = 10000,
         risk_limit: int = 3,
+        role: str = "general-helper",
     ):
         self.agent_id = str(uuid.uuid4())[:8]
         self.task_name = task_name
         self.parent_id = parent_id
         self.budget_tokens = budget_tokens
         self.risk_limit = risk_limit
+        self.role = role
         self.start_time = time.time()
         self.status = "pending"
         self.progress = 0
@@ -69,6 +71,7 @@ class AgentProcess:
             "start_time": get_iso_time(),
             "budget_tokens": self.budget_tokens,
             "risk_limit": self.risk_limit,
+            "role": self.role,
             "logs": ["Process initialized."],
             "result": None,
         }
@@ -99,6 +102,17 @@ class AgentProcess:
         env["AA_PARENT_ID"] = self.parent_id
         env["AA_BUDGET_TOKENS"] = str(self.budget_tokens)
         env["AA_RISK_LIMIT"] = str(self.risk_limit)
+        env["AA_SUBAGENT_ROLE"] = self.role
+
+        # Inject role-specific constraints (VFS Whitelist & RTK mode)
+        role_cfg = self._get_role_config(self.role)
+        if role_cfg:
+            if "whitelist" in role_cfg:
+                env["AA_WHITELIST"] = ",".join(role_cfg["whitelist"])
+            if "rtk_mode" in role_cfg:
+                env["AA_RTK_MODE"] = role_cfg["rtk_mode"]
+            if "persona" in role_cfg:
+                env["AA_PERSONA_PATH"] = str(Path(role_cfg["persona"]).absolute())
 
         creationflags = 0
         if sys.platform == "win32":
@@ -130,6 +144,18 @@ class AgentProcess:
             self.status = "fail"
             self.update_progress(0, f"Spawn failed: {str(e)}")
             raise
+
+    def _get_role_config(self, role: str) -> Dict[str, Any]:
+        """Loads role configuration from subagents.json registry."""
+        config_path = Path(__file__).parent / "subagents.json"
+        if config_path.exists():
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+                    return config.get("roles", {}).get(role, {})
+            except Exception:
+                pass
+        return {}
 
     def __del__(self):
         """Auto-terminate on object destruction."""
