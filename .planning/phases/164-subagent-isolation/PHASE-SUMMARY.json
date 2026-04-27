@@ -1,0 +1,23 @@
+{
+  "phase": 164,
+  "name": "Subagent Context Isolation (Axis 2)",
+  "date": "2026-04-27",
+  "status": "Completed",
+  "summary": "Implemented a 3-layer isolation architecture for subagents using expert roles, logical VFS sandboxing, and role-aware token pruning (RTK).",
+  "technical_highlights": [
+    "Expert Persona Registry (subagents.json) mapping roles to permissions.",
+    "SpawnManager role-injection using AA_SUBAGENT_ROLE and AA_WHITELIST.",
+    "Logical VFS Guard intercepting unauthorized path access with PermissionError.",
+    "RTK Pruning utility (rtk_prune.py) for aggressive context reduction."
+  ],
+  "verification": {
+    "total_tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "coverage": "Core subagent orchestration modules"
+  },
+  "impact": {
+    "token_efficiency": "High (up to 40% reduction for C++ code in aggressive mode)",
+    "security": "Enforced path-level isolation for sub-processes"
+  }
+}

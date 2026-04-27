@@ -44,5 +44,6 @@
 - [X] Phase 160: AutoCLI Integration (v3.3.2) [DONE]
 - [X] Phase 162: Harness Engineering Production Guardrails (v3.5.0) [DONE]
 - [X] Phase 163: Karpathy Best Practices & Context Optimization (v3.5.1) [DONE]
-- [ ] Phase 164: Subagent Context Isolation (Axis 2) [TODO]
+- [X] Phase 164: Subagent Context Isolation (Axis 2) (v3.5.2) [DONE]
+- [ ] Phase 165: Subagent Resource Governance (Axis 3) [TODO]
 - [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
