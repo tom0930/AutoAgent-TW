@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0",
+  "description": "Risk Contract — 根據變更路徑自動決定審查強度 (AutoAgent-TW)",
+  "updated": "2026-04-27",
+  "tiers": {
+    "critical": {
+      "description": "核心引擎 / 安全 / 權限 — 變更爆炸半徑最大",
+      "paths": [
+        "src/core/harness_gateway.py",
+        "src/core/security/**",
+        "src/core/permission_engine.py",
+        "src/core/orchestration/**",
+        "scripts/autocli_guard.py",
+        "scripts/preflight_gate.py",
+        "risk-tiers.json",
+        "AGENTS.md",
+        "SECURITY.md",
+        ".env",
+        ".planning/PROJECT.md"
+      ],
+      "review": {
+        "min_reviewers": 2,
+        "require_staging": true,
+        "require_rollback_plan": true,
+        "block_auto_merge": true
+      },
+      "ci": {
+        "run_full_suite": true,
+        "run_security_scan": true,
+        "block_on_coverage_drop": true
+      }
+    },
+    "high": {
+      "description": "核心模組 / MCP / Memory — 功能性影響大",
+      "paths": [
+        "src/core/**",
+        "src/harness/**",
+        "src/mcp/**",
+        "scripts/context_guard.py",
+        "scripts/doctor.py",
+        "scripts/shadow_check.py",
+        "config/**",
+        "_configs/**"
+      ],
+      "review": {
+        "min_reviewers": 1,
+        "require_staging": false,
+        "require_rollback_plan": false,
+        "block_auto_merge": false
+      },
+      "ci": {
+        "run_full_suite": true,
+        "run_security_scan": false,
+        "block_on_coverage_drop": true
+      }
+    },
+    "medium": {
+      "description": "腳本 / Skills / 工具 — 功能性影響中等",
+      "paths": [
+        "scripts/**",
+        "_agents/**",
+        "skills/**",
+        "bin/**",
+        "templates/**"
+      ],
+      "review": {
+        "min_reviewers": 1,
+        "require_staging": false,
+        "require_rollback_plan": false,
+        "block_auto_merge": false
+      },
+      "ci": {
+        "run_full_suite": false,
+        "run_security_scan": false,
+        "block_on_coverage_drop": false
+      }
+    },
+    "low": {
+      "description": "文件 / 測試 / 靜態資源 — 爆炸半徑最小",
+      "paths": [
+        "docs/**",
+        "doc/**",
+        "*.md",
+        "tests/**",
+        "test/**",
+        ".planning/phases/**",
+        ".planning/history/**",
+        ".planning/research/**"
+      ],
+      "review": {
+        "min_reviewers": 0,
+        "require_staging": false,
+        "require_rollback_plan": false,
+        "block_auto_merge": false
+      },
+      "ci": {
+        "run_full_suite": false,
+        "run_security_scan": false,
+        "block_on_coverage_drop": false
+      }
+    }
+  }
+}
