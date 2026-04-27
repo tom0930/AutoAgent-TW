@@ -15,6 +15,7 @@ description: Ship Phase N / 出貨階段 N 與 PR 生成。
 1. 讀取 `.planning/PROJECT.md`。
 2. 讀取 `.planning/ROADMAP.md` 與當前 Phase N 已完成的所有計畫、研究與代碼 Commit。
 3. // turbo
+   - 執行 `python scripts/preflight_gate.py --check` 以進行風險分級與編譯驗證。
    - 執行 `python .agents/skills/status-notifier/scripts/cc_manager.py --phase $N --check-audit` 以驗證最終品質。
 4. 讀取 `.planning/phases/{N}-*/QA-REPORT.md` 確認質量。
 
