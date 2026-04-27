@@ -306,3 +306,8 @@
 - 升級 `spawn_manager.py` 支援角色感知環境注入。
 - 實作 `vfs_guard.py` (邏輯 VFS 沙盒) 與 `rtk_prune.py` (角色感知裁剪)。
 - 通過 5 項整合測試，確保權限隔離與 Token 優化有效。
+
+### Hotfix (2026-04-27)
+- **編碼衝突修復**: 解決了 `ROADMAP.md`, `STATE.md`, `PROJECT.md` 在 Windows 環境下的 UTF-8 與 CP950 (Big5) 亂碼問題。
+- **還原內容**: 從備份 (`planning_orig`) 還原了所有損壞的中文描述。
+- **強制規範**: 全面轉換為標準 UTF-8 編碼，防止後續 AI 修改時再次發生 Mojibake。
