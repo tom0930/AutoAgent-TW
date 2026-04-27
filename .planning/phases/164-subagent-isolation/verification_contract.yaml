@@ -1,0 +1,37 @@
+phase: "164"
+phase_name: "subagent-context-isolation"
+created_at: "2026-04-27"
+
+success_criteria:
+  - id: "SC-164-001"
+    name: "Persona Registry Validation"
+    test: "python -c \"import json; json.load(open('src/core/orchestration/subagents.json'))\""
+    expected: "exit_code == 0"
+    severity: "critical"
+
+  - id: "SC-164-002"
+    name: "SpawnManager Role Support"
+    test: "grep -r 'AA_SUBAGENT_ROLE' src/core/orchestration/spawn_manager.py"
+    expected: "match"
+    severity: "critical"
+
+  - id: "SC-164-003"
+    name: "VFS Guard Enforcement"
+    test: "python -m pytest tests/test_subagent_isolation.py -k 'test_vfs_denial'"
+    expected: "exit_code == 0"
+    severity: "critical"
+
+  - id: "SC-164-004"
+    name: "RTK Pruning Accuracy"
+    test: "python -m pytest tests/test_subagent_isolation.py -k 'test_rtk_pruning_ratio'"
+    expected: "exit_code == 0"
+    severity: "warning"
+
+fix_loop:
+  max_iterations: 3
+  strategy: "incremental"
+
+negative_patterns:
+  - "RecursionError"
+  - "PermissionError"
+  - "Access Denied"
