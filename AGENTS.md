@@ -58,6 +58,49 @@
 - 不可啟動常駐 Daemon 而不提供關閉機制
 - 所有 background process 必須有 TTL 或 reaper 機制
 
+## 🛡️ PreToolUse 虛擬 Hook（即時攔截）
+
+> 來源：Karpathy Skills 原則 3 + Best Practice Hook 架構
+> 目標：在 AI **嘗試操作的瞬間**攔截，而非事後 commit 前才檢查。
+
+### 修改檔案前（edit_file / write_to_file）
+1. 檢查目標檔案是否在 `risk-tiers.json` 的 **critical** 清單
+2. critical → 必須在對話中**明確聲明意圖**並等待確認
+3. 涉及 `.env` / `SECURITY.md` → **完全禁止** AI 修改，提示用戶手動操作
+4. 每一行改動必須能追溯到用戶請求（Surgical Changes 原則）
+
+### 執行命令前（run_command）
+1. 禁止包含 `rm -rf` / `drop table` / `format` 的命令
+2. 禁止 `subprocess.call` 直接執行系統命令（使用 `aa-cli` 包裝）
+3. 涉及外部網路請求的命令必須聲明目標 URL
+
+### 產出代碼前
+1. **Simplicity Check** — 200 行能用 50 行解決？重寫它
+2. **No Speculation** — 沒要求的功能/抽象/彈性一律不做
+3. **困惑即停** — 不確定時標記 `[ASSUMPTION]` 並詢問
+
+### 反面示例（Hook 觸發場景）
+```python
+# ❌ 觸發 Hook：未聲明就修改 critical 路徑
+replace_file_content("src/core/permission_engine.py", ...)  # 攔截！
+
+# ✅ 正確：先聲明再修改
+# 「我需要修改 permission_engine.py 的第 42 行，
+#   原因是 XXX，風險等級為 high」
+# [用戶確認後]
+replace_file_content("src/core/permission_engine.py", ...)
+```
+
+```python
+# ❌ 觸發 Hook：投機性設計
+class AbstractFactoryBuilderStrategy:  # 單一用途不需要抽象！
+    pass
+
+# ✅ 正確：最小代碼解決問題
+def process_data(data: list) -> dict:
+    return {item["id"]: item for item in data}
+```
+
 ---
 
 ## ❌ 禁止寫法（反面示例）

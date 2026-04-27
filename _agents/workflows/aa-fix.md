@@ -23,8 +23,13 @@ description: Self-Repair Cycle / 自我修復循環。
 ### Step 2: 啟動 PISRC LangGraph 循環
 針對每一個 FAIL 的 Issue：
 1. 將失敗的日誌與問題分類導入 PISRC (Persistent Issue Self-Review & Correction) 狀態機。
-2. 透過執行 `python scripts/resilience/pisrc_graph.py` 或呼叫對應 PISRC API 初始化檢測。
-3. 若連續失敗超過 3 輪，PISRC 將自動觸發 `level1_reviewer` 與 `level2_analyzer` 並產出 Root Cause Analysis (RCA)。
+2. **載入驗證合約** (Karpathy Goal-Driven Execution)：
+   - 讀取 `.planning/phases/{N}-*/verification_contract.yaml`
+   - 以合約中的 `success_criteria` 作為修復的**宣告式目標**
+   - 遵守 `max_fix_loops` 限制（默認 3 輪）
+   - 如命中 `negative_patterns`，立即升級而非繼續嘗試
+3. 透過執行 `python scripts/resilience/pisrc_graph.py` 或呼叫對應 PISRC API 初始化檢測。
+4. 若連續失敗超過合約定義的 `max_fix_loops`，PISRC 將自動觸發 `level1_reviewer` 與 `level2_analyzer` 並產出 Root Cause Analysis (RCA)。
 
 ### Step 3: 套用 PISRC Corrector 修正與 Commit
 1. 根據 PISRC 產出的 `proposed_fix`，自動調整代碼或工具 prompt。
