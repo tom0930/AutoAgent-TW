@@ -1,0 +1,83 @@
+# ============================================================
+# Verification Contract Template — Goal-Driven Execution
+# ============================================================
+# Karpathy: "Don't tell it what to do, give it success criteria
+#            and watch it go."
+#
+# Usage:
+#   1. Copy this template into your PLAN.md or as a standalone
+#      .planning/phases/{N}-*/verification_contract.yaml
+#   2. Fill in the success_criteria with concrete, machine-checkable tests
+#   3. aa-fix will auto-loop using these criteria until all pass
+# ============================================================
+
+phase: "N"
+phase_name: "phase-name-here"
+created_at: "2026-04-27"
+
+# ── Success Criteria ──────────────────────────────────────────
+# Each criterion MUST be machine-verifiable.
+# Bad:  "功能正常"  ← 模糊！
+# Good: "python -m pytest tests/test_xxx.py exits with code 0"
+success_criteria:
+  # --- Compilation / Syntax ---
+  - id: "SC-001"
+    name: "Python syntax check"
+    test: "python -m py_compile ${TARGET_FILE}"
+    expected: "exit_code == 0"
+    severity: "critical"
+
+  # --- Unit Tests ---
+  - id: "SC-002"
+    name: "Unit tests pass"
+    test: "python -m pytest tests/ -v --tb=short"
+    expected: "exit_code == 0"
+    severity: "critical"
+
+  # --- Static Analysis ---
+  - id: "SC-003"
+    name: "No eval/exec in core"
+    test: "grep -rn 'eval(\\|exec(' src/core/"
+    expected: "no_match"
+    severity: "critical"
+
+  # --- Code Complexity ---
+  - id: "SC-004"
+    name: "File line count within budget"
+    test: "wc -l ${TARGET_FILE}"
+    expected: "< 300"
+    severity: "warning"
+
+  # --- Diff Scope ---
+  - id: "SC-005"
+    name: "Surgical change validation"
+    test: "python scripts/diff_scope_check.py --plan ${PLAN_PATH} --staged --strict"
+    expected: "exit_code == 0"
+    severity: "warning"
+
+  # --- Security ---
+  - id: "SC-006"
+    name: "No secrets in commit"
+    test: "git diff --staged | grep -iE '(api_key|password|secret|token)\\s*='"
+    expected: "no_match"
+    severity: "critical"
+
+# ── Fix Loop Configuration ────────────────────────────────────
+fix_loop:
+  max_iterations: 3
+  strategy: "incremental"  # incremental | full_rewrite
+  escalation: "human_interrupt"  # what to do after max_iterations
+
+# ── Negative Patterns (Early Abort) ───────────────────────────
+# If ANY of these appear in test output, immediately FAIL and escalate
+negative_patterns:
+  - "Segmentation fault"
+  - "MemoryError"
+  - "RecursionError"
+  - "CRITICAL"
+  - "data loss"
+
+# ── Metadata ──────────────────────────────────────────────────
+# Auto-filled by aa-plan during generation
+generated_by: "aa-plan"
+plan_hash: ""  # SHA256 of PLAN.md at generation time

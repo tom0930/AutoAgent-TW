@@ -28,6 +28,15 @@ description: QA Check Phase N / 執行階段 N 的 QA 檢查。
 1. 分析代碼質量。
 2. 檢查是否符合專案開發規範。
 3. 評估效能與安全性風險。
+4. **Surgical Change 驗證** (Karpathy 原則 3)：
+   ```bash
+   python scripts/diff_scope_check.py --plan .planning/phases/{N}-*/PLAN.md --staged
+   ```
+   - 如果有 UNPLANNED 變更，標記為 ⚠️ 並要求解釋。
+5. **驗證合約執行** (Karpathy 原則 4)：
+   - 讀取 `.planning/phases/{N}-*/verification_contract.yaml`
+   - 逐一執行 `success_criteria` 中的每個 `test` 命令
+   - 若命中 `negative_patterns`，立即 FAIL 並升級
 
 ### Step 4: 產出 QA-REPORT.md
 包含：

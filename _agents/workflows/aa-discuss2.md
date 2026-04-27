@@ -29,9 +29,30 @@ description: Stage1Discuss
 1. 明確 Phase N 的 **DoD (Definition of Done)**。
 2. 定義非功能性需求：性能、擴展性、跨平台限制。
 
+### Step 2.5: Karpathy 原則 — Think Before Coding（強制）
+> **來源**: andrej-karpathy-skills (⭐ 92.7k)
+> 「LLMs make wrong assumptions and just run along with them without checking.」
+
+1. **列出所有假設** — 不確定的地方必須標記 `[ASSUMPTION]` 並詢問用戶。
+2. **暴露多重解讀** — 如果需求存在歧義，列出所有可能的解讀，不可默默選一個。
+3. **適時推回** — 如果存在更簡單的方案，必須提出並解釋為什麼更好。
+4. **困惑時停下** — 命名不清楚的地方，直接問。不要猜測後繼續跑。
+
+### Step 2.6: 內部多 Agent 思考（7-Step CoT）
+> 從 user_rules 下放至此的執行細節。每次回應前內部完整走完：
+
+1. 問題解析與意圖挖掘
+2. 自我質疑與漏洞檢查（常見陷阱、隱藏假設）
+3. 多 Agent 思考（≥3 視角：架構師、資安工程師、AI 產品專家）
+4. 多角度/反面思考 + ≥2 個解決方案 + 優劣評估
+5. 自我質疑與修正
+6. 最終決策與優化
+7. 主動發現問題、提出 SOP 與預防性優化
+
 ### Step 3: 架構選型與 Trade-off 討論
 1. 提出至少兩種技術方案論證。
 2. 討論並發模型、數據持久化策略及第三方模組整合。
+3. **Simplicity Check** — 問自己：「資深工程師會說這太複雜嗎？」如果是，精簡它。
 
 ### Step 4: 資安威脅建模 (STRIDE)
 1. 針對當前 Phase 執行 STRIDE 分析。

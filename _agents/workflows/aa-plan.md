@@ -41,6 +41,29 @@ python scripts/context_guard.py .
     - `task_3_verification.md`
 3. 每個任務需包含：目標、具體步驟、預期變更的文件列表，以及對應的驗證標準 (UAT Criteria)。
 
+### Step 3.5: 8 維度檢查表（強制 Markdown 表格）
+> 從 user_rules 下放至此的執行細節。每個 Plan 必須通過：
+
+| # | 維度 | 檢查項 |
+|---|------|--------|
+| 1 | 需求拆解 | 邊界定義完整？ |
+| 2 | 技術選型 | 有理由？有替代方案？ |
+| 3 | 架構圖 | Mermaid 文字圖完整？ |
+| 4 | 並行設計 | 鎖策略、死鎖預防？ |
+| 5 | 資安威脅 | STRIDE + Prompt Injection 防禦？ |
+| 6 | AI 考量 | UX、成本、模型漂移？ |
+| 7 | 錯誤處理 | 監控與恢復策略？ |
+| 8 | 測試策略 | 單元/整合/E2E/壓力/資安？ |
+
+### Step 3.6: 驗證合約生成 (Verification Contract)
+> **Karpathy**: 「Don't tell it what to do, give it success criteria and watch it go.」
+
+1. 從 `_agents/templates/verification_contract.yaml` 複製模板至 `.planning/phases/{N}-*/`。
+2. 為每個任務填入**具體的、機器可執行的**成功標準。
+3. ❌ 禁止模糊 UAT：「功能正常」「測試通過」。
+4. ✅ 正確 UAT：`python -m pytest tests/test_xxx.py -v` → `exit_code == 0`。
+5. 設定 `max_fix_loops: 3` 與 `negative_patterns`。
+
 ### Step 4: 狀態更新與 Commit
 1. 更新 `.planning/STATE.md`。
 2. Commit 研究與計畫：
