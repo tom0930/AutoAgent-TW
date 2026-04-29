@@ -43,7 +43,7 @@ class HarnessGateway:
     這是 autoagent-TW 的核心服務管理器，提供與 OpenClaw Gateway 同等的功能。
     """
     
-    VERSION = "3.5.4"
+    VERSION = "3.5.5"
     SERVICE_NAME = "AutoAgent-TW Harness Gateway"
     
     def __init__(self, workspace: Optional[str] = None):

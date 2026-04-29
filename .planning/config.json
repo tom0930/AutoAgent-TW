@@ -1,6 +1,6 @@
 {
   "project_name": "AutoAgent-TW-Industrial",
-  "version": "v3.5.4",
+  "version": "v3.5.5",
   "mode": "YOLO",
   "granularity": "TASK",
   "notifications": {
