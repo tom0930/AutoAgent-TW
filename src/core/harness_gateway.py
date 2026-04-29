@@ -1,7 +1,7 @@
 """
 AI Harness Gateway - 守護行程服務
 功能：啟動時自動初始化所有服務，支援 start/stop/restart/status 命令
-版本：v1.0.0
+版本：v3.5.2
 """
 import sys
 import os
@@ -43,7 +43,7 @@ class HarnessGateway:
     這是 autoagent-TW 的核心服務管理器，提供與 OpenClaw Gateway 同等的功能。
     """
     
-    VERSION = "1.0.0"
+    VERSION = "3.5.2"
     SERVICE_NAME = "AutoAgent-TW Harness Gateway"
     
     def __init__(self, workspace: Optional[str] = None):
