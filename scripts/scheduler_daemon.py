@@ -38,7 +38,22 @@ class SchedulerDaemon:
             except Exception as e:
                 logger.error(f"[Health] Error in health check: {e}")
             
-            await asyncio.sleep(300) # 5 minutes
+    async def _reflection_loop(self):
+        """Phase 166: L2 Strategic Reflection Loop (Daily/Weekly)"""
+        while self.is_running:
+            try:
+                # Simulate daily check (run once a day)
+                # We'll sleep for 24 hours (86400 seconds), but for testing we might trigger it manually
+                logger.info("[Reflection] Daily L2 Strategic Reflection triggered.")
+                
+                # We would call pattern_matcher and patch_generator here via subprocess or direct import
+                # import subprocess
+                # subprocess.run(["python", "scripts/reflection/pattern_matcher.py"], check=False)
+                
+            except Exception as e:
+                logger.error(f"[Reflection] Error in reflection loop: {e}")
+            
+            await asyncio.sleep(86400) # 24 hours
 
     async def start(self):
         """背景服務啟動主進入點"""
@@ -49,6 +64,7 @@ class SchedulerDaemon:
         
         # 2. 啟動背景巡檢任務
         asyncio.create_task(self._health_check_loop())
+        asyncio.create_task(self._reflection_loop())
         
         logger.info("[Scheduler] System background layer ACTIVE.")
         

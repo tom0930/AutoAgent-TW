@@ -45,6 +45,12 @@ description: QA Check Phase N / 執行階段 N 的 QA 檢查。
 - 失敗原因及修復建議 (High/Medium/Low 難度)。
 - 覆蓋率概況。
 
+### Step 4.5: L1 Tactical Reflection
+1. 無論 PASS/FAIL，執行 L1 戰術反思收集（Phase 166 新增），將錯誤記錄至 Episodic Memory Buffer：
+```bash
+python scripts/reflection/collector.py ${N}
+```
+
 ### Step 5: 下一步建議
 - 如果全部 PASS：執行 `/aa-guard N` 並準備 `/aa-ship N`。
 - 如果有 FAIL：執行 `/aa-fix N` 自動修復 Issues。
