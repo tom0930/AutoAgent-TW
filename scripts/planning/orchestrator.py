@@ -2,8 +2,8 @@
 from typing import List, Dict, Any, Tuple
 import asyncio
 from engine import ParallelPlanner
-from schemas import AgentPlan, ConflictReport, DecisionMatrix
-
+from schemas import AgentPlan, ConflictReport, DecisionMatrix, AgentVote, ConsensusResult
+from consensus import ConsensusEngine
 class ComplexityScorer:
     def __init__(self, threshold: int = 1000):
         self.threshold = threshold
@@ -17,9 +17,10 @@ class ComplexityScorer:
 
 
 class MapReflectReduceOrchestrator:
-    def __init__(self, context: Dict[str, Any], planner: ParallelPlanner):
+    def __init__(self, context: Dict[str, Any], planner: ParallelPlanner, resource_monitor: Any = None):
         self.context = context
         self.planner = planner
+        self.consensus_engine = ConsensusEngine(resource_monitor=resource_monitor)
 
     async def _extract_conflicts(self, plans: List[AgentPlan]) -> ConflictReport:
         """
@@ -70,15 +71,23 @@ class MapReflectReduceOrchestrator:
             options=options
         )
 
-    async def run(self, agents: List[Dict[str, Any]]) -> Tuple[List[AgentPlan], DecisionMatrix]:
+    async def run(self, agents: List[Dict[str, Any]]) -> Tuple[List[AgentPlan], ConsensusResult]:
         # 1. Map Phase
         valid_plans, failed = await self.planner.run(agents)
         
         # 2. Reflect Phase
         conflicts = await self._extract_conflicts(valid_plans)
-        if conflicts.has_conflict:
-            valid_plans = await self._cross_reflect(conflicts, valid_plans)
-
-        # 3. Reduce Phase
-        decision_matrix = await self.synthesize(valid_plans, conflicts)
-        return valid_plans, decision_matrix
+        
+        # 3. Consensus / Reduce Phase
+        # Convert plans to votes
+        votes = []
+        for plan in valid_plans:
+            votes.append(AgentVote(
+                agent_role=plan.role,
+                confidence=plan.confidence,
+                decision=f"Adopt {plan.role}'s plan",
+                reasoning="Based on individual agent's planning output."
+            ))
+            
+        consensus_result = await self.consensus_engine.resolve(votes, conflicts)
+        return valid_plans, consensus_result

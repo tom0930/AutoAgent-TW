@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Literal, Optional, Dict, Any
 
 class AgentPlan(BaseModel):
     role: str = Field(..., description="The role of the agent generating this plan (e.g., Architect, Security, UX)")
@@ -24,3 +24,17 @@ class DecisionMatrixOption(BaseModel):
 class DecisionMatrix(BaseModel):
     conflict_summary: str
     options: List[DecisionMatrixOption]
+
+class AgentVote(BaseModel):
+    agent_role: str = Field(..., description="Role of the agent voting")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence of the vote")
+    decision: str = Field(..., description="The option or decision adopted")
+    reasoning: str = Field(..., description="Reasoning behind this vote")
+    domain_relevance: float = Field(default=1.0, ge=0.5, le=1.5, description="Domain relevance multiplier")
+
+class ConsensusResult(BaseModel):
+    status: Literal["CONSENSUS", "VETO", "FALLBACK", "PENDING_REVIEW"]
+    score: float
+    adopted_decision: str
+    audit_path: str
+    notes: List[str] = Field(default_factory=list)

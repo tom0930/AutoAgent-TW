@@ -5,7 +5,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, Tree
 from typing import List, Optional
 import json
 import os
-from schemas import DecisionMatrix
+from schemas import DecisionMatrix, ConsensusResult
 
 class ParallelPlanningCLI:
     def __init__(self):
@@ -27,29 +27,27 @@ class ParallelPlanningCLI:
 
     def present_decision_matrix(self, matrix: DecisionMatrix) -> Optional[int]:
         """
-        Presents the decision matrix to the user and asks for a selection.
+        Legacy method for DecisionMatrix. Kept for backward compatibility.
         """
-        self.console.print("\n[bold red]⚠️  Architectural Conflict Detected[/bold red]")
-        self.console.print(f"[white]{matrix.conflict_summary}[/white]\n")
+        # ... (Implementation preserved for compatibility if needed, though we primarily use ConsensusResult now)
+        pass
         
-        for idx, opt in enumerate(matrix.options, start=1):
-            self.console.print(f"[bold cyan]Option {idx}: {opt.title}[/bold cyan] (Risk: {opt.risk_level})")
-            self.console.print(f"  [green]Pros:[/green] {', '.join(opt.pros)}")
-            self.console.print(f"  [red]Cons:[/red] {', '.join(opt.cons)}\n")
-            
-        try:
-            choice = input("Enter your choice (1/2/... or 0 to abort): ")
-            choice_int = int(choice)
-            if choice_int > 0 and choice_int <= len(matrix.options):
-                # Save user decision
-                os.makedirs(".agent-state", exist_ok=True)
-                with open(".agent-state/user_decision.json", "w") as f:
-                    json.dump({"selected_option": choice_int}, f)
-                return choice_int
-            return None
-        except ValueError:
-            self.console.print("[red]Invalid selection.[/red]")
-            return None
+    def present_consensus_result(self, result: ConsensusResult):
+        """
+        Presents the final consensus result and score.
+        """
+        status_color = "green" if result.status == "CONSENSUS" else "red" if result.status == "VETO" else "yellow"
+        
+        self.console.print(f"\n[bold {status_color}]⚖️  Consensus Status: {result.status}[/bold {status_color}]")
+        self.console.print(f"[bold cyan]Consensus Score:[/bold cyan] {result.score:.2f}")
+        self.console.print(f"[bold cyan]Adopted Decision:[/bold cyan] {result.adopted_decision}")
+        
+        if result.notes:
+            self.console.print("\n[bold]Notes:[/bold]")
+            for note in result.notes:
+                self.console.print(f"  - {note}")
+                
+        self.console.print(f"\n[dim]Audit log saved to: {result.audit_path}[/dim]\n")
 
     def apply_resource_governance(self, requested_concurrency: int, current_token_budget_percent: float) -> int:
         """

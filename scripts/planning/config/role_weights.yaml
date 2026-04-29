@@ -1,0 +1,20 @@
+roles:
+  Security:
+    base_weight: 2.0
+    description: "Security expert focusing on STRIDE and vulnerabilities."
+  Architect:
+    base_weight: 1.5
+    description: "System architect focusing on scalability and design."
+  UX:
+    base_weight: 1.0
+    description: "User experience expert focusing on usability."
+  Developer:
+    base_weight: 1.0
+    description: "General developer role."
+  General:
+    base_weight: 1.0
+    description: "Default fallback role."
+
+thresholds:
+  consensus_score: 0.75
+  max_negotiation_rounds: 2
