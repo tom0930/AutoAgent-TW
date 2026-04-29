@@ -1,6 +1,6 @@
 {
   "name": "autoagent-tw-root",
-  "version": "3.5.3",
+  "version": "3.5.4",
   "description": "Root proxy for AutoAgent-TW Dashboard",
   "scripts": {
     "dev": "npm --prefix C:\\Users\\TOM\\.gemini\\antigravity\\dashboard\\skills run dev",

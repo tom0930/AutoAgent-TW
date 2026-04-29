@@ -14,6 +14,7 @@ class AgentState(TypedDict):
     review_reports: List[Dict]
     success_rate: float
     thread_id: str
+    self_critique: Optional[str]
 
 # PISRC Node Implementations (Wave 3)
 def task_executor(state: AgentState):
@@ -36,6 +37,17 @@ def issue_detector(state: AgentState):
     if state.get("failure_count", 0) >= 3:
         return "level1_reviewer"
     return "__end__"
+
+def critique_synthesizer(state: AgentState):
+    """
+    Reflexion-style Critique Synthesizer:
+    Generates a natural language self-critique of the accumulated failures to serve as context.
+    """
+    critique = f"Self-Critique: Failed {state.get('failure_count')} times. Errors indicate a pattern of: {', '.join(state.get('last_errors', [])[-2:])}."
+    return {
+        "self_critique": critique,
+        "messages": [AIMessage(content=critique)]
+    }
 
 def level1_reviewer(state: AgentState):
     """
@@ -112,6 +124,7 @@ def compile_pisrc_graph(memory_saver):
     
     workflow.add_node("task_executor", task_executor)
     # issue_detector is a conditional edge router, not a node
+    workflow.add_node("critique_synthesizer", critique_synthesizer)
     workflow.add_node("level1_reviewer", level1_reviewer)
     workflow.add_node("level2_analyzer", level2_analyzer)
     workflow.add_node("corrector", corrector)
@@ -125,12 +138,13 @@ def compile_pisrc_graph(memory_saver):
         "task_executor",
         issue_detector,
         {
-            "level1_reviewer": "level1_reviewer",
+            "level1_reviewer": "critique_synthesizer",
             "__end__": END
         }
     )
     
     # Reviewer pipeline
+    workflow.add_edge("critique_synthesizer", "level1_reviewer")
     workflow.add_edge("level1_reviewer", "level2_analyzer")
     workflow.add_edge("level2_analyzer", "corrector")
     workflow.add_edge("corrector", "validator")

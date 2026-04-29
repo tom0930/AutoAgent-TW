@@ -311,3 +311,13 @@
 - **編碼衝突修復**: 解決了 `ROADMAP.md`, `STATE.md`, `PROJECT.md` 在 Windows 環境下的 UTF-8 與 CP950 (Big5) 亂碼問題。
 - **還原內容**: 從備份 (`planning_orig`) 還原了所有損壞的中文描述。
 - **強制規範**: 全面轉換為標準 UTF-8 編碼，防止後續 AI 修改時再次發生 Mojibake。
+
+### Phase 166 (2026-04-29)
+- **Self-Reflection & Self-Evolution (v3.5.4)**
+- 導入 L1/L2/L3 三層反思架構 (Collector, PatternMatcher, EvolutionEngine)。
+- 實作 \safety_validator.py\ 與 Sandbox 驗證，防堵 AI 竄改核心防護 (AGENTS.md)。
+- 整合 LangGraph，在 PISRC 狀態機加入 \critique_synthesizer\，落實即時自我反思。
+- @file:scripts/reflection/collector.py
+- @file:scripts/reflection/pattern_matcher.py
+- @file:scripts/reflection/safety_validator.py
+- @file:scripts/resilience/pisrc_graph.py

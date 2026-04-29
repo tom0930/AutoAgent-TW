@@ -1,6 +1,6 @@
 """
 AI Harness CLI - Unified command-line interface
-Version: v3.5.3
+Version: v3.5.4
 
 Usage:
     aa-harness <command> [options]
@@ -40,7 +40,7 @@ class HarnessCLI:
     Provides functionality equivalent to the OpenClaw CLI.
     """
 
-    VERSION = "3.5.3"
+    VERSION = "3.5.4"
     NAME = "aa-harness"
 
     def __init__(self, argv: Optional[List[str]] = None):
