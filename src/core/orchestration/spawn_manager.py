@@ -103,6 +103,10 @@ class AgentProcess:
         env["AA_BUDGET_TOKENS"] = str(self.budget_tokens)
         env["AA_RISK_LIMIT"] = str(self.risk_limit)
         env["AA_SUBAGENT_ROLE"] = self.role
+        
+        # Ensure we don't pass capture keys to subprocess env
+        if "_capture_stdout" in env: del env["_capture_stdout"]
+        if "_capture_stderr" in env: del env["_capture_stderr"]
 
         # Inject role-specific constraints (VFS Whitelist & RTK mode)
         role_cfg = self._get_role_config(self.role)
@@ -125,15 +129,40 @@ class AgentProcess:
                 command,
                 env=env,
                 creationflags=creationflags,
-                stdout=subprocess.DEVNULL, # Don't block on output to avoid memory build-up
-                stderr=subprocess.DEVNULL,
+                stdout=env_overrides.get("_capture_stdout", subprocess.DEVNULL) if env_overrides else subprocess.DEVNULL,
+                stderr=env_overrides.get("_capture_stderr", subprocess.DEVNULL) if env_overrides else subprocess.DEVNULL,
                 text=True,
                 bufsize=1,
             )
             
             # Securely link to parent lifecycle via Job Object
             if self.process:
-                process_job.add_pid(self.process.pid)
+                # Apply limits from role config
+                limits = role_cfg.get("resource_limits", {})
+                mem_mb = limits.get("memory_mb")
+                cpu_prio = limits.get("cpu_priority", "normal")
+                
+                # If a specific memory limit is required, create a dedicated Job Object
+                # Otherwise, use the global session job for general lifecycle protection
+                if mem_mb:
+                    from src.utils.win32_job import Win32JobManager
+                    self.agent_job = Win32JobManager(name=f"AA_Agent_{self.agent_id}")
+                    self.agent_job.set_memory_limit(mem_mb)
+                    self.agent_job.add_pid(self.process.pid)
+                else:
+                    process_job.add_pid(self.process.pid)
+                
+                process_job.apply_legacy_limits(self.process.pid, cpu_priority=cpu_prio)
+                
+                # Start TTL Timer if specified
+                ttl = int(env.get("AA_AGENT_TTL", 0))
+                if ttl > 0:
+                    import threading
+                    self.ttl_timer = threading.Timer(ttl, self._on_ttl_expiry)
+                    self.ttl_timer.daemon = True
+                    self.ttl_timer.start()
+                    self.update_progress(10, f"TTL Timer started: {ttl}s")
+                
                 _ACTIVE_SUBAGENTS.append(self)
 
             self.status = "running"
@@ -177,8 +206,20 @@ class AgentProcess:
             except Exception:
                 pass
 
+    def _on_ttl_expiry(self):
+        """Callback for TTL timer."""
+        if self.process and self.process.poll() is None:
+            self.update_progress(99, "TTL Expired: Forcefully terminating agent.")
+            self.terminate()
+
     def terminate(self):
         """Forcefully terminates the process."""
+        if hasattr(self, "ttl_timer"):
+            try:
+                self.ttl_timer.cancel()
+            except:
+                pass
+
         if self.process:
             try:
                 if self.process.poll() is None:

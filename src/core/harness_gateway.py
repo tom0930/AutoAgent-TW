@@ -43,7 +43,7 @@ class HarnessGateway:
     這是 autoagent-TW 的核心服務管理器，提供與 OpenClaw Gateway 同等的功能。
     """
     
-    VERSION = "3.5.2"
+    VERSION = "3.5.3"
     SERVICE_NAME = "AutoAgent-TW Harness Gateway"
     
     def __init__(self, workspace: Optional[str] = None):
@@ -168,10 +168,13 @@ class HarnessGateway:
         self._worker_thread.name = "Gateway-Worker"
         self._worker_thread.start()
         
-        # 啟動健康檢查執行緒
-        self._health_thread = threading.Thread(target=self._health_checker, daemon=True)
-        self._health_thread.name = "Gateway-Health"
-        self._health_thread.start()
+        # 啟動資源監控 (Phase 165)
+        try:
+            from src.core.orchestration.monitor import start_monitor
+            start_monitor()
+            self.logger.info("Subagent Resource Monitor started")
+        except Exception as e:
+            self.logger.warning(f"Failed to start Resource Monitor: {e}")
         
         self.logger.info("Gateway started successfully")
         self.logger.info(f"Uptime: {self._format_uptime()}")
@@ -364,6 +367,13 @@ class HarnessGateway:
         """停止 Gateway 服務"""
         self.logger.info("Stopping Gateway...")
         self.running = False
+        
+        # 停止資源監控 (Phase 165)
+        try:
+            from src.core.orchestration.monitor import stop_monitor
+            stop_monitor()
+        except:
+            pass
         
         # 優雅關閉所有服務
         for service_id, service in self.services.items():

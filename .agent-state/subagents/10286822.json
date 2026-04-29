@@ -1,0 +1,20 @@
+{
+    "id": "10286822",
+    "parent_id": "main",
+    "task": "TTL Test",
+    "status": "terminated",
+    "progress": 99,
+    "start_time": "2026-04-29T16:47:48.469232",
+    "budget_tokens": 10000,
+    "risk_limit": 3,
+    "role": "architect",
+    "logs": [
+        "Process initialized.",
+        "[2026-04-29T16:47:48.480080] TTL Timer started: 2s",
+        "[2026-04-29T16:47:48.485971] Process spawned successfully (PID: 43324).",
+        "[2026-04-29T16:47:50.485903] TTL Expired: Forcefully terminating agent.",
+        "[2026-04-29T16:47:50.494207] Process cleaned up.",
+        "[2026-04-29T16:47:54.704791] Process cleaned up."
+    ],
+    "result": null
+}

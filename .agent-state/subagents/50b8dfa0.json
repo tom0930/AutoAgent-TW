@@ -1,0 +1,16 @@
+{
+    "id": "50b8dfa0",
+    "parent_id": "main",
+    "task": "Memory Test",
+    "status": "running",
+    "progress": 10,
+    "start_time": "2026-04-29T16:46:06.454403",
+    "budget_tokens": 10000,
+    "risk_limit": 3,
+    "role": "architect",
+    "logs": [
+        "Process initialized.",
+        "[2026-04-29T16:46:06.464207] Process spawned successfully (PID: 51864)."
+    ],
+    "result": null
+}

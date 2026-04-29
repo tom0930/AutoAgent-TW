@@ -4,23 +4,28 @@
     "architect": {
       "persona": ".agents/personas/architect.md",
       "whitelist": ["**/*.md", "**/ARCHITECTURE.md", "**/PROJECT.md", "**/CONTEXT.md", "**/*.json"],
-      "rtk_mode": "standard"
+      "rtk_mode": "standard",
+      "resource_limits": { "memory_mb": 512, "cpu_priority": "below_normal" }
     },
     "cpp-pro": {
       "persona": ".agents/personas/cpp-pro.md",
       "whitelist": ["**/*.cpp", "**/*.h", "**/*.hpp", "**/*.cu", "**/*.tcl", "**/Makefile", "**/CMakeLists.txt", "PROJECT.md"],
-      "rtk_mode": "aggressive"
+      "rtk_mode": "aggressive",
+      "resource_limits": { "memory_mb": 2048, "cpu_priority": "normal" }
     },
     "security-auditor": {
       "persona": ".agents/personas/security.md",
       "whitelist": ["**/*"],
-      "rtk_mode": "sanitized"
+      "rtk_mode": "sanitized",
+      "resource_limits": { "memory_mb": 1024, "cpu_priority": "below_normal" }
     },
     "qa-expert": {
       "persona": ".agents/personas/qa-expert.md",
       "whitelist": ["tests/**", "**/*.test.*", "**/*.py", "PROJECT.md", "STATE.md"],
-      "rtk_mode": "standard"
+      "rtk_mode": "standard",
+      "resource_limits": { "memory_mb": 1024, "cpu_priority": "normal" }
     }
   },
-  "default_role": "general-helper"
+  "default_role": "general-helper",
+  "default_resource_limits": { "memory_mb": 512, "cpu_priority": "below_normal" }
 }

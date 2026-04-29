@@ -1,0 +1,15 @@
+{
+    "id": "5ab0fa21",
+    "parent_id": "main",
+    "task": "TTL Test",
+    "status": "pending",
+    "progress": 0,
+    "start_time": "2026-04-29T16:44:44.918256",
+    "budget_tokens": 10000,
+    "risk_limit": 3,
+    "role": "architect",
+    "logs": [
+        "Process initialized."
+    ],
+    "result": null
+}
