@@ -1,0 +1,22 @@
+name: Phase 169 - Multi-Agent Execution Engine
+version: v2.1
+max_fix_loops: 3
+negative_patterns:
+  - "import subprocess; subprocess.call"  # 禁止不安全的直接呼叫
+  - "time.sleep"                          # 測試中禁止使用 sleep，需用 mock
+
+criteria:
+  - id: dag_parsing
+    command: python -m pytest tests/test_execution_dag.py -v
+    expected_exit_code: 0
+    description: "DAG Parser 必須正確進行拓撲排序，並具備循環依賴降級機制"
+
+  - id: lock_and_ttl
+    command: python -m pytest tests/test_executor_and_lock.py -v
+    expected_exit_code: 0
+    description: "FileLockManager 與 Executor 的 TTL 必須生效，超時必須清空 Git 暫存區"
+
+  - id: validation_gate
+    command: python -m pytest tests/test_validation_gate.py -v
+    expected_exit_code: 0
+    description: "Validation Gate 必須正確執行 hook，攔截語義衝突"
