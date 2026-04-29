@@ -1,0 +1,12 @@
+# .planning/phases/167-parallel-planning/verification_contract.yaml
+phase: 167
+success_criteria:
+  - id: V167-01
+    description: Parallel execution of 3 agents completes within 3 seconds.
+    test: "python tests/test_phase167_uat.py"
+  - id: V167-02
+    description: Security filter prevents write_to_file tool exposure.
+    test: "python tests/test_phase167_uat.py"
+negative_patterns:
+  - pattern: "parallel_planner.py.*write_to_file"
+    message: "Security Breach: parallel_planner should not contain direct calls to write_to_file."
