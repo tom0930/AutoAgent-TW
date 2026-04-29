@@ -1,49 +1,42 @@
-# PLAN: Phase 129 Headless CI/CD Integration
+# Phase 129: Headless CI/CD Integration - PLAN
 
-## 複雜度評估 (Complexity Assessment)
-- **跨度**: 涉及主入口 (`main.py`)、安全模組 (`log_sanitizer.py`)、調度模組 (`coordinator.py`) 與 Docker/CI 設定檔。
-- **複雜度**: 中等 (Medium)。不需要強制拆分為多個 Task 檔案，單一 `PLAN.md` 搭配明確的 Step-by-Step 即可。
+## 1. 任務拆解
+為確保穩定推進，本 Phase 已依據 `CONTEXT.md` 的 Wave 策略拆解為以下子任務：
+- [task_1_core_headless.md](./task_1_core_headless.md) (Wave 1: 無頭旗標與脫敏)
+- [task_2_containerization.md](./task_2_containerization.md) (Wave 2: 容器化與資源控制)
+- [task_3_cicd_templates.md](./task_3_cicd_templates.md) (Wave 3: CI 模板與效能)
 
----
+## 2. 8 維度檢查表 (Architectural Checklist)
 
-## 執行步驟 (Execution Steps)
+| # | 維度 | 檢查項確認狀態 |
+|---|------|----------------|
+| 1 | **需求拆解** | ✅ 邊界定義完整。已明確切分 CI/CD (Runtime) 與 QA (Validation Brain)。 |
+| 2 | **技術選型** | ✅ 混合方案 (Hybrid)。本地支援 CLI `--headless`，跨平台採用 Docker，兼顧彈性與隔離。 |
+| 3 | **架構圖** | ✅ (請見下方 Mermaid 圖表) |
+| 4 | **並行設計** | ✅ 多 PR 併發會引發 Rate Limit，已規劃 `ExponentialBackoff` (Jitter + 3 max retries)。 |
+| 5 | **資安威脅** | ✅ 實作 `LogSanitizer` (防洩漏) 與 `ci_audit.json` (防篡改)，徹底涵蓋 STRIDE。 |
+| 6 | **AI 考量** | ✅ 實作 Stealth Mode 限縮 Token，控制單次 CI Action 的成本，防範模型濫用。 |
+| 7 | **錯誤處理** | ✅ 實作絕對 TTL (`15min`) 與 `max_loops=3`，防止無窮自我修復造成 Action Minutes 爆表。 |
+| 8 | **測試策略** | ✅ 單元測試 (`test_headless_runtime.py`, `test_stealth_mode.py`) 配合 Exit Code 驗證。 |
 
-### Step 1: 實作日誌脫敏 (Log Sanitization)
-- **目標**: 防止 API Keys 在 CI/CD 日誌中外洩。
-- **動作**: 
-  - 建立 `src/core/security/log_sanitizer.py`。
-  - 實作 `LogSanitizer` 類別，使用 Regex 攔截並替換符合 `sk-ant-api*`, `AIzaSy*`, `ghp_*` 格式的字串為 `[REDACTED]`。
-  - 整合至 `src/harness/cli/main.py` 的 `_setup_logging` 中。
-- **UAT**: 在測試中印出包含 Dummy API Key 的字串，確認輸出被替換。
+## 3. 架構圖 (Mermaid)
 
-### Step 2: CLI 支援 `--headless` 標記
-- **目標**: 禁用所有的互動提示與 GUI 相依性。
-- **動作**:
-  - 在 `main.py` 中新增 `--headless` 全域參數。
-  - 確保 `--headless` 開啟時，`PYTHONUNBUFFERED` 被模擬或強制設定。
-  - 傳遞 `headless=True` 到 `OrchestrationCoordinator`，關閉所有的 `input()` 提示。
-- **UAT**: 執行 `aa-harness --headless doctor`，不應出現任何暫停等待。
+```mermaid
+graph TD
+    A[CI/CD Event: PR Push] --> B[action.yml]
+    B --> C{Docker Container}
+    C --> D[Diff Scanner]
+    D --> E[Headless Runtime]
+    
+    subgraph "AutoAgent-TW Core"
+        E --> F[Stealth Mode Context]
+        F --> G[Execution Engine]
+        G --> H[Log Sanitizer]
+    end
+    
+    H --> I[ci_metrics.json]
+    H --> J[Exit Code: 0 / 1 / 2]
+```
 
-### Step 3: 調度器防護 (Orchestration Guard)
-- **目標**: 防止 CI/CD 分鐘數被耗盡。
-- **動作**:
-  - 在 `src/core/orchestration/coordinator.py` 中，當 `headless=True` 時，強制設定 `max_loops = 3` (或從環境變數讀取)。
-  - 若達到 `max_loops` 尚未完成，拋出 `HeadlessTimeoutError` 並回傳 Exit Code `1`。
-- **UAT**: 撰寫 Mock 測試，模擬一個永遠失敗的子代理人，驗證 3 次後自動中斷並退出。
-
-### Step 4: 容器化與 CI/CD 範本
-- **目標**: 支援 GitHub Actions。
-- **動作**:
-  - 撰寫根目錄的 `Dockerfile`，使用 `python:3.13-slim`，安裝依賴，並複製專案檔案。設定 ENTRYPOINT 為 `aa-harness --headless`。
-  - 建立 `.github/workflows/autoagent-review.yml` 範本，示範如何觸發 AI 代碼審查。
-- **UAT**: 能成功執行 `docker build -t autoagent-tw .`。
-
----
-
-## 預期變更文件列表 (Expected File Changes)
-- `[NEW] src/core/security/log_sanitizer.py`
-- `[MODIFY] src/harness/cli/main.py`
-- `[MODIFY] src/core/orchestration/coordinator.py`
-- `[MODIFY] src/core/health/checks.py`
-- `[NEW] Dockerfile`
-- `[NEW] .github/workflows/autoagent-review.yml`
+## 4. 執行前置作業
+執行前請確認已透過 `verification_contract.yaml` 指定好機器可執行的成功標準。後續透過 `/aa-execute 129` 啟動。

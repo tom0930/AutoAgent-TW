@@ -1,0 +1,36 @@
+phase: "129"
+phase_name: "headless-cicd"
+created_at: "2026-04-30"
+
+success_criteria:
+  - id: "SC-001"
+    name: "Python syntax check for new modules"
+    test: "python -m py_compile src/core/runtime/headless.py src/core/exit_codes.py src/utils/log_sanitizer_ci.py src/core/context_scoper.py src/integrations/rva/headless_adapter.py src/utils/metrics_exporter.py src/core/diff_scanner.py"
+    expected: "exit_code == 0"
+    severity: "critical"
+
+  - id: "SC-002"
+    name: "Unit tests pass"
+    test: "python -m pytest tests/test_headless_runtime.py tests/test_stealth_mode.py tests/test_ci_metrics.py -v"
+    expected: "exit_code == 0"
+    severity: "critical"
+
+  - id: "SC-003"
+    name: "Surgical change validation"
+    test: "python scripts/diff_scope_check.py --plan .planning/phases/129-headless-cicd/PLAN.md --staged"
+    expected: "exit_code == 0"
+    severity: "warning"
+
+fix_loop:
+  max_iterations: 3
+  strategy: "incremental"
+  escalation: "human_interrupt"
+
+negative_patterns:
+  - "Segmentation fault"
+  - "MemoryError"
+  - "RecursionError"
+  - "ModuleNotFoundError"
+
+generated_by: "aa-plan"
+plan_hash: ""

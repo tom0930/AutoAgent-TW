@@ -1,21 +1,27 @@
-# RESEARCH: Phase 129 Headless CI/CD Integration
+# Phase 129: Domain Research (Headless CI/CD Integration)
 
-## 1. Codebase Map (相關程式碼地圖)
-- `src/harness/cli/main.py`: 主程式入口，目前透過 `argparse` 解析命令。需要新增 `--headless` 參數並傳遞給各子系統。
-- `src/core/security/log_sanitizer.py` (尚未建立): 預計放在此處，用來包裝 `sys.stdout` 進行正則表達式的密鑰脫敏 (Redaction)。
-- `src/core/orchestration/coordinator.py`: 代理人調度中心。目前如果代理人發生錯誤可能會進行重試，在 Headless 模式下需要限制最大重試次數 (`max_loops`) 與 TTL。
-- `src/core/health/checks.py`: 健康檢查，需在 Headless 模式下略過 UI / Display 相關的檢查。
+## 1. 模組定位與依賴分析
+從 `CONTEXT.md` 的 Wave 1 定義可知，需要建立以下模組：
+- **CLI Entrypoint (`main.py`)**: 必須處理 `--headless` 解析。若偵測到該標記，需要覆寫標準 I/O。
+- **Runtime 覆寫 (`src/core/runtime/headless.py`)**: 取代互動式 `input()` 與 rich Prompt。
+- **日誌脫敏 (`src/utils/log_sanitizer.py`)**: 全域的 stdout/stderr Hook，攔截所有 API 輸出，替換敏感字串為 `***MASKED***`。
+- **狀態退出碼 (`src/core/exit_codes.py`)**: 必須使用 Enum 定義 `0` (Success), `1` (Failure), `2` (Needs Human)。
 
-## 2. API 與資料結構分析 (API & Data Structures)
-- **Exit Codes**:
-  - `0`: 成功完成自動化任務 (例如：Code Review Pass 或 Bug Fix 成功並 Commit)。
-  - `1`: 系統性錯誤或自動化修復失敗。
-  - `2`: 需要人工介入 (Human-in-the-loop)，在 CI/CD 中可視為失敗，但給予不同的提示。
-- **Docker Base Image**: 
-  - `python:3.13-slim` 是輕量且官方支援的首選。
-  - 需要 `apt-get install -y git jq curl` 等 CI/CD 基本工具。
+## 2. CI/CD 環境限制
+- 在 GitHub Actions (`debian-slim` 或 `ubuntu-latest`) 下，`DISPLAY` 變數不存在，任何嘗試載入 `pywinauto` 或 `tkinter` 的動作都會導致 RuntimeError。
+- 必須在 `src/integrations/rva/` 中實作 `headless_adapter.py`，作為 GUI 引擎在無頭模式下的 Dummy 替身或降級模組。
+- Docker Image 需要包含 `chromium` (如果需要 headless RVA) 或 `xvfb` 以便欺騙顯示伺服器。
 
-## 3. 陷阱與已知問題 (Pitfalls & Known Issues)
-1. **Windows API 相依性**: 目前系統有部分 RVA 邏輯使用了 `pywinauto`。在 Linux Docker 或 Headless 模式下直接 `import pywinauto` 可能會導致 Crash。**解法**：在匯入時使用 `try-except ImportError` 或在執行時檢查 `os.name == 'nt'`。
-2. **Interactive Prompts**: 任何 `input("Press Enter...")` 都會導致 CI/CD pipeline 卡死直到 timeout。必須嚴格封殺。
-3. **stdout 緩衝區**: 在 CI/CD 中，Python 的 `stdout` 可能會有緩衝延遲，導致日誌順序錯亂。**解法**：使用 `sys.stdout.reconfigure(line_buffering=True)` 或執行時加上 `PYTHONUNBUFFERED=1`。
+## 3. GitHub Actions Template 參數設計
+- `action.yml` 需要以下輸入參數 (inputs)：
+  - `headless_args`: 傳遞給 AutoAgent-TW 的參數 (如 `--lite-context`)。
+  - `ttl_minutes`: 確保 Job 不會超時掛起 (Hang)。
+  - GitHub Token 或其他 OIDC 必須由 CI 環境注入環境變數 (`GITHUB_TOKEN`)。
+
+## 4. 常見陷阱 (Pitfalls)
+- **日誌編碼問題**: 在 Docker 內 `sys.stdout` 的編碼可能不是 UTF-8，導致中文字元噴出 `UnicodeEncodeError`，需要強制設定 `PYTHONIOENCODING=utf-8`。
+- **快取失效**: Python 的 Pip Cache 若沒有搭配正確的 `hashFiles('requirements.txt')`，會導致每次 CI 都重新下載。
+- **LLM Rate Limit**: CI 環境常併發執行多個 PR 的 Workflow，極易觸發 Gemini 或 Claude 的 429 Error。這凸顯了 `ExponentialBackoff` 在 Headless 模式中的絕對必要性。
+
+## 5. 結論
+本階段實作不會改變 AutoAgent-TW 的大腦邏輯，重點是**外殼與邊界**的加固。將任務嚴格拆分為 3 個子任務是最穩妥的做法。
