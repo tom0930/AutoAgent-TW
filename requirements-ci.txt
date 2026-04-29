@@ -1,0 +1,7 @@
+pydantic>=2.0.0
+pytest>=7.0.0
+pytest-asyncio
+rich
+pyyaml
+# Playwright for headless browser if needed
+playwright
