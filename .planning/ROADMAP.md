@@ -1,4 +1,4 @@
-# Roadmap: v3.6.0 Unified Core (Resilience & Agentic)
+# Roadmap: v3.7.0 AI-Native CLI Infrastructure
 
 ## 🚀 Phase 1.x: Industrial Foundation (v1.7.0 - v1.8.x)
 
