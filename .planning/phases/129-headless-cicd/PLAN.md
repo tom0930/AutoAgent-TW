@@ -19,7 +19,32 @@
 | 7 | **錯誤處理** | ✅ 實作絕對 TTL (`15min`) 與 `max_loops=3`，防止無窮自我修復造成 Action Minutes 爆表。 |
 | 8 | **測試策略** | ✅ 單元測試 (`test_headless_runtime.py`, `test_stealth_mode.py`) 配合 Exit Code 驗證。 |
 
-## 3. 架構圖 (Mermaid)
+## 3. Proposed Changes
+
+### Core Runtime (Wave 1)
+- [NEW] [exit_codes.py](file:///z:/AutoAgent-TW/src/core/exit_codes.py)
+- [NEW] [headless.py](file:///z:/AutoAgent-TW/src/core/runtime/headless.py)
+- [NEW] [log_sanitizer_ci.py](file:///z:/AutoAgent-TW/src/utils/log_sanitizer_ci.py)
+- [MODIFY] [log_sanitizer.py](file:///z:/AutoAgent-TW/src/core/security/log_sanitizer.py)
+
+### Containerization (Wave 2)
+- [NEW] [Dockerfile.ci](file:///z:/AutoAgent-TW/Dockerfile.ci)
+- [NEW] [requirements-ci.txt](file:///z:/AutoAgent-TW/requirements-ci.txt)
+- [NEW] [context_scoper.py](file:///z:/AutoAgent-TW/src/core/context_scoper.py)
+- [NEW] [headless_adapter.py](file:///z:/AutoAgent-TW/src/integrations/rva/headless_adapter.py)
+
+### CI/CD Templates (Wave 3)
+- [NEW] [action.yml](file:///z:/AutoAgent-TW/action.yml)
+- [NEW] [auto-review.yml](file:///z:/AutoAgent-TW/examples/auto-review.yml)
+- [NEW] [metrics_exporter.py](file:///z:/AutoAgent-TW/src/utils/metrics_exporter.py)
+- [NEW] [diff_scanner.py](file:///z:/AutoAgent-TW/src/core/diff_scanner.py)
+
+### Tests
+- [NEW] [test_headless_runtime.py](file:///z:/AutoAgent-TW/tests/test_headless_runtime.py)
+- [NEW] [test_stealth_mode.py](file:///z:/AutoAgent-TW/tests/test_stealth_mode.py)
+- [NEW] [test_ci_metrics.py](file:///z:/AutoAgent-TW/tests/test_ci_metrics.py)
+
+## 4. 架構圖 (Mermaid)
 
 ```mermaid
 graph TD

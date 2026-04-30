@@ -1,6 +1,6 @@
 import re
 import sys
-from typing import List, Pattern
+from typing import List, Pattern, Optional
 
 class LogSanitizer:
     """
@@ -17,7 +17,7 @@ class LogSanitizer:
         r"[a-fA-F0-9]{32,}",               # Generic MD5/Hex secrets
     ]
     
-    def __init__(self, patterns: List[str] = None):
+    def __init__(self, patterns: Optional[List[str]] = None):
         self.patterns: List[Pattern] = [
             re.compile(p, re.IGNORECASE) for p in (patterns or self.DEFAULT_PATTERNS)
         ]
