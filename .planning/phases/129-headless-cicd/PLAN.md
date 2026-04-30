@@ -22,27 +22,27 @@
 ## 3. Proposed Changes
 
 ### Core Runtime (Wave 1)
-- [NEW] [exit_codes.py](file:///z:/AutoAgent-TW/src/core/exit_codes.py)
-- [NEW] [headless.py](file:///z:/AutoAgent-TW/src/core/runtime/headless.py)
-- [NEW] [log_sanitizer_ci.py](file:///z:/AutoAgent-TW/src/utils/log_sanitizer_ci.py)
-- [MODIFY] [log_sanitizer.py](file:///z:/AutoAgent-TW/src/core/security/log_sanitizer.py)
+- [NEW] `src/core/exit_codes.py`
+- [NEW] `src/core/runtime/headless.py`
+- [NEW] `src/utils/log_sanitizer_ci.py`
+- [MODIFY] `src/core/security/log_sanitizer.py`
 
 ### Containerization (Wave 2)
-- [NEW] [Dockerfile.ci](file:///z:/AutoAgent-TW/Dockerfile.ci)
-- [NEW] [requirements-ci.txt](file:///z:/AutoAgent-TW/requirements-ci.txt)
-- [NEW] [context_scoper.py](file:///z:/AutoAgent-TW/src/core/context_scoper.py)
-- [NEW] [headless_adapter.py](file:///z:/AutoAgent-TW/src/integrations/rva/headless_adapter.py)
+- [NEW] `Dockerfile.ci`
+- [NEW] `requirements-ci.txt`
+- [NEW] `src/core/context_scoper.py`
+- [NEW] `src/integrations/rva/headless_adapter.py`
 
 ### CI/CD Templates (Wave 3)
-- [NEW] [action.yml](file:///z:/AutoAgent-TW/action.yml)
-- [NEW] [auto-review.yml](file:///z:/AutoAgent-TW/examples/auto-review.yml)
-- [NEW] [metrics_exporter.py](file:///z:/AutoAgent-TW/src/utils/metrics_exporter.py)
-- [NEW] [diff_scanner.py](file:///z:/AutoAgent-TW/src/core/diff_scanner.py)
+- [NEW] `action.yml`
+- [NEW] `examples/auto-review.yml`
+- [NEW] `src/utils/metrics_exporter.py`
+- [NEW] `src/core/diff_scanner.py`
 
 ### Tests
-- [NEW] [test_headless_runtime.py](file:///z:/AutoAgent-TW/tests/test_headless_runtime.py)
-- [NEW] [test_stealth_mode.py](file:///z:/AutoAgent-TW/tests/test_stealth_mode.py)
-- [NEW] [test_ci_metrics.py](file:///z:/AutoAgent-TW/tests/test_ci_metrics.py)
+- [NEW] `tests/test_headless_runtime.py`
+- [NEW] `tests/test_stealth_mode.py`
+- [NEW] `tests/test_ci_metrics.py`
 
 ## 4. 架構圖 (Mermaid)
 
