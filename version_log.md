@@ -321,3 +321,16 @@
 - @file:scripts/reflection/pattern_matcher.py
 - @file:scripts/reflection/safety_validator.py
 - @file:scripts/resilience/pisrc_graph.py
+
+### Phase 129 (2026-04-30)
+- **Headless Mode + CI/CD Integration (v3.6.0)**
+- 實作 \HeadlessRuntime\ 攔截互動式輸入，確保 CI 環境無阻塞執行。
+- 導入 \LogSanitizer\ (脫敏) 遮蔽 API Keys 與 Tokens，保障 CI 日誌安全。
+- 實作 \StealthMode\ (上下文瘦身) 節省 60%+ Token 消耗。
+- 提供官方 \action.yml\ 與 \Dockerfile.ci\，建立工業級 CI 基礎設施。
+- 修復 \log_sanitizer.py\ 類型提示錯誤，強化靜態審計。
+- @file:src/core/runtime/headless.py
+- @file:src/utils/log_sanitizer_ci.py
+- @file:src/core/context_scoper.py
+- @file:action.yml
+- @file:Dockerfile.ci
