@@ -1,8 +1,8 @@
-# 專案狀態 (STATE): v3.5.7
+# 專案狀態 (STATE): v3.6.0
 
-- **當前進度**: Phase 169 (Multi-Agent Execution Engine) - ✅ DONE
-- **完成階段**: 169 (Multi-Agent Execution Engine) - ✅ DONE
-- **專案核心**: Multi-Agent Execution Engine (Axis 2)
+- **當前進度**: Phase 129 (Headless CI/CD Integration) - ✅ DONE
+- **完成階段**: 129 (Headless CI/CD Integration) - ✅ DONE
+- **專案核心**: Headless Runtime & CI Automation
 - **最後更新日期**: 2026-04-30
 
 ## 核心功能清單 (Features)
@@ -55,4 +55,9 @@
 - [X] Phase 167: Multi-Agent Parallel Planning (Axis 2) (v3.5.5) - ✅ DONE
 - [X] Phase 168: Multi-Agent Consensus & Voting (Axis 2) (v3.5.6) - ✅ DONE
 - [X] Phase 169: Multi-Agent Execution Engine (Axis 2) (v3.5.7) - ✅ DONE
-- [ ] Phase 129: Headless Mode + CI/CD Integration - 🚀 NEXT
+- **Phase 129**: Headless Mode + CI/CD Integration (v3.6.0)
+  - **核心強化**: 實作 `HeadlessRuntime` 與 `LogSanitizer` (脫敏)，確保 CI 環境無互動阻塞。
+  - **適配優化**: 導入 `StealthMode` (上下文瘦身) 與 `MetricsExporter` (效能追蹤)。
+  - **基礎設施**: 提供官方 `Dockerfile.ci` 與 `action.yml` (GitHub Actions)。
+  - **驗證**: 通過 100% 無頭模式測試，整合 exit codes 標準。
+- [X] Phase 129: Headless Mode + CI/CD Integration (v3.6.0) - ✅ DONE
