@@ -1,0 +1,28 @@
+name: 'AutoAgent-TW Headless CI'
+description: 'AI-powered code review & auto-fix in CI/CD'
+author: 'AutoAgent-TW Team'
+
+inputs:
+  headless_args:
+    description: 'Additional CLI args for --headless mode'
+    required: false
+    default: '--lite-context --max-loops=3'
+  ttl_minutes:
+    description: 'Absolute TTL for the job'
+    required: false
+    default: '15'
+  github_token:
+    description: 'GitHub Token for PR comments and commits'
+    required: true
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile.ci'
+  args:
+    - --headless
+    - ${{ inputs.headless_args }}
+    - --ttl=${{ inputs.ttl_minutes }}
+
+branding:
+  icon: 'cpu'
+  color: 'blue'
