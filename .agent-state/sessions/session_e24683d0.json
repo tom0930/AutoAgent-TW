@@ -1,0 +1,23 @@
+{
+  "key": "session_de0e052907fd",
+  "kind": "main",
+  "label": "SmokeTest",
+  "status": "active",
+  "created_at": 1777785073.3207657,
+  "last_active": 1777785073.324536,
+  "model": null,
+  "message_count": 1,
+  "token_count": 0,
+  "metadata": {},
+  "messages": [
+    {
+      "id": "msg_7fbcf420c591",
+      "role": "user",
+      "content": "Test message",
+      "timestamp": 1777785073.3245275,
+      "metadata": {}
+    }
+  ],
+  "workflow_id": "wf_de0e052907fd",
+  "capability_mode": "explore"
+}
