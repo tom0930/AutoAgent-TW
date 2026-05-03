@@ -11,6 +11,7 @@ class ContextScoper:
     def __init__(self, is_stealth: bool = False, max_tokens: int = 2048):
         self.is_stealth = is_stealth
         self.max_tokens = max_tokens
+        self.compression_threshold = 0.8 * max_tokens
 
     def get_scoped_context(self, files: List[str], base_context: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -31,6 +32,14 @@ class ContextScoper:
         }
         
         return scoped
+
+    def should_compress(self, current_tokens: int) -> bool:
+        """Determines if the context should be compressed."""
+        return current_tokens > self.compression_threshold
+
+    def estimate_tokens(self, text: str) -> int:
+        """Simple heuristic for token estimation."""
+        return len(text) // 4
 
     @classmethod
     def apply_stealth_limits(cls):

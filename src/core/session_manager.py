@@ -13,6 +13,11 @@ from dataclasses import dataclass, asdict, field
 from typing import List, Optional, Dict, Any, Callable
 from enum import Enum
 from collections import defaultdict
+from .feature_flags import feature_flags
+from .workflow_checkpoint import CheckpointManager, WorkflowCheckpoint
+from .auto_compressor import AutoCompressor
+from .evidence_memory import CompressionSummary, EvidenceFact
+from .security.input_sanitizer import InputSanitizer
 
 
 class SessionKind(Enum):
@@ -54,6 +59,8 @@ class Session:
     token_count: int = 0
     metadata: Dict[str, Any] = field(default_factory=dict)
     messages: List[SessionMessage] = field(default_factory=list)
+    workflow_id: Optional[str] = None
+    capability_mode: str = "explore"
     
     def touch(self):
         """更新最後活躍時間"""
@@ -76,8 +83,13 @@ class Session:
         return msg
     
     def to_dict(self) -> Dict[str, Any]:
-        """轉換為字典"""
-        return asdict(self)
+        """轉換為字典，處理 Enum 序列化"""
+        data = asdict(self)
+        if isinstance(self.kind, Enum):
+            data['kind'] = self.kind.value
+        if isinstance(self.status, Enum):
+            data['status'] = self.status.value
+        return data
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Session':
@@ -112,6 +124,15 @@ class SessionManager:
         self.sessions: Dict[str, Session] = {}
         self.subscribers: Dict[str, List[Callable]] = defaultdict(list)
         self._lock = threading.RLock()
+        
+        # Phase 170: Checkpoint Manager for V2
+        self._checkpoint_manager = CheckpointManager(self.storage_path.parent)
+        
+        # Phase 170: Auto Compressor
+        self._compressor = AutoCompressor(summarizer_fn=self._mock_summarizer)
+        
+        # Phase 170: Security Sanitizer
+        self._sanitizer = InputSanitizer()
         
         # 載入已存在的 Session
         self._load_sessions()
@@ -238,12 +259,50 @@ class SessionManager:
             if not session:
                 return None
             
+            # Phase 170: Security Sanitization (L1)
+            is_safe, reason = self._sanitizer.is_safe(message)
+            if not is_safe:
+                self.logger.warning(f"Message blocked by Security Sanitizer: {reason}")
+                raise PermissionError(f"Security Policy Violation: {reason}")
+            
             msg = session.add_message(role, message, metadata)
             self._save_session(session)
             
+            # Phase 170: Async Compression Trigger
+            if feature_flags.is_enabled("AA_ASYNC_COMPRESSION"):
+                if session.token_count > 1000: # Example threshold
+                    self._compressor.compress_async(
+                        session_id=session.key,
+                        messages=[asdict(m) for m in session.messages],
+                        on_success=lambda new_msgs: self._on_compression_success(session.key, new_msgs)
+                    )
+
             self._emit('message_sent', session, msg)
             
             return msg
+
+    def _on_compression_success(self, session_key: str, new_messages: List[Dict[str, Any]]):
+        """Callback from AutoCompressor."""
+        with self._lock:
+            session = self.sessions.get(session_key)
+            if session:
+                # Convert dict back to SessionMessage
+                session.messages = [
+                    SessionMessage(**m) if isinstance(m, dict) else m 
+                    for m in new_messages
+                ]
+                session.message_count = len(session.messages)
+                self.logger.info(f"Session {session_key} context swapped with compressed version.")
+                self._save_session(session)
+
+    def _mock_summarizer(self, messages: List[Dict[str, Any]]) -> CompressionSummary:
+        """Mock LLM summarizer for testing the pipeline."""
+        return CompressionSummary(
+            executive_summary="This is a mock summary of the conversation.",
+            key_facts=[EvidenceFact(fact="Mock fact", evidence=["1"])],
+            decisions_made=["Mock decision"],
+            open_questions=[]
+        )
     
     def destroy(self, key: str) -> bool:
         """
@@ -326,6 +385,37 @@ class SessionManager:
         
         with open(path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
+            
+        # Phase 170: Shadow Mode Dual-Writing
+        if feature_flags.is_enabled("AA_CC_STATE_V2"):
+            self._shadow_checkpoint_save(session)
+
+    def _shadow_checkpoint_save(self, session: Session):
+        """Perform Shadow Mode writing to Checkpoint V2 (Non-blocking)."""
+        def _bg_save():
+            try:
+                # Ensure session has a workflow_id
+                if not session.workflow_id:
+                    session.workflow_id = f"wf_{session.key.replace('session_', '')}"
+                
+                # Create checkpoint from session state
+                checkpoint = WorkflowCheckpoint(
+                    workflow_id=session.workflow_id,
+                    step_id=str(session.message_count),
+                    action="session_update",
+                    status="completed",
+                    artifacts=[],
+                    requires_hitl=session.metadata.get("requires_hitl", False),
+                    active_tools=session.metadata.get("active_tools", []),
+                    capability_mode=session.capability_mode,
+                    timestamp=time.time()
+                )
+                self._checkpoint_manager.save(checkpoint)
+            except Exception as e:
+                # Shadow writing failure should NOT affect main session
+                pass
+
+        threading.Thread(target=_bg_save, daemon=True, name=f"Shadow-CP-{session.key}").start()
     
     def _load_sessions(self):
         """載入所有 Session"""

@@ -16,6 +16,11 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
+from .feature_flags import feature_flags
+from .security.input_sanitizer import InputSanitizer
+from .security.audit_logger import AuditLogger
+from ..harness.streaming import event_bus, WorkflowEvent, EventType, CLIEventPublisher
+from ..harness.cli.event_renderer import CLIEventRenderer
 
 
 class ServiceStatus(Enum):
@@ -63,6 +68,17 @@ class HarnessGateway:
         
         # 設定訊號處理
         self._setup_signal_handlers()
+
+        # Phase 170: Security Hardening
+        self.sanitizer = InputSanitizer()
+        self.audit_logger = AuditLogger(self.workspace / "logs" / "audit")
+        self.audit_logger.log("GATEWAY_INIT", "system", "Gateway initialization started")
+
+        # Phase 170: Initialize Streaming
+        if feature_flags.is_enabled("AA_INTERRUPTIBLE_STREAM"):
+            self.renderer = CLIEventRenderer()
+            event_bus.subscribe(CLIEventPublisher(self.renderer))
+            self.logger.info("Streaming Event Bus initialized")
     
     def _setup_logging(self) -> logging.Logger:
         """設定日誌"""
@@ -140,6 +156,17 @@ class HarnessGateway:
         def handle_signal(signum, frame):
             signal_name = signal.Signals(signum).name
             self.logger.info(f"Received signal {signal_name}, shutting down...")
+            
+            # Phase 170: Interruptible Interception
+            if signum == signal.SIGINT and feature_flags.is_enabled("AA_INTERRUPTIBLE_STREAM"):
+                event_bus.emit(WorkflowEvent(
+                    event_type=EventType.WORKFLOW_PAUSED,
+                    workflow_id="gateway",
+                    data={"reason": "Ctrl+C Interruption"}
+                ))
+                # Give some time for event to flush
+                time.sleep(0.5)
+
             self.stop()
             sys.exit(0)
         
@@ -210,13 +237,30 @@ class HarnessGateway:
             try:
                 # 這裡應該呼叫實際的服務初始化
                 # 目前是 placeholder，實際會依賴各服務模組
+                event_bus.emit(WorkflowEvent(
+                    event_type=EventType.TOOL_START,
+                    workflow_id="gateway",
+                    data={"tool": service_name}
+                ))
+                
                 self._init_service_module(service_id)
                 service.status = ServiceStatus.RUNNING
                 self.logger.info(f"  ✓ {service_name} started")
+                
+                event_bus.emit(WorkflowEvent(
+                    event_type=EventType.TOOL_END,
+                    workflow_id="gateway",
+                    data={"tool": service_name, "duration": time.time() - service.started_at}
+                ))
             except Exception as e:
                 service.status = ServiceStatus.ERROR
                 service.error = str(e)
                 self.logger.error(f"  ✗ {service_name} failed: {e}")
+                event_bus.emit(WorkflowEvent(
+                    event_type=EventType.ERROR,
+                    workflow_id="gateway",
+                    data={"message": f"{service_name} failed: {str(e)}"}
+                ))
             
             self.services[service_id] = service
     
@@ -283,7 +327,7 @@ class HarnessGateway:
         """Initialize the Cron Scheduler service."""
         try:
             from src.core.cron.scheduler import CronScheduler
-            scheduler = CronScheduler(workspace=str(self.workspace))
+            scheduler = CronScheduler(storage_path=self.workspace / "cron")
             self.logger.debug(f"CronScheduler initialized: {scheduler}")
             return scheduler
         except ImportError:
@@ -308,6 +352,16 @@ class HarnessGateway:
     def _handle_event(self, event: Dict[str, Any]):
         """處理事件"""
         event_type = event.get('type', 'unknown')
+        
+        # Phase 170: Input Sanitization (L1)
+        if 'payload' in event and isinstance(event['payload'], str):
+            is_safe, reason = self.sanitizer.is_safe(event['payload'])
+            if not is_safe:
+                self.logger.error(f"Security Alert: Blocked event {event_type} due to {reason}")
+                self.audit_logger.log("SECURITY_BLOCK", "sanitizer", f"Blocked {event_type}", {"reason": reason})
+                return
+
+        self.audit_logger.log("GATEWAY_EVENT", "worker", f"Processing {event_type}", {"event": event})
         
         handlers = {
             'check_health': self._check_health,
