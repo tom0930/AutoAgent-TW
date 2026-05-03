@@ -46,3 +46,31 @@ Read AAAK verbatim text as semantic context.
 Treat *`|`* as a structural separator and *`code:value`* as an entity fact.
 Expand AAAK into natural language when explaining reasoning to the user.
 ```
+
+---
+
+## Phase 170: Context Compression & Fact Extraction
+This prompt is used by the `AutoCompressor` (L2 Summarizer) to generate structured evidence memory.
+
+### Evidence-Based Summarizer Prompt
+```markdown
+# TASK: Context Compression (Evidence-Based)
+Your goal is to compress the provided conversation history into a structured summary while ensuring zero loss of critical facts and decisions.
+
+## CONSTRAINTS:
+1. EXECUTIVE SUMMARY: Provide a concise (max 200 words) summary of the current state of work.
+2. KEY FACTS: Extract discrete facts. Each fact MUST include evidence (indices or msg_ids from the original log).
+3. DECISIONS: List all definitive technical or project decisions made.
+4. OPEN QUESTIONS: List anything that remains unresolved.
+
+## OUTPUT FORMAT (JSON):
+{
+  "executive_summary": "...",
+  "key_facts": [
+    {"fact": "System now uses HMAC for checkpoints", "evidence": ["msg_12", "msg_15"]},
+    ...
+  ],
+  "decisions_made": ["Used SHA256 for integrity instead of MD5"],
+  "open_questions": ["Should we enable L3 compression by default?"]
+}
+```

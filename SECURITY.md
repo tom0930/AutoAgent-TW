@@ -112,10 +112,28 @@ python scripts/doctor.py --repair
 ```
 
 
-## Security Checklist
-- [ ] `.env` file is in `.gitignore`
-- [ ] `bin/extension/` is in `.gitignore` (Chrome extension)
-- [ ] No hardcoded API keys in codebase
-- [ ] Pyrefly disabled when not type-checking
-- [ ] Regular health checks with `doctor.py`
 - [ ] `autocli_policy.json` whitelist is appropriate
+
+---
+
+## Phase 170: 7-Layer Defense Pipeline (Hardening)
+To defend against advanced LLM-specific attacks (Prompt Injection, Data Poisoning), Phase 170 introduces a multi-layer defense pipeline.
+
+### 1. L1: Input Sanitizer (Ingress)
+- **Mechanism**: Pattern-based filtering for known injection vectors (e.g., "Ignore previous instructions").
+- **Action**: Proactive blocking of unsafe messages at the `SessionManager` level.
+
+### 2. L5: Sandbox Evaluator (Pre-execution)
+- **Mechanism**: Static analysis of shell commands and Python code before execution.
+- **Risk Scoring**: High-risk operations (e.g., `rm -rf`, accessing `.env`) are blocked or require explicit human approval.
+
+### 3. L7: Chained Audit Logger (Post-execution)
+- **Mechanism**: Each system event is recorded in a hash-chained log file (`audit.jsonl`).
+- **Integrity**: Every log entry points to the previous entry's hash. Any manual tampering will break the cryptographic chain.
+- **Verification**: `AuditLogger.verify_integrity()` is called during system health checks.
+
+### 4. Checkpoint Integrity
+- **HMAC Verification**: Workflow checkpoints use a system-level secret key (stored at `~/.autoagent/config/checkpoint_key`) to sign and verify state files. This prevents session hijacking via malicious state injection.
+
+### 5. Data Privacy
+- **Summarization Quality Gate**: Ensures that sensitive facts are either preserved with high fidelity or explicitly excluded based on privacy rules, preventing "semantic leak" during context compression.

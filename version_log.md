@@ -334,3 +334,4 @@
 - @file:src/core/context_scoper.py
 - @file:action.yml
 - @file:Dockerfile.ci
+$entry

@@ -48,3 +48,37 @@ To ensure system stability during long-running sessions, AutoAgent-TW implements
 2. **Vision Zero-Copy Architecture**: Utilizes multiprocessing.shared_memory to transfer high-resolution screen data directly between the capture daemon (PyRefly) and the analysis agent without intermediate buffer copies.
 3. **Lazy Memory Allocation**: All vision and file-heavy tools use LRU caching and explicit buffer cleaning to prevent memory bloat over 500MB.
 4. **Task Isolation**: Uses Windows **Job Objects** to treat the entire agent tree as a single atomic unit for resource limiting and final cleanup.
+
+---
+
+## Phase 170: Industrial Resilience Layer
+The Phase 170 upgrade focuses on high availability and resilience for professional agent workflows.
+
+### 1. Checkpoint V2 (Resilience)
+- **Shadow Mode**: Implements background dual-writing of session state.
+- **HMAC Integrity**: Each checkpoint is signed with a system-level secret to prevent tampering.
+- **Async Persistence**: Checkpoint writing is performed in daemon threads to ensure zero-latency for the main agent loop.
+
+### 2. Streaming Event Bus (Observability)
+- **Real-time Pipeline**: Provides a standard interface for tools to emit status events.
+- **Decoupled Rendering**: Separation of event logic from UI rendering (CLI/Web).
+- **Interruptible Logic**: Handles Ctrl+C (SIGINT) to gracefully pause and save partial state.
+
+### 3. Safe Auto-Compression (Efficiency)
+- **3-Stage Pipeline**: L1 Trim -> L2 LLM Summary -> L3 Quality Gate.
+- **Hard Gate Validation**: Ensures compression ratio > 60% and fact recall > 80% before swapping context.
+- **Evidence-Based Memory**: Summaries must link to original message indices to maintain provenance.
+
+```mermaid
+graph TD
+    User[User Input] --> San[Input Sanitizer]
+    San --> SM[Session Manager]
+    SM --> Check[Checkpoint V2 - Background]
+    SM --> LLM[LLM Engine]
+    LLM --> EB[Event Bus]
+    EB --> Renderer[CLI Renderer]
+    LLM --> Comp[Auto Compressor - Async]
+    Comp --> Gate[Quality Gate]
+    Gate -- Pass --> SM
+    Gate -- Fail --> Audit[Audit Logger]
+```

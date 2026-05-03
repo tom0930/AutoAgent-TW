@@ -24,9 +24,12 @@
 - [X] Phase 138: Windows GUI Automation (RVA & Vision Integration) [DONE]
 - [X] Phase 153: Human-in-the-loop Verification Contracts [DONE]
 - [X] Phase 160: AutoCLI Integration (v3.3.2) [DONE]
+- [X] Phase 170: Industrial Resilience & Safe Compression [DONE]
+- [ ] Phase 171: Multi-Agent Coordination & Shared Bus [BACKLOG]
 - [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
 
 ## Feedback & Ideas
 - **User Preference Mining**: Auto-detect habits and coding style to tailor future suggestions.
 - **Collaborative Palace**: Real-time memory sync for teams working on the same repository.
-- **AAAK Dialect v3**: Improved lossless compression to fit even more context into tiny windows.
+- **Zero-Knowledge Checkpoints**: Use ZKP to verify checkpoint integrity without exposing the system secret to subagents.
+- **Visual Memory Map**: A 2D/3D visualization of the palace (wings, rooms) to help users explore their own project's history.
