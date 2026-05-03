@@ -1,27 +1,31 @@
-# Phase 171: Multi-Agent Coordination & AI Omniscient Assistant
-## AutoAgent-TW 下一代多代理協作架構設計
+# Phase 171 Enhanced v2.0: Multi-Agent Coordination & Omniscient Assistant
+## AutoAgent-TW 多代理協作架構 + IDE 全能助手設計
 
-**版本**: v1.0 (Discuss Phase)
+**版本**: v2.0 (Discuss Phase — Enhanced with User Feedback)
 **日期**: 2026-05-03
 **設計者**: Tom (Senior Architect, AI Product Expert, Security Engineer)
+**決策確認**: A=(c), B=(c), C=(a) — 雙端渲染 + 批量/常駐雙模 + 結構化 Event
 
 ---
 
 ## 1. 需求拆解與邊界定義
 
-### 1.1 兩大核心需求
+### 1.1 已確認的三大核心需求
 
-**需求 A: Multi-Agent Coordination (多代理並行協作)**
-- 多個功能型 Agent 能夠**並行**執行不同子任務
-- Agent 間能夠透過**共享匯流排 (Shared Bus)** 感知彼此進度
-- 支援 **Supervisor → Worker** 與 **Peer-to-Peer** 兩種協作模式
-- 任何 Agent 失敗，不影響其他 Agent（隔離原則）
+#### 需求 A: Shared Core, Dual Renderers（核心共用、雙端渲染）
+- **Web Side Panel** (Antigravity IDE): 主要介面，透過 Extension API 深度整合
+- **CLI `rich` Live Display**: Fallback / 純終端機用戶使用
+- **鐵律**: 兩個 Renderer **共享同一個 Omniscient Agent Core**，只差渲染層（MVC 解耦）
 
-**需求 B: IDE Omniscient Agent (全能 AI 助手)**
-- Antigravity IDE 啟動後自動喚起的**常駐 AI 伴侶 (Persistent AI Companion)**
-- 感知 IDE 當前上下文（打開文件、錯誤、游標位置、最近 git 變更）
-- 主動推送建議（Proactive Suggestions），不需要用戶主動詢問
-- 整合 AutoAgent-TW 所有工作流（`/aa-*` 指令）為自然語言介面
+#### 需求 B: Dynamic Squad Composition（動態小隊組合）
+- 一次性批量任務：用戶說「修 5 個 bug」→ 自動 spawn Coder + Tester + Reviewer
+- 常駐專家代理：持續監控 CI、檔案變更、效能指標
+- **動態組合**：根據任務自動決定需要哪些 Agent 角色
+
+#### 需求 C: Structured Event-Only Communication
+- Agent 間**禁止自然語言對話**（避免幻覺 + 成本失控）
+- 所有通訊透過 Phase 170 的 `StreamingEventBus` 傳遞結構化 JSON
+- 未來若需「討論」：透過 `REQUEST_FOR_DISCUSSION` Event，由 Coordinator 中轉
 
 ### 1.2 DoD (Definition of Done)
 - [ ] 可同時運行 ≥ 3 個 Agent，各自獨立完成子任務
@@ -29,236 +33,400 @@
 - [ ] IDE 全能助手在 Antigravity 啟動後 < 3 秒完成初始化
 - [ ] 全能助手能感知當前文件的 Lint 錯誤並主動提示修復
 - [ ] 所有 Agent 間通訊均通過 Phase 170 的 Input Sanitizer
+- [ ] Max Concurrent Agents = 4（全域上限，可配置）
+- [ ] 所有文字產出強制繁體中文
 
 ---
 
-## 2. 技術選型與理由
+## 2. 技術選型（最終決策）
 
-### 2.1 多代理協作框架
+### 2.1 多代理框架: LangGraph 擴展 + 自建 Hierarchical Coordinator
 
-| 方案 | 優點 | 缺點 | 推薦度 |
-|------|------|------|--------|
-| **A: LangGraph 擴展** (現有) | 已有基礎、LangGraph 支援 Human-in-loop | 單一進程、無跨進程隔離 | ⭐⭐⭐⭐ |
-| **B: CrewAI Role-based** | 直觀的角色定義、內建任務分配 | 難以整合自定義 MCP | ⭐⭐⭐ |
-| **C: 自建 Actor Model** | 完全控制、最佳隔離 | 開發成本高 | ⭐⭐ |
-| **D: AutoGen (Microsoft)** | 成熟的多代理框架 | 過重、依賴複雜 | ⭐⭐ |
+**選擇理由**:
+- 現有 `OrchestrationCoordinator` 已使用 LangGraph，不引入新依賴（Simplicity Check ✅）
+- Phase 170 的 `StreamingEventBus` 直接作為 Agent 通訊底層
+- 現有 `SpawnManager` + `PermissionEngine` 提供 Agent 生命週期與權限控制
 
-**結論：選擇 A (LangGraph 擴展) + 自建 Shared Event Bus**
-- 理由：Phase 170 的 Streaming Event Bus 可以直接作為 Agent 間通訊的底層
-- 每個 Worker Agent 在獨立線程中運行（Thread Isolation），共享同一個 Event Bus
+### 2.2 Omniscient Agent: MCP Bridge + Event-Driven UI
 
-### 2.2 IDE 全能助手架構
-
-| 方案 | 優點 | 缺點 | 推薦度 |
-|------|------|------|--------|
-| **A: Antigravity Extension API** | 深度整合、感知 IDE 狀態 | 需要 IDE 開放 API | ⭐⭐⭐⭐⭐ |
-| **B: LSP (Language Server Protocol) 擴展** | 標準化、跨 IDE | 延遲較高、協議複雜 | ⭐⭐⭐ |
-| **C: Side Panel Webview (Electron)** | 豐富 UI、React 支援 | 記憶體佔用高 | ⭐⭐⭐ |
-
-**結論：選擇 A + 搭配 MCP Protocol 橋接 IDE 事件**
-- 實現「IDE 事件 → MCP Tool → AutoAgent-TW」的完整感知鏈
-- 全能助手通過 MCP 的 `workspace/status` Tool 讀取 IDE 狀態
+**感知鏈**: `IDE Events → MCP workspace/status → OmniscientCore → EventBus → Renderers`
 
 ---
 
 ## 3. 系統架構圖
 
 ```
-┌─────────────────── Antigravity IDE ─────────────────────────────────┐
-│                                                                     │
-│   ┌───────────────────────────────────────────────────────────┐    │
-│   │           AI Omniscient Assistant (Side Panel)            │    │
-│   │   - Context Awareness: 文件、錯誤、Git Status             │    │
-│   │   - Proactive Suggestions Engine                          │    │
-│   │   - Natural Language → /aa-* Workflow Bridge              │    │
-│   └────────────────────────┬──────────────────────────────────┘    │
-│                            │ MCP Protocol                          │
-└────────────────────────────┼───────────────────────────────────────┘
-                             │
-┌────────────────────────────▼───────────────────────────────────────┐
-│                  AutoAgent-TW Core Layer (Phase 171)               │
-│                                                                    │
-│  ┌─────────────────────────────────────────────────────────────┐  │
-│  │                  Agent Coordinator Hub                      │  │
-│  │         (Phase 170 Streaming Bus as backbone)               │  │
-│  │                                                             │  │
-│  │  ┌───────────────┐  ┌─────────────────┐  ┌─────────────┐  │  │
-│  │  │  Agent Alpha  │  │   Agent Beta    │  │  Agent Gamma│  │  │
-│  │  │  (Coder)      │  │   (Tester)      │  │  (Reviewer) │  │  │
-│  │  │  Thread-A     │  │   Thread-B      │  │  Thread-C   │  │  │
-│  │  └───────┬───────┘  └────────┬────────┘  └──────┬──────┘  │  │
-│  │          │                   │                   │         │  │
-│  │          └───────────────────▼───────────────────┘         │  │
-│  │                    Shared Event Bus                         │  │
-│  │              (Phase 170: streaming.py)                      │  │
-│  └─────────────────────────────────────────────────────────────┘  │
-│                            │                                       │
-│  ┌─────────────────────────▼──────────────────────────────────┐   │
-│  │             Security & Persistence Layer                    │   │
-│  │   Input Sanitizer | Audit Logger | Checkpoint V2           │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-└────────────────────────────────────────────────────────────────────┘
+┌───────────── Antigravity IDE ──────────────────────────────────┐
+│                                                                │
+│  ┌──────────────────────────────────────────────────────┐     │
+│  │      AI Omniscient Assistant (Web Side Panel)         │     │
+│  │  - 三層介入: Passive → Proactive Gentle → Active     │     │
+│  │  - Proactive Suggestion Engine                        │     │
+│  │  - Natural Language → /aa-* Workflow Bridge           │     │
+│  └──────────────────────┬───────────────────────────────┘     │
+│                         │ MCP Protocol                         │
+└─────────────────────────┼─────────────────────────────────────┘
+                          │
+┌─────────────────────────▼─────────────────────────────────────┐
+│              AutoAgent-TW Core (Phase 171)                     │
+│                                                                │
+│  ┌──────────────────────────────────────────────────────────┐ │
+│  │          Hierarchical Coordinator Hub                     │ │
+│  │                                                           │ │
+│  │  Top: OrchestrationCoordinator (全局調度)                 │ │
+│  │    ├── Squad-A: [Coder + Tester + Reviewer]              │ │
+│  │    └── Squad-B: [Coder + Reviewer]                       │ │
+│  │                                                           │ │
+│  │  Omniscient Agent (常駐)                                  │ │
+│  │    ├── IDE Sensor (MCP workspace/status)                  │ │
+│  │    ├── Suggestion Engine (L0/L1/L2)                       │ │
+│  │    └── Workflow Bridge (/aa-* 自然語言介面)                │ │
+│  └──────────────────────┬───────────────────────────────────┘ │
+│                         │                                      │
+│  ┌──────────────────────▼───────────────────────────────────┐ │
+│  │         Phase 170 Streaming Event Bus                     │ │
+│  │  新增 EventTypes:                                         │ │
+│  │    AGENT_SPAWNED | AGENT_COMPLETED | AGENT_FAILED         │ │
+│  │    SQUAD_PROPOSED | SQUAD_COMPLETED                       │ │
+│  │    SUGGESTION_READY | CRISIS_DETECTED                     │ │
+│  │    INTERVENTION_TRIGGERED                                 │ │
+│  └──────────────────────┬───────────────────────────────────┘ │
+│                         │                                      │
+│  ┌──────────────────────▼───────────────────────────────────┐ │
+│  │     Security & Persistence (Phase 170)                    │ │
+│  │  InputSanitizer | SandboxEvaluator | AuditLogger          │ │
+│  │  CheckpointV2   | CompressionGate  | FeatureFlags         │ │
+│  └──────────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────┘
+                          │
+                   ┌──────▼──────┐
+                   │ Dual Render │
+                   ├─────────────┤
+                   │ CLI (rich)  │  ← Fallback
+                   │ Web (Panel) │  ← Primary
+                   └─────────────┘
 ```
 
-### 3.1 Agent 角色定義
+### 3.1 Agent Identity & Capability Card（核心資料模型）
 
-| Agent 角色 | 職責 | 專屬工具 |
-|-----------|------|---------|
-| **Coordinator** | 任務分解、分配、結果聚合 | 全局 MCP Router |
-| **Coder Agent** | 代碼生成、重構 | `edit_file`, `run_command` |
-| **Tester Agent** | 測試執行、回歸分析 | `run_command`, `read_file` |
-| **Reviewer Agent** | 代碼審查、資安掃描 | `grep_search`, `Sandbox Evaluator` |
-| **Omniscient Agent** | IDE 感知、主動建議 | `workspace/status` MCP, `mempalace_search` |
+```python
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import List, Optional
+
+class AgentRole(Enum):
+    COORDINATOR = "coordinator"
+    CODER = "coder"
+    TESTER = "tester"
+    REVIEWER = "reviewer"
+    OMNISCIENT = "omniscient"
+
+class TrustLevel(Enum):
+    LOW = 1      # 只能讀取
+    MEDIUM = 2   # 可執行安全命令
+    HIGH = 3     # 可修改文件
+    ADMIN = 4    # 可存取 .env / 系統設定
+
+@dataclass
+class CapabilityCard:
+    """每個 Agent 的身份與能力清單"""
+    agent_id: str
+    role: AgentRole
+    trust_level: TrustLevel
+    allowed_tools: List[str]           # 白名單工具列表
+    forbidden_tools: List[str] = field(default_factory=list)
+    max_memory_mb: int = 256           # 記憶體上限
+    ttl_seconds: int = 300             # 生命週期上限 (5 min)
+    model_preference: str = "flash"    # 成本控制：flash/sonnet/opus
+    current_load: float = 0.0          # 目前負載 (0.0 ~ 1.0)
+```
+
+**角色預設能力矩陣**:
+
+| 角色 | 信任等級 | 允許工具 | 禁止工具 | 預設模型 |
+|------|---------|---------|---------|---------|
+| Coordinator | ADMIN | 全部 | 無 | opus |
+| Coder | HIGH | edit_file, run_command, grep | delete_database | sonnet |
+| Tester | MEDIUM | run_command, read_file | write_to_file, edit_file | flash |
+| Reviewer | MEDIUM | grep_search, read_file | run_command, write_to_file | sonnet |
+| Omniscient | LOW | workspace/status, mempalace_search | 所有修改類 | flash |
 
 ---
 
-## 4. 並行與效能設計
+## 4. Omniscient Agent Core（全能助手核心設計）
 
-### 4.1 Agent 線程模型
-```python
-# 每個 Worker Agent 在獨立線程中運行
-# 共享同一個 Event Bus（Thread-safe Queue）
-class AgentWorker(threading.Thread):
-    def __init__(self, role: AgentRole, task: Task, bus: EventBus):
-        super().__init__(daemon=True)
-        self.role = role
-        self.task = task
-        self.bus = bus      # Shared (Thread-safe)
-        self.result = None
-    
-    def run(self):
-        # 1. 通知啟動
-        self.bus.publish(WorkflowEvent(EventType.AGENT_STARTED, self.role.value))
-        try:
-            self.result = self._execute(self.task)
-            self.bus.publish(WorkflowEvent(EventType.AGENT_COMPLETED, str(self.result)))
-        except Exception as e:
-            self.bus.publish(WorkflowEvent(EventType.AGENT_FAILED, str(e)))
+### 4.1 三層介入策略狀態機
+
+```
+                    ┌─────────────┐
+        idle > 8s   │             │ user @助手
+   ┌───────────────>│   PASSIVE   │<────────────┐
+   │  (無問題)       │  (靜默觀察)  │             │
+   │                └──────┬──────┘             │
+   │                       │                     │
+   │           偵測到 Warning/Lint               │
+   │                       │                     │
+   │                ┌──────▼──────┐             │
+   │                │  PROACTIVE  │ 用戶關閉     │
+   │                │   GENTLE    │─────────────┘
+   │                │(側邊欄建議)  │
+   │                └──────┬──────┘
+   │                       │
+   │           偵測到 Error/Security
+   │                       │
+   │                ┌──────▼──────┐
+   └────────────────│   ACTIVE    │
+     問題已解決      │(強制介入)    │
+                    │ 全螢幕診斷   │
+                    └─────────────┘
 ```
 
-### 4.2 並行任務鏈 (Wave 並行化)
-- Wave 1: Coordinator 分解任務 → 並行啟動 N 個 Worker Thread
-- Wave 2: Worker 完成後通知 Coordinator → Coordinator 聚合結果
-- Wave 3: Reviewer Agent 審核聚合結果 → 產出最終報告
+### 4.2 Proactive Suggestion Engine（主動建議引擎）
 
-### 4.3 死鎖預防
+**分級掃描策略（Token 成本控制）**:
+
+| 等級 | 觸發條件 | 方法 | LLM 成本 |
+|------|---------|------|---------|
+| **L0** (Free) | 文件保存、切換 | 本地規則引擎（正則 + AST） | 0 |
+| **L1** (Cheap) | Lint 錯誤 > 3 個 | Flash 模型 + 快取 | 低 |
+| **L2** (Premium) | CRISIS (編譯失敗/安全問題) | Opus 完整分析 | 高 |
+
+**觸發事件矩陣**:
+
+| IDE 事件 | 觸發動作 | 介入等級 |
+|---------|---------|---------|
+| 文件保存 | L0 規則掃描 | Passive |
+| 切換文件 | 查詢 MemPalace 歷史決策 | Passive |
+| Lint 錯誤 ≥ 3 | L1 Flash 分析 | Proactive Gentle |
+| 編譯失敗 | L2 Opus 診斷 | Active |
+| Git Commit 前 | Preflight Check | Proactive Gentle |
+| 測試失敗 | 自動啟動 /aa-fix | Active |
+
+### 4.3 BaseRenderer 介面（共用核心原則）
+
+```python
+# src/core/renderers/base.py
+from abc import ABC, abstractmethod
+from typing import Dict, Any
+
+class BaseRenderer(ABC):
+    """所有渲染器的合約介面（CLI 與 Web 共用）"""
+    
+    @abstractmethod
+    def update_state(self, status: str, context: Dict[str, Any]) -> None:
+        """處理狀態變更 (IDLE, ACTIVE, CRISIS)"""
+        ...
+        
+    @abstractmethod
+    def display_suggestion(self, suggestion: Dict[str, Any]) -> None:
+        """渲染主動建議（含嚴重度、修復方案）"""
+        ...
+    
+    @abstractmethod
+    def display_agent_status(self, agents: list) -> None:
+        """渲染多代理狀態儀表板"""
+        ...
+```
+
+---
+
+## 5. 並行與效能設計
+
+### 5.1 Hierarchical Thread Model
+
+```python
+class SquadCoordinator(threading.Thread):
+    """Mid-level: 管理單一任務的 Agent 小隊"""
+    def __init__(self, squad_id: str, tasks: List[Task], bus: EventBus):
+        super().__init__(daemon=True)
+        self.squad_id = squad_id
+        self.workers: List[AgentWorker] = []
+        self.bus = bus
+        self.max_agents = 4  # 全域上限
+
+    def run(self):
+        self.bus.emit(WorkflowEvent(EventType.SQUAD_PROPOSED, self.squad_id))
+        
+        # 並行啟動所有 Worker
+        for task in self.tasks[:self.max_agents]:
+            worker = AgentWorker(task=task, bus=self.bus)
+            worker.start()
+            self.workers.append(worker)
+        
+        # 等待所有 Worker 完成（含 TTL 保護）
+        results = []
+        for w in self.workers:
+            w.join(timeout=w.capability.ttl_seconds)
+            if w.is_alive():
+                self.bus.emit(WorkflowEvent(EventType.AGENT_FAILED, w.agent_id,
+                    data={"reason": "TTL exceeded"}))
+                # 安全終止超時 Agent
+            results.append(w.result)
+        
+        self.bus.emit(WorkflowEvent(EventType.SQUAD_COMPLETED, self.squad_id,
+            data={"results": results}))
+```
+
+### 5.2 Circuit Breaker（熔斷器）
+
+```python
+class CircuitBreaker:
+    """防止 Agent 無限重試"""
+    def __init__(self, max_failures=3, cooldown_seconds=60):
+        self.failure_count = 0
+        self.max_failures = max_failures
+        self.cooldown = cooldown_seconds
+        self.state = "CLOSED"  # CLOSED → OPEN → HALF_OPEN
+        self.last_failure_time = 0
+    
+    def record_failure(self):
+        self.failure_count += 1
+        self.last_failure_time = time.time()
+        if self.failure_count >= self.max_failures:
+            self.state = "OPEN"
+    
+    def can_execute(self) -> bool:
+        if self.state == "CLOSED":
+            return True
+        if self.state == "OPEN":
+            elapsed = time.time() - self.last_failure_time
+            if elapsed > self.cooldown:
+                self.state = "HALF_OPEN"
+                return True
+            return False
+        return True  # HALF_OPEN: 允許一次嘗試
+```
+
+### 5.3 死鎖預防
 - Agent 間**禁止直接呼叫**，只能透過 Event Bus 發布事件
 - 所有任務有 TTL（預設 5 分鐘），超時自動 Kill 並記錄 Audit Log
+- Event Bus Queue 上限 1000 條，滿時丟棄最舊事件（Back Pressure）
 
 ---
 
-## 5. 資安設計與威脅建模 (STRIDE)
+## 6. 資安設計與威脅建模 (STRIDE)
 
 | 威脅類型 | 攻擊向量 | 防禦措施 |
 |---------|---------|---------|
-| **Spoofing** | 惡意代理偽裝為高信任 Agent | Agent 身份 Token（每個 Agent 啟動時生成一次性 UUID） |
-| **Tampering** | Agent 修改其他 Agent 的輸出 | Event Bus 消息帶 HMAC 簽名（沿用 Phase 170） |
-| **Repudiation** | Agent 否認執行了某個操作 | 所有 Agent 操作寫入 Audit Logger（L7） |
-| **Information Disclosure** | 低信任 Agent 讀取高信任 Agent 的上下文 | Session 隔離（每個 Agent 獲取獨立的 Context View） |
-| **Denial of Service** | 惡意任務讓 Coder Agent 進入無限循環 | 每個 Agent 線程有 TTL + 資源上限（CPU/Memory）|
-| **Elevation of Privilege** | Tester Agent 嘗試執行 `rm -rf` | Sandbox Evaluator（L5）強制評估所有命令 |
-| **Prompt Injection (AI-特有)** | 透過代碼文件注入惡意指令 | Input Sanitizer（L1）在 Agent 讀取任何文件前先掃描 |
+| **Spoofing** | 偽裝高信任 Agent | CapabilityCard + UUID 身份驗證 |
+| **Tampering** | 修改其他 Agent 輸出 | Event Bus 消息帶 HMAC 簽名 |
+| **Repudiation** | 否認執行操作 | AuditLogger (L7) 全記錄 |
+| **Info Disclosure** | 低信任讀取高信任上下文 | Session 隔離 + Tool 白名單 |
+| **DoS** | 無限循環 Agent | TTL + Circuit Breaker + Max 4 |
+| **Privilege Escalation** | Tester 嘗試 write_to_file | PermissionEngine 強制攔截 |
+| **Prompt Injection** | 透過代碼注入惡意指令 | InputSanitizer (L1) 前置掃描 |
 
----
+### 6.1 Agent 權限沙箱（與 PermissionEngine 整合）
 
-## 6. AI 產品相關考量
-
-### 6.1 IDE 全能助手 UX 設計
-**核心 UX 原則**：「主動感知，按需介入，永不打擾」
-
-```
-[IDLE 狀態]: 靜默，僅在角落顯示小圓圈（綠色=健康，橙色=有建議）
-[ACTIVE 狀態]: 彈出側邊欄，顯示「Smart Suggestions」
-[CRISIS 狀態]: 強制介入，顯示錯誤診斷與修復方案
-```
-
-### 6.2 Proactive Suggestion Engine（主動建議引擎）
-**觸發條件**：
-1. **文件保存時**: 掃描 Lint 錯誤 → 主動提供修復建議
-2. **切換文件時**: 查詢 MemPalace → 提示相關歷史決策
-3. **Git Commit 前**: 觸發 Preflight Check → 提示潛在問題
-4. **測試失敗時**: 自動啟動 `/aa-fix` 診斷流程
-
-### 6.3 Token 成本控制
-- Omniscient Agent 使用**分級掃描**：
-  - L0 (Free): 本地規則引擎分析（無 LLM 調用）
-  - L1 (Cheap): 快取 + 小型 LLM (Flash)
-  - L2 (Premium): 完整 LLM 分析（僅在 CRISIS 狀態觸發）
-
----
-
-## 7. 錯誤處理、監控與恢復策略
-
-### 7.1 Agent 故障隔離
 ```python
-class AgentCoordinator:
-    def run_parallel_agents(self, tasks: List[Task]) -> List[Result]:
-        workers = [AgentWorker(task=t, bus=self.bus) for t in tasks]
-        [w.start() for w in workers]
-        
-        results = []
-        for w in workers:
-            w.join(timeout=300)  # 5min TTL
-            if w.is_alive():
-                # Agent 超時，記錄 Audit Log 並繼續
-                self.audit_logger.log("AGENT_TIMEOUT", w.role.value, "TTL exceeded")
-                w.terminate()  # 安全終止
-                results.append(FailedResult(reason="Timeout"))
-            else:
-                results.append(w.result or FailedResult(reason="Crashed"))
-        return results
+class AgentSandbox:
+    """基於 CapabilityCard 的工具存取控制"""
+    def __init__(self, card: CapabilityCard, permission_engine: PermissionEngine):
+        self.card = card
+        self.engine = permission_engine
+    
+    def can_use_tool(self, tool_name: str) -> bool:
+        # 1. 白名單檢查
+        if tool_name not in self.card.allowed_tools:
+            return False
+        # 2. 黑名單檢查
+        if tool_name in self.card.forbidden_tools:
+            return False
+        # 3. PermissionEngine 風險評估
+        risk = self.engine.get_risk_level(tool_name)
+        return risk <= self.card.trust_level.value
 ```
 
-### 7.2 Circuit Breaker（熔斷器）
-- 若同一 Agent 在 10 分鐘內連續失敗 3 次，觸發 **熔斷**（暫停該類型 Agent）
-- 熔斷恢復策略：指數退避（1s → 2s → 4s → ... → 60s max）
+---
+
+## 7. AI 產品考量
+
+### 7.1 Omniscient UX 原則
+**「主動感知，按需介入，永不打擾」**
+
+- **個性化**: 預設「專業、謙遜、主動但不煩人」，可透過設定調整介入頻率
+- **繁體中文強制**: 所有 System Prompt 內建 `## 強制在地化：所有輸出必須使用繁體中文`
+- **成本透明**: Agent Activity Dashboard 即時顯示每個 Agent 的 Token 消耗
+
+### 7.2 動態 Squad 組合 UX
+
+用戶輸入: `「幫我修這 5 個 bug」`
+系統行為:
+1. Omniscient Agent 分析 5 個 bug 的類型
+2. 自動 spawn Squad: [Coder×2, Tester×1, Reviewer×1]
+3. Side Panel 顯示 Squad 進度儀表板
+4. 完成後 Reviewer 聚合結果並產出修復報告
+
+### 7.3 Prompt 系統管理
+- **位置**: `.ag_prompts/` 目錄（每個角色一個 `.md` 文件）
+- **與 `PROMPT_LIBRARY.md` 的關係**: PROMPT_LIBRARY.md 紀錄設計理念，`.ag_prompts/` 存放實際運行的 System Prompt
+- **載入順序**: `base.md` → `role_specific.md` → `task_override.md`
 
 ---
 
-## 8. 測試策略
+## 8. Event Bus 擴展（Phase 170 → 171）
 
-### 8.1 Multi-Agent 測試
-- **單元測試**: 測試每個 Agent 角色在 Mock 環境下的行為
-- **整合測試**: 測試 Coordinator 在 3 個 Agent 並行下的任務分配與聚合
-- **壓力測試**: 10 個 Agent 同時運行，驗證 Event Bus 的吞吐量與線程安全
-- **資安滲透測試**: 注入惡意 Agent 嘗試越權操作
+### 8.1 新增 EventTypes
 
-### 8.2 IDE 全能助手測試
-- **模擬 IDE 事件**: Mock `workspace/status` MCP Tool 的回應
-- **UX 響應時間測試**: 確保 Suggestion 在文件保存後 < 500ms 出現
-- **Token 效率測試**: 驗證 L0 掃描能攔截 90% 的常見 Lint 錯誤
-
----
-
-## 9. 開放問題 [ASSUMPTION — 需要 Tom 確認]
-
-> [!IMPORTANT]
-> 以下 3 個問題會影響實作方向，請確認後再進入 Plan Phase：
-
-1. **[ASSUMPTION A]** 「Antigravity IDE 全能助手」的 UI 目標是：
-   - (a) Antigravity 的 **Web Side Panel**（需要 Antigravity Extension API）
-   - (b) 一個**獨立的 CLI 浮動視窗**（使用 `rich` Live Display）
-   - (c) **兩者都要**（優先 Web Panel，CLI 為降級方案）
-   
-2. **[ASSUMPTION B]** 多代理的典型使用場景是：
-   - (a) 一次性**批量任務**（例如：同時修復 5 個 Bug）
-   - (b) **持久化專家代理**（例如：一個常駐的 Tester Agent 持續監控 CI 結果）
-   - (c) 兩者都要
-   
-3. **[ASSUMPTION C]** 是否需要**代理間自然語言溝通**（Agent A 可以問 Agent B 問題）？
-   還是代理間只透過**結構化 Event 傳遞結果**即可？
+```python
+class EventType(Enum):
+    # Phase 170 (現有)
+    TOOL_START = "tool_start"
+    TOOL_END = "tool_end"
+    MODEL_THINKING = "model_thinking"
+    CHECKPOINT_SAVED = "checkpoint_saved"
+    CONTEXT_COMPRESSED = "context_compressed"
+    WORKFLOW_PAUSED = "workflow_paused"
+    WORKFLOW_RESUMED = "workflow_resumed"
+    ERROR = "error"
+    
+    # Phase 171 (新增)
+    AGENT_SPAWNED = "agent_spawned"
+    AGENT_COMPLETED = "agent_completed"
+    AGENT_FAILED = "agent_failed"
+    SQUAD_PROPOSED = "squad_proposed"
+    SQUAD_COMPLETED = "squad_completed"
+    SUGGESTION_READY = "suggestion_ready"
+    CRISIS_DETECTED = "crisis_detected"
+    INTERVENTION_TRIGGERED = "intervention_triggered"
+    CIRCUIT_BREAKER_OPEN = "circuit_breaker_open"
+    CIRCUIT_BREAKER_RESET = "circuit_breaker_reset"
+```
 
 ---
 
-## 10. 建議執行波次 (Waves)
+## 9. 測試策略
 
-> [!NOTE]
-> 以下波次基於 Assumption (c)/(a)/(b) 的預設方案，收到確認後調整。
+### 9.1 Multi-Agent 測試
+- **單元**: 每個 Agent 角色的 CapabilityCard 權限驗證
+- **整合**: Coordinator 在 3 Agent 並行下的任務分配與聚合
+- **壓力**: 4 Agent 同時運行，驗證 Event Bus 吞吐量
+- **資安滲透**: 注入惡意 Agent 嘗試越權（Tester 呼叫 write_to_file）
 
-| Wave | 內容 | 預估工時 | 風險 |
-|------|------|---------|------|
-| Wave 1 | `AgentCoordinator` Hub + `AgentWorker` 線程模型 + Event Bus 整合 | 中 | 低 |
-| Wave 2 | Coder/Tester/Reviewer 角色實作 + 並行任務鏈 | 中高 | 中 |
-| Wave 3 | IDE Omniscient Agent + MCP `workspace/status` 橋接 | 高 | 中高 |
-| Wave 4 | Proactive Suggestion Engine + UX Side Panel UI | 高 | 中 |
-| Wave 5 | Circuit Breaker + Agent TTL + 壓力測試 | 中 | 低 |
+### 9.2 Omniscient Agent 測試
+- **模擬 IDE 事件**: Mock `workspace/status` MCP 回應
+- **UX 響應時間**: Suggestion 在文件保存後 < 500ms
+- **Token 效率**: L0 掃描攔截 90% 常見 Lint 錯誤
+
+---
+
+## 10. 執行波次 (Waves)
+
+| Wave | 內容 | 新增/修改文件 | 風險 |
+|------|------|-------------|------|
+| **W1** | Event Bus 擴展 + CapabilityCard + AgentSandbox | `streaming.py`, `agent_identity.py`, `agent_sandbox.py` | 低 |
+| **W2** | SquadCoordinator + AgentWorker 線程模型 + CircuitBreaker | `squad_coordinator.py`, `circuit_breaker.py` | 中 |
+| **W3** | Omniscient Agent Core + 三層介入狀態機 | `omniscient/core.py`, `omniscient/suggestion_engine.py` | 中高 |
+| **W4** | BaseRenderer + CLI Rich Renderer + Web Panel Bridge | `renderers/base.py`, `renderers/cli.py`, `renderers/web.py` | 中 |
+| **W5** | Proactive Suggestion Engine + `.ag_prompts/` 系統 | `suggestion_engine.py`, `.ag_prompts/*.md` | 中 |
+| **W6** | 整合測試 + 壓力測試 + 資安滲透測試 | `tests/test_multi_agent.py`, `tests/test_omniscient.py` | 低 |
+
+---
+
+## 11. 開放問題（已全部解決）
+
+✅ ASSUMPTION A: (c) 雙端渲染 — 已確認
+✅ ASSUMPTION B: (c) 批量 + 常駐 — 已確認
+✅ ASSUMPTION C: (a) 結構化 Event — 已確認
+
+**無剩餘阻塞問題，可直接進入 `/aa-plan 171`。**
