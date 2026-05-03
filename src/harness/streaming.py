@@ -17,6 +17,16 @@ class EventType(Enum):
     WORKFLOW_PAUSED = "workflow_paused"
     WORKFLOW_RESUMED = "workflow_resumed"
     ERROR = "error"
+    
+    # Phase 171 (New)
+    AGENT_SPAWNED = "agent_spawned"
+    AGENT_COMPLETED = "agent_completed"
+    AGENT_FAILED = "agent_failed"
+    SQUAD_PROPOSED = "squad_proposed"
+    SQUAD_COMPLETED = "squad_completed"
+    SUGGESTION_READY = "suggestion_ready"
+    CRISIS_DETECTED = "crisis_detected"
+    INTERVENTION_TRIGGERED = "intervention_triggered"
 
 @dataclass
 class WorkflowEvent:
@@ -32,12 +42,13 @@ class EventPublisher(Protocol):
 
 class StreamingEventBus:
     """
-    In-memory event bus for workflow observability.
+    In-memory priority event bus for workflow observability.
     Decouples event production from rendering/transmission.
+    Supports Priority: CRISIS (0) > ERROR (1) > INFO (2) > LOG (3).
     """
     def __init__(self):
         self._subscribers: List[EventPublisher] = []
-        self._event_queue = queue.Queue(maxsize=1000)
+        self._event_queue = queue.PriorityQueue(maxsize=2000)
         self._stop_event = threading.Event()
         self._worker_thread = threading.Thread(target=self._process_queue, daemon=True, name="EventBus-Worker")
         self._worker_thread.start()
@@ -46,20 +57,28 @@ class StreamingEventBus:
         self._subscribers.append(publisher)
 
     def emit(self, event: WorkflowEvent):
+        # Determine priority (Lower number = Higher priority)
+        priority = 2 # Default Info
+        if event.event_type.value in ["error", "crisis_detected"]:
+            priority = 0
+        elif event.event_type.value in ["intervention_triggered", "workflow_paused"]:
+            priority = 1
+        
         try:
-            self._event_queue.put_nowait(event)
+            self._event_queue.put_nowait((priority, event.timestamp, event))
         except queue.Full:
-            # Drop oldest event if queue is full (Industrial standard for high-volume logs)
+            # Drop lowest priority event if queue is full
             try:
                 self._event_queue.get_nowait()
-                self._event_queue.put_nowait(event)
+                self._event_queue.put_nowait((priority, event.timestamp, event))
             except queue.Empty:
                 pass
 
     def _process_queue(self):
         while not self._stop_event.is_set():
             try:
-                event = self._event_queue.get(timeout=0.1)
+                # PriorityQueue returns (priority, timestamp, event)
+                prio, ts, event = self._event_queue.get(timeout=0.1)
                 for sub in self._subscribers:
                     try:
                         sub.publish(event)

@@ -25,27 +25,26 @@ class PermissionEngine:
             "read_sensitive_data": ToolRisk("read_sensitive_data", 3, "Internal customer records"),
             "web_search": ToolRisk("web_search", 2, "General information retrieval"),
             "get_time": ToolRisk("get_time", 1, "System read-only status"),
-            "local_rag_read": ToolRisk("local_rag_read", 1, "Local vector database read")
+            "local_rag_read": ToolRisk("local_rag_read", 1, "Local vector database read"),
+            "read_file": ToolRisk("read_file", 2, "Read local file content"),
+            "list_dir": ToolRisk("list_dir", 1, "List directory contents")
         }
 
     def get_risk_level(self, tool_name: str) -> int:
         risk_obj = self.registry.get(tool_name)
         return risk_obj.risk_level if risk_obj else 3 # Default to Medium if unknown
 
-    def should_interrupt(self, tool_name: str, is_trusted_user: bool = False) -> Tuple[bool, str]:
+    def should_interrupt(self, tool_name: str, trust_level: int = 2) -> Tuple[bool, str]:
         """
-        Decision logic:
-        (Risk >= 4) OR (Risk == 3 AND !User.Trusted) -> trigger_interrupt()
+        Decision logic based on agent trust level (Phase 171 v2.1).
+        (Risk > TrustLevel) -> trigger_interrupt()
         """
         risk = self.get_risk_level(tool_name)
         
-        if risk >= 4:
-            return True, f"Interrupt: Tool '{tool_name}' has fatal/high risk level ({risk})."
-        
-        if risk == 3 and not is_trusted_user:
-            return True, f"Interrupt: Tool '{tool_name}' (Risk 3) requires trusted user privileges."
+        if risk > trust_level:
+            return True, f"Interrupt: Tool '{tool_name}' risk ({risk}) exceeds trust level ({trust_level})."
             
-        return False, "Auto-execution permitted."
+        return False, "Execution permitted."
 
 if __name__ == "__main__":
     engine = PermissionEngine()
