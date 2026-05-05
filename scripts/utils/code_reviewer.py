@@ -9,8 +9,10 @@ class CodeReviewer:
     AutoAgent-TW AI Reviewer Engine (Phase 129)
     負責提取變更並生成審查意見。
     """
-    def __init__(self, workspace_path="z:/autoagent-TW"):
-        self.workspace = Path(workspace_path)
+    def __init__(self, workspace_path=None):
+        # 優先從環境變數讀取，若無則自動偵測當前目錄
+        env_path = os.getenv("AA_WORKSPACE")
+        self.workspace = Path(workspace_path or env_path or os.getcwd())
         self.report_path = self.workspace / "REVIEW-REPORT.md"
 
     def get_staged_diff(self):

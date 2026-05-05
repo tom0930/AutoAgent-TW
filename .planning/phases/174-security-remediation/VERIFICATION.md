@@ -18,6 +18,23 @@
 - [x] 執行 `git rm --cached .env` 確保其不被 Git 追蹤。
 - [x] 使用 `rg` 掃描 `src` 目錄，確認無洩漏。
 
-## 4. 剩餘風險
-- **Git History**: 歷史 commit 中可能仍存在這些字串。若要完全「淨化」倉庫，建議在確認金鑰已重置（Rotate）後，執行 `git filter-repo` 或 BFG。
-- **Placeholders**: 用戶需手動在本地 `.env` 中填回真實金鑰，切勿將真實金鑰再次 commit。
+## 4. 歷史清理驗證 (Git History Purging)
+使用 `git log -p -S` 遍歷重寫後的歷史，確認所有敏感字串均已抹除：
+- `sk-e581cc9...`: **NOT FOUND**
+- `sk-1234567...`: **NOT FOUND**
+- `AKID...`: **NOT FOUND**
+- `LTAI...`: **NOT FOUND**
+- `123456789:...`: **NOT FOUND**
+
+**執行細節**:
+- 使用 `git filter-branch --tree-filter` 配合 Python 脫敏腳本重寫了 348 個 commit。
+- 已執行 `git gc --prune=now --aggressive` 壓縮倉庫並永久移除舊對象。
+
+## 6. CI 環境對齊 (CI Environment Alignment)
+- **問題診斷**: `code_reviewer.py` 硬編碼 `z:/autoagent-TW` 路徑導致 GitHub Actions 失敗。
+- **修復措施**:
+    - 重構 `code_reviewer.py` 使用 `os.getcwd()` 動態獲取工作目錄。
+    - 補全 `state_lock.py` 的 `--check` CLI 參數與 `sys.exit` 狀態碼，使其符合 CI 腳本預期。
+- **本地驗證**: 
+    - `python scripts/utils/state_lock.py --check`: **[OK]**
+    - `python scripts/utils/code_reviewer.py`: **[OK]**

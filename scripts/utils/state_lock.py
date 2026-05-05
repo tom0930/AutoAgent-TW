@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import sys
 from pathlib import Path
 
 class StateLock:
@@ -56,13 +57,35 @@ class StateLock:
             return True
 
 if __name__ == "__main__":
-    # 測試腳本
+    import argparse
+    parser = argparse.ArgumentParser(description="AutoAgent-TW State Locker")
+    parser.add_argument("--check", action="store_true", help="Check if workspace is locked")
+    parser.add_argument("--acquire", action="store_true", help="Acquire lock")
+    parser.add_argument("--release", action="store_true", help="Release lock")
+    parser.add_argument("--phase", type=int, default=177)
+    parser.add_argument("--task", type=str, default="CI-Task")
+    
+    args = parser.parse_args()
     lock = StateLock()
-    success, info = lock.acquire(phase=129, task_name="Test-Locking")
-    if success:
-        print(f"[OK] Lock acquired: {info}")
-        time.sleep(2)
+    
+    if args.check:
+        if lock.lock_path.exists():
+            with open(lock.lock_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if lock._is_pid_running(data.get("pid")):
+                    print(f"[FAILED] Workspace LOCKED by: {data}")
+                    sys.exit(1)
+        print("[OK] Workspace is FREE")
+        sys.exit(0)
+        
+    if args.acquire:
+        success, info = lock.acquire(phase=args.phase, task_name=args.task)
+        if success:
+            print(f"[OK] Lock acquired: {info}")
+        else:
+            print(f"[FAILED] Failed to acquire lock: {info}")
+            sys.exit(1)
+            
+    if args.release:
         lock.release()
         print("[OK] Lock released.")
-    else:
-        print(f"[FAILED] Workspace in use by: {info}")
