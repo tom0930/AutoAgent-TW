@@ -49,6 +49,13 @@ description: Stage1Discuss
 6. 最終決策與優化
 7. 主動發現問題、提出 SOP 與預防性優化
 
+### Step 2.7: L3 Skill Discovery (Auto)
+1. 如果當前任務關鍵字在 L1 (workspace) 與 L2 (global) 無匹配匹配，執行：
+   `python scripts/l3_skill_cache.py --search "<task keywords>"`
+2. 如果找到匹配 (Score > 0.8)，自動讀取 SKILL.md 並通知用戶：
+   > [L3 Cache HIT] 偵測到相關專家技能：`xxx-skill`。正在套用邏輯...
+3. 任務完成後 L3 內容不保留，維持 Workspace 潔淨。
+
 ### Step 3: 架構選型與 Trade-off 討論
 1. 提出至少兩種技術方案論證。
 2. 討論並發模型、數據持久化策略及第三方模組整合。

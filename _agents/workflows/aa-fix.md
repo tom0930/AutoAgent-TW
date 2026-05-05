@@ -20,6 +20,11 @@ description: Self-Repair Cycle / 自我修復循環。
 2. 提取所有 FAIL 標籤對應的 Issues。
 3. 按照優先順序排列 Issues。
 
+### Step 1.5: L3 Skill Correlation (Phase 173)
+1. 對於每個 FAIL 項目，執行：
+   `python scripts/l3_trace_hook.py --correlate HEAD`
+2. 如果發現 bug 與某個 L3 技能強相關，記錄於 `.planning/phases/{N}-*/FIX-LOG.md` 並在修復時考慮切換技能或手動修正。
+
 ### Step 2: 啟動 PISRC LangGraph 循環
 針對每一個 FAIL 的 Issue：
 1. 將失敗的日誌與問題分類導入 PISRC (Persistent Issue Self-Review & Correction) 狀態機。
