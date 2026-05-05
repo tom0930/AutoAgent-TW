@@ -158,6 +158,95 @@ RISK_LEVELS = {
     → 已自動跳過，改用次佳匹配: kubernetes-security-best-practices
 ```
 
+### 決策 6：L3 Skill Traceability & Feedback Loop（溯源 + 品質迴路）
+
+**核心思想：** 每次使用 L3 技能時，在 git commit 中植入溯源標記。當 `bug`/`fix`/`issue` 發生時，自動回溯關聯的 L3 技能，長期累積統計數據，形成品質回饋迴路。
+
+#### Git Commit 植入溯源標記
+
+```
+# 正常 commit（自動附加 L3 trailer）
+git commit -m "feat(api): add kubernetes health check endpoint"
+
+# Git Trailer（由 l3_skill_cache 自動注入）
+L3-Skill: kubernetes-deployment
+L3-Repo: awesome-HQ-claude-skills
+L3-Score: 0.94
+L3-Hash: sha256:abc123
+```
+
+**實作方式：** 使用 [Git Trailers](https://git-scm.com/docs/git-interpret-trailers) 標準格式，不影響 commit message 本身。
+
+#### Bug/Fix/Issue 關聯分析
+
+當 commit message 包含 `fix`/`bug`/`hotfix`/`revert` 時，自動觸發回溯：
+
+```python
+def correlate_fix_to_skills(commit_hash: str) -> list[SkillCorrelation]:
+    """
+    1. 從 fix commit 取得修改的檔案清單
+    2. 用 git log --follow 找出這些檔案的歷史 commit
+    3. 從歷史 commit 的 trailers 中提取 L3-Skill 標記
+    4. 計算關聯分數 = 時間接近度 × 檔案重疊率
+    5. 返回關聯的 L3 技能清單
+    """
+```
+
+**使用者通知範例：**
+```
+[L3 Trace] ⚠️ 此 fix commit 修改的檔案與以下 L3 技能使用歷史高度相關：
+  → kubernetes-deployment (3 天前使用, 關聯分數: 0.87)
+  → helm-chart-basics (5 天前使用, 關聯分數: 0.42)
+  建議檢查這些技能的指引是否有誤導。
+```
+
+#### Skill Quality Ledger（品質帳本）
+
+長期累積的統計數據存儲在 `data/l3_skill_ledger.jsonl`：
+
+```json
+{"skill_id": "kubernetes-deployment", "event": "used", "commit": "abc123", "ts": "2026-05-05T11:00:00Z", "score": 0.94}
+{"skill_id": "kubernetes-deployment", "event": "correlated_fix", "fix_commit": "def456", "correlation": 0.87, "ts": "2026-05-08T14:00:00Z"}
+{"skill_id": "helm-chart-basics", "event": "used", "commit": "ghi789", "ts": "2026-05-06T09:00:00Z", "score": 0.78}
+```
+
+#### 品質統計與自動優化
+
+```python
+def compute_skill_quality(skill_id: str) -> SkillQuality:
+    """
+    quality_score = (
+        0.4 * success_rate          # 使用後無 fix 的比例
+      + 0.3 * avg_search_score      # 平均搜尋匹配分數
+      + 0.2 * usage_frequency       # 使用頻率 (log scale)
+      + 0.1 * recency               # 最近使用時間衰減
+      - 0.5 * fix_correlation_rate  # 關聯 fix 的比例 (懲罰項)
+    )
+    """
+```
+
+**自動優化行為：**
+
+| Quality Score | 行為 |
+|---------------|------|
+| ≥ 0.85 | 🏆 建議升級到 L2（自動安裝到 Global Skills） |
+| 0.60 ~ 0.84 | ✅ 正常使用 |
+| 0.40 ~ 0.59 | ⚠️ 搜尋時降低排名，附加警告 |
+| < 0.40 | 🚫 加入黑名單，不再推薦（需人工確認才可使用） |
+
+**報表指令：**
+```bash
+python scripts/l3_skill_cache.py --report
+# 輸出：
+# ┌──────────────────────────┬────────┬──────┬────────┬──────────┐
+# │ Skill                    │ Uses   │ Fixes│ Quality│ Action   │
+# ├──────────────────────────┼────────┼──────┼────────┼──────────┤
+# │ fastapi-pro              │ 12     │ 0    │ 0.95   │ ↑ L2     │
+# │ kubernetes-deployment    │ 8      │ 2    │ 0.62   │ ✅ OK    │
+# │ legacy-docker-compose    │ 3      │ 3    │ 0.28   │ 🚫 Block │
+# └──────────────────────────┴────────┴──────┴────────┴──────────┘
+```
+
 ---
 
 ## 4. 架構設計 (Architecture)
@@ -190,11 +279,14 @@ z:\AutoAgent-TW\
 ├── config/
 │   └── l3_config.json          ← L3 路徑 + repo 清單 + 安全設定
 ├── scripts/
-│   ├── l3_skill_cache.py       ← 核心搜尋引擎 (CLI + API)
+│   ├── l3_skill_cache.py       ← 核心搜尋引擎 (CLI + API + --report)
 │   ├── build_l3_index.py       ← Master Index 建置器
+│   ├── l3_trace_hook.py        ← Git commit trailer 注入 + fix 關聯分析
 │   └── aa_installer_logic.py   ← 新增 --with-l3-cache 參數
 ├── data/
-│   └── l3_master_index.json    ← 自建統一索引
+│   ├── l3_master_index.json    ← 自建統一索引
+│   ├── l3_skill_ledger.jsonl   ← 品質帳本 (使用/fix 事件追蹤)
+│   └── l3_quarantine.log       ← 被攔截的技能記錄
 └── .agents/skills/
     └── antigravity-awesome-bridge/
         └── SKILL.md            ← 更新：整合 L3 搜尋邏輯
@@ -283,36 +375,48 @@ z:\AutoAgent-TW\
 | 更新 `scripts/aa_installer_logic.py` | 新增 `--with-l3-cache` + `--l3-path` 參數 |
 | Content Sanitizer | 黑名單掃描 + Hash 計算 |
 
-### Phase 173.2：Workflow 整合
+### Phase 173.2：Workflow 整合 + Traceability
 
 | 任務 | 產出 |
 |------|------|
 | 更新 `antigravity-awesome-bridge/SKILL.md` | L3 多源搜尋指令 |
 | 在 `aa-discuss2.md` 新增 Step 2.7 | 自動 L3 Discovery |
 | 在 `aa-execute.md` 新增 L3 pre-check | 執行前自動搜尋 |
-| Telemetry logging | `data/l3_telemetry.jsonl` |
+| 實作 `scripts/l3_trace_hook.py` | Git Trailer 注入 + fix 關聯分析 |
+| 在 `aa-ship.md` 新增 L3 Trace commit | Ship 時自動寫入 L3 Trailer |
+| 在 `aa-fix.md` 新增 L3 correlation check | Fix 時自動回溯關聯技能 |
+| Skill Quality Ledger | `data/l3_skill_ledger.jsonl` |
 
-### Phase 173.3：未來優化（Backlog）
+### Phase 173.3：品質優化 + 統計報表
+
+| 任務 | 說明 |
+|------|------|
+| `--report` 品質報表 | 統計使用/fix 比例 → quality_score |
+| 自動降級/升級 | quality < 0.4 → 黑名單; quality ≥ 0.85 → 建議升級 L2 |
+| Git Hook 整合 | pre-commit hook 自動注入 L3 Trailer |
+
+### Phase 173.4：未來優化（Backlog）
 
 | 任務 | 說明 |
 |------|------|
 | Embedding Hybrid Search | `0.65 * keyword + 0.35 * embedding` |
 | Skill Dependency Graph | NetworkX + `prerequisites` 抽取 |
-| L3 → L2 自動升級 | 常用技能建議安裝到 Global Skills |
+| L3 → L2 自動升級（實作） | Quality ≥ 0.85 自動複製到 Global Skills |
 | MCP Server 封裝 | 將 L3 Cache 包裝為 MCP Tool |
+| Dashboard 可視化 | 品質趨勢圖 + 技能使用熱力圖 |
 
 ---
 
 ## 7. 多 Agent 思考 (3-Perspective Analysis)
 
 ### 架構師視角
-> 「路徑可配置化是正確的。自建 Master Index 消除了對上游格式的依賴。Hybrid 搜尋兼顧速度與覆蓋率。分 3 階段實作避免過度工程化。」
+> 「路徑可配置化是正確的。自建 Master Index 消除了對上游格式的依賴。Git Trailer 溯源是 zero-cost 的元數據方案，不影響正常 git 操作。品質分數公式的懲罰項 (`fix_correlation_rate`) 確保問題技能會被自然淘汰。」
 
 ### 資安工程師視角
-> 「Content Sanitizer + Hash 驗證形成雙層防禦。白名單 repo 限制了攻擊面。Quarantine log 提供事後稽核能力。建議 Phase 173.1 完成後做一次完整的安全掃描驗證。」
+> 「三層防禦完整：Sanitizer (預防) + Hash 驗證 (偵測篡改) + Traceability (事後稽核)。Quarantine log + Skill Ledger 形成完整的審計鏈。品質黑名單機制在發現問題後能自動隔離風險技能。」
 
 ### AI 產品專家視角
-> 「自動 Clone + 可配置路徑降低了使用者門檻。`[L3 Cache HIT]` 通知保持了透明度。Eager Eviction 避免了 Token 浪費。搜尋延遲 <1s 符合 UX 預期。」
+> 「Feedback Loop 是最有價值的設計。技能市場的核心痛點就是『不知道哪個技能好用』。品質報表直接解決了這個問題。自動升級到 L2 的機制形成了正向飛輪：好技能越用越近、壞技能越用越遠。」
 
 ---
 
@@ -326,6 +430,10 @@ z:\AutoAgent-TW\
 - [ ] 載入的 L3 技能不會出現在下次任務的上下文中
 - [ ] 搜尋平均延遲 < 800ms (P95)
 - [ ] 所有 Workflow 能自動觸發 L3 搜尋
+- [ ] Git commit 使用 L3 技能時自動附加 `L3-Skill` / `L3-Repo` / `L3-Score` Trailer
+- [ ] `fix`/`bug` commit 時自動觸發關聯分析並通知使用者
+- [ ] `--report` 能輸出品質統計報表 (使用次數 / fix 關聯 / quality score)
+- [ ] Quality < 0.4 的技能自動降級為黑名單
 
 ---
 
