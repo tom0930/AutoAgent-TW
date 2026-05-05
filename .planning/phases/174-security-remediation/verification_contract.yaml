@@ -1,0 +1,18 @@
+# Phase 174 Verification Contract
+success_criteria:
+  - id: "env_redacted"
+    test: "powershell -Command \"Select-String -Path .env -Pattern 'sk-e581cc92'\""
+    expected: "negative"
+  - id: "test_keys_obfuscated"
+    test: "rg -u 'LTAI5tExampleFakeKeyXyz9' openclaw/src/logging/redact.test.ts"
+    expected: "negative"
+  - id: "vitest_pass"
+    test: "cd openclaw && npx vitest src/logging/redact.test.ts --run"
+    expected: "exit_code=0"
+  - id: "ci_scripts_fixed"
+    test: "python scripts/utils/code_reviewer.py"
+    expected: "exit_code=0"
+negative_patterns:
+  - "LTAI[A-Za-z0-9]{15,}"
+  - "AKID[A-Za-z0-9]{15,}"
+  - "sk-[a-zA-Z0-9]{25,}"
