@@ -1,76 +1,168 @@
-# Phase 173: L3 Skill Cache — D:\git 自動技能發現與生命週期管理
+# Phase 173: L3 Skill Cache — 自動技能發現與生命週期管理 (v2.0 Merged)
 
 > **Phase**: 173
 > **版本**: v3.6.3
-> **狀態**: Discuss (Architectural Context)
+> **狀態**: Discuss Complete → Ready for Plan
 > **日期**: 2026-05-05
+> **來源**: CONTEXT.md v1.0 + L3skill.md 優化建議 + 使用者 3 項決策回覆
 
 ---
 
 ## 1. 目標 (Goal)
 
-當 AutoAgent-TW 執行任務時，若在 **L1 (workspace skills)** 與 **L2 (global skills)** 中找不到相關技能，自動向 **L3 (`D:\git`)** 搜尋匹配的 SKILL.md，按需載入使用，**任務結束後自動卸載**（不持久佔用記憶體/Token）。
+當 AutoAgent-TW 執行任務時，若在 **L1 (workspace skills)** 與 **L2 (global skills)** 中找不到相關技能，自動向 **L3 (可配置目錄)** 搜尋匹配的 SKILL.md，按需載入使用，**任務結束後自動卸載**。
 
 ### CPU Cache 類比模型
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│ L1 Cache (最快 · 5 skills)                                  │
-│ z:\AutoAgent-TW\.agents\skills\                             │
-│ → git-token-killer, karpathy-guidelines, mcp-router,       │
-│   rtk-token-killer, status-notifier                        │
-├────────────────────────────────────────────────────────────┤
-│ L2 Cache (快 · 172 skills)                                  │
-│ C:\Users\TOM\.gemini\antigravity\skills\                    │
-│ → 已安裝的全域 Antigravity 技能                              │
-├────────────────────────────────────────────────────────────┤
-│ L3 Cache (慢 · 7,176 SKILL.md files)                        │
-│ D:\git\                                                     │
-│ ├── antigravity-awesome-skills/ (4,509 skills + index)      │
-│ ├── awesome-HQ-claude-skills/  (864 skills)                 │
-│ ├── awesome-HQ-codex-skills/   (880 skills)                 │
-│ ├── awesome-codex-skills/      (880 skills)                 │
-│ ├── skills/                    (43 skills)                   │
-│ └── awesome-agent-skills/      (README only, 0 SKILL.md)    │
-│ → 純讀取參考，用完即棄                                       │
-└────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│ L1 Cache (最快 · 5 skills)                                       │
+│ {workspace}/.agents/skills/                                      │
+│ → 專案專用技能 (git-token-killer, karpathy-guidelines 等)         │
+├─────────────────────────────────────────────────────────────────┤
+│ L2 Cache (快 · 172 skills)                                       │
+│ {home}/.gemini/antigravity/skills/                               │
+│ → 已安裝的全域 Antigravity 技能                                   │
+├─────────────────────────────────────────────────────────────────┤
+│ L3 Cache (按需 · 7,176+ SKILL.md)                                │
+│ {l3_cache_root}/  ← 可配置 (預設 D:\git)                          │
+│ ├── antigravity-awesome-skills/ (4,509 skills + index)           │
+│ ├── awesome-HQ-claude-skills/  (864 skills)                      │
+│ ├── awesome-HQ-codex-skills/   (880 skills)                      │
+│ ├── awesome-codex-skills/      (880 skills)                      │
+│ ├── skills/                    (43 skills)                        │
+│ └── awesome-agent-skills/      (README curated list)             │
+│ → Read-Only 參考，用完即棄                                        │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. 核心設計決策 (Key Decisions)
+## 2. 使用者決策回覆 (User Decisions)
 
-### 決策 1：搜尋策略 — Index-First vs. Filesystem Scan
-
-| 方案 | 優點 | 缺點 |
-|------|------|------|
-| **A: Index-First (✅ 選用)** | `skills_index.json` 有 1,445 筆預建索引，搜尋 <50ms | 僅涵蓋 `antigravity-awesome-skills`，需補充其他 repo |
-| **B: Filesystem Scan** | 涵蓋所有 7,176 SKILL.md | 每次掃描需 3-5 秒，高 I/O 開銷 |
-| **C: Hybrid (✅ 最終)** | Index 優先 + fallback to FS scan for non-indexed repos | 兼顧速度與覆蓋率 |
-
-**最終選用 C (Hybrid)**：先查 `skills_index.json`（4,509 skills），miss 時 fallback 到 `awesome-HQ-*` 等 repo 的 SKILL.md 掃描。
-
-### 決策 2：載入粒度 — Full Copy vs. Read-Only Reference
-
-| 方案 | 描述 |
-|------|------|
-| **A: Symlink/Copy to .agents/skills/** | 持久安裝，增加 L1 膨脹 |
-| **B: Read-Only In-Memory Reference (✅ 選用)** | 僅讀取 SKILL.md 內容到當前會話，任務結束自動消失 |
-
-**選用 B**：符合 "用完即棄" 原則，不污染 workspace。
-
-### 決策 3：自動清除機制 — Eager vs. Lazy Eviction
-
-| 策略 | 說明 |
-|------|------|
-| **Eager (✅ 選用)** | 每次任務完成後，L3 引用立即從上下文中移除 |
-| **Lazy** | 保留到 Token 壓力超過閾值再清除 |
-
-**選用 Eager**：遵循 Karpathy 原則的 Simplicity First，避免複雜的 LRU 邏輯。
+| # | 問題 | 使用者決策 | 影響 |
+|---|------|-----------|------|
+| 1 | `D:\git` 路徑是否固定？ | **NO** — 安裝時可配置化，並自動 `git clone` 相關 repo 到指定目錄 | 需新增 `l3_config.json` + Installer 整合 |
+| 2 | `skills_index.json` 結構穩定？ | **不確定** — 不應依賴單一索引格式 | 需自建 `l3_master_index.json`，具備版本容錯 |
+| 3 | SKILL.md 內容是否安全？ | **需資安確認** — 不可直接信任開源 SKILL.md | 需 Content Sanitizer + Hash 驗證 |
 
 ---
 
-## 3. 架構設計 (Architecture)
+## 3. 核心設計決策 (Key Decisions)
+
+### 決策 1：L3 路徑可配置化 + 自動 Clone
+
+**安裝時行為：**
+```
+$ python scripts/aa_installer_logic.py --with-l3-cache --l3-path "E:\my-skills"
+```
+
+1. Installer 提示用戶選擇 L3 目錄（預設 `D:\git`）
+2. 自動 `git clone --depth 1` 預定義的 repo 清單
+3. 路徑寫入 `config/l3_config.json`
+
+**預定義 Git Repo 清單：**
+
+| Repo | URL | SKILL.md 數量 | 優先級 |
+|------|-----|--------------|--------|
+| antigravity-awesome-skills | `sickn33/antigravity-awesome-skills` | 4,509 | **P0** (有 index) |
+| awesome-HQ-claude-skills | `ComposioHQ/awesome-claude-skills` | 864 | P1 |
+| awesome-HQ-codex-skills | `ComposioHQ/awesome-codex-skills` | 880 | P1 |
+| skills (OpenAI) | `openai/skills` | 43 | P2 |
+| awesome-agent-skills | `VoltAgent/awesome-agent-skills` | 0 (README) | P3 |
+
+### 決策 2：自建 Master Index（不依賴上游 index 格式）
+
+由於 `skills_index.json` 格式不穩定，改為 **自建統一索引**：
+
+```python
+# l3_master_index.json 結構
+{
+  "version": "1.0.0",
+  "built_at": "2026-05-05T11:00:00Z",
+  "total_skills": 7176,
+  "entries": [
+    {
+      "id": "kubernetes-deployment",
+      "name": "Kubernetes Deployment",
+      "description": "...",
+      "repo": "awesome-HQ-claude-skills",
+      "path": "kubernetes/deployment/SKILL.md",
+      "abs_path": "D:\\git\\awesome-HQ-claude-skills\\kubernetes\\deployment\\SKILL.md",
+      "category": "devops",
+      "tags": ["k8s", "deployment"],
+      "token_count": 1240,
+      "content_hash": "sha256:abc123...",
+      "risk": "safe",
+      "last_modified": "2026-04-12"
+    }
+  ]
+}
+```
+
+**建置方式：** `python scripts/build_l3_index.py --root D:\git`
+- 遍歷所有 repo，解析每個 SKILL.md 的 frontmatter
+- 計算 `content_hash` (SHA-256) 供資安驗證
+- 支援 incremental update（只掃描 `git diff` 有變動的檔案）
+
+### 決策 3：搜尋策略 — Hybrid (Index + Smart FS)
+
+```mermaid
+graph TD
+    Query["搜尋 Query"] --> MasterIndex["l3_master_index.json<br/>(keyword + tags 匹配)"]
+    MasterIndex -->|Top-K hits| ScoreCheck{"score ≥ 0.6?"}
+    ScoreCheck -->|YES| Results["返回匹配結果"]
+    ScoreCheck -->|NO / 0 hits| SmartFS["Smart FS Scan<br/>(只掃相關子目錄)"]
+    SmartFS --> Results
+```
+
+### 決策 4：Read-Only + Eager Eviction（不變）
+
+- 僅讀取 SKILL.md 內容到當前會話
+- 任務完成後立即清除 L3 引用
+- 不安裝、不複製、不持久化
+
+### 決策 5：內容安全閘門 (Content Sanitizer)
+
+**兩層防禦：**
+
+1. **靜態掃描 (Build-time)**：建置 Index 時檢查每個 SKILL.md
+2. **載入時驗證 (Runtime)**：讀取前比對 `content_hash`
+
+```python
+# 黑名單關鍵字（SKILL.md 中不應出現的危險指令）
+DANGEROUS_PATTERNS = [
+    r'\beval\s*\(',
+    r'\bexec\s*\(',
+    r'\bsubprocess\b',
+    r'\bos\.system\s*\(',
+    r'\bshutil\.rmtree\s*\(',
+    r'\brequests\.post\s*\(.+(?:webhook|external)',
+    r'\bopen\s*\(.+["\']w["\']\)',
+    r'__import__\s*\(',
+    r'\bimport\s+ctypes\b',
+]
+
+# 風險分級
+RISK_LEVELS = {
+    "safe": 0,       # 無任何危險 pattern
+    "caution": 1,    # 有 1 個 pattern 但可能是教學示例
+    "blocked": 2,    # ≥2 個 pattern，拒絕載入
+}
+```
+
+**使用者通知：**
+```
+[L3 Cache] ⚠️ kubernetes-hacking (score: 0.88) 被安全閘門攔截
+    → 偵測到危險指令: subprocess.call, os.system
+    → 已自動跳過，改用次佳匹配: kubernetes-security-best-practices
+```
+
+---
+
+## 4. 架構設計 (Architecture)
+
+### 完整流程
 
 ```mermaid
 graph TD
@@ -78,135 +170,170 @@ graph TD
     L1 -->|HIT| Execute["載入 SKILL.md 執行"]
     L1 -->|MISS| L2{"L2 搜尋<br/>Antigravity Global Skills"}
     L2 -->|HIT| Execute
-    L2 -->|MISS| L3{"L3 搜尋<br/>D:\\git 多源索引"}
-    L3 -->|HIT| TempLoad["臨時載入 SKILL.md<br/>(Read-Only)"]
+    L2 -->|MISS| L3Router["L3 Router"]
+    L3Router --> MasterIdx["Master Index 搜尋"]
+    MasterIdx -->|HIT| Sanitizer{"Content Sanitizer"}
+    MasterIdx -->|MISS| SmartFS["Smart FS Fallback"]
+    SmartFS --> Sanitizer
+    Sanitizer -->|SAFE| TempLoad["臨時載入<br/>(Read-Only)"]
+    Sanitizer -->|BLOCKED| NextBest["跳過 → 次佳匹配"]
+    NextBest --> Sanitizer
     TempLoad --> Execute
-    L3 -->|MISS| Fallback["無可用技能<br/>使用內建知識"]
-    Execute --> Cleanup["任務完成<br/>清除 L3 引用"]
+    Execute --> Evict["任務完成 → 清除 L3 引用"]
+    MasterIdx -->|ALL MISS| Fallback["無可用技能<br/>使用內建知識"]
 ```
 
-### 搜尋優先級（Search Priority）
-
-1. **L1**: `z:\AutoAgent-TW\.agents\skills\` — 專案級技能 (5 skills)
-2. **L2**: `C:\Users\TOM\.gemini\antigravity\skills\` — 全域技能 (172 skills)
-3. **L3-Index**: `D:\git\antigravity-awesome-skills\skills_index.json` — 預建索引 (1,445 entries)
-4. **L3-FS**: `D:\git\awesome-HQ-claude-skills\`, `D:\git\awesome-HQ-codex-skills\`, `D:\git\skills\` — 補充掃描
-
-### 搜尋演算法
-
-```python
-def search_l3(query: str, top_k: int = 3) -> list[SkillMatch]:
-    """
-    1. Tokenize query -> keywords
-    2. Search skills_index.json by:
-       - name match (exact > partial)
-       - description match (TF-IDF-like scoring)
-       - category/tags match
-    3. If < top_k results, fallback to FS scan of non-indexed repos
-    4. Return ranked list of {skill_id, path, score, description}
-    """
-```
-
-### 生命週期
+### 檔案結構
 
 ```
-[DISCOVER] → query 關鍵字比對 skills_index.json + FS scan
-[LOAD]     → 讀取 SKILL.md 內容到當前上下文
-[EXECUTE]  → 依照 SKILL.md 指令執行任務
-[EVICT]    → 任務完成，從上下文中移除 L3 內容
+z:\AutoAgent-TW\
+├── config/
+│   └── l3_config.json          ← L3 路徑 + repo 清單 + 安全設定
+├── scripts/
+│   ├── l3_skill_cache.py       ← 核心搜尋引擎 (CLI + API)
+│   ├── build_l3_index.py       ← Master Index 建置器
+│   └── aa_installer_logic.py   ← 新增 --with-l3-cache 參數
+├── data/
+│   └── l3_master_index.json    ← 自建統一索引
+└── .agents/skills/
+    └── antigravity-awesome-bridge/
+        └── SKILL.md            ← 更新：整合 L3 搜尋邏輯
+```
+
+### l3_config.json Schema
+
+```json
+{
+  "l3_cache_root": "D:\\git",
+  "repos": [
+    {
+      "name": "antigravity-awesome-skills",
+      "url": "https://github.com/sickn33/antigravity-awesome-skills",
+      "priority": 0,
+      "has_index": true,
+      "enabled": true
+    },
+    {
+      "name": "awesome-HQ-claude-skills",
+      "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "priority": 1,
+      "has_index": false,
+      "enabled": true
+    },
+    {
+      "name": "awesome-HQ-codex-skills",
+      "url": "https://github.com/ComposioHQ/awesome-codex-skills",
+      "priority": 1,
+      "has_index": false,
+      "enabled": true
+    },
+    {
+      "name": "skills",
+      "url": "https://github.com/openai/skills",
+      "priority": 2,
+      "has_index": false,
+      "enabled": true
+    }
+  ],
+  "search": {
+    "timeout_seconds": 5,
+    "max_results": 5,
+    "score_threshold": 0.6,
+    "max_token_injection": 2000
+  },
+  "security": {
+    "enable_content_sanitizer": true,
+    "hash_verification": true,
+    "blocked_risk_level": 2
+  }
+}
 ```
 
 ---
 
-## 4. 實作方案 (Implementation Plan)
+## 5. 資安設計 — STRIDE 強化版
 
-### 4.1 核心腳本：`scripts/l3_skill_cache.py`
+| 威脅 | 風險等級 | 攻擊向量 | 防禦對策 |
+|------|----------|---------|---------|
+| **Spoofing** | MEDIUM | 惡意 repo 偽裝合法技能 | 白名單 repo URL + Git origin 驗證 |
+| **Tampering** | HIGH | SKILL.md 被注入惡意指令 | Content Sanitizer (黑名單掃描) + SHA-256 Hash 比對 |
+| **Repudiation** | LOW | 無法追蹤哪個 L3 技能被使用 | Telemetry log: `{query, hit_repo, score, timestamp}` |
+| **Info Disclosure** | LOW | L3 搜尋可能洩漏任務意圖 | 搜尋僅在本機執行，無網路傳輸 |
+| **Denial of Service** | MEDIUM | 大量 FS scan 導致磁碟 I/O 飽和 | 每 repo 搜尋超時 2.5s + ThreadPool 並行 |
+| **Elevation of Privilege** | MEDIUM | 惡意 SKILL.md 指示 Agent 執行危險操作 | 雙層防禦：靜態掃描 + Runtime Hash 驗證 |
 
-- **功能**: 搜尋 `D:\git` 中的技能索引，返回匹配結果
-- **輸入**: 查詢關鍵字 (e.g., "kubernetes deployment")
-- **輸出**: JSON 格式的匹配結果 [{id, path, score, description}]
-- **模式**:
-  - `--search <query>` — 搜尋模式
-  - `--read <skill_path>` — 讀取特定 SKILL.md
-  - `--sources` — 列出所有可用的 L3 源
+### 額外安全措施
 
-### 4.2 Workflow 整合：修改 `aa-discuss2.md` 的 Step 2.5
-
-在 Karpathy Think Before Coding 步驟後，新增：
-
-```markdown
-### Step 2.7: L3 Skill Discovery (Auto)
-1. 如果當前任務的關鍵字在 L1/L2 中無匹配技能：
-   - 執行 `python scripts/l3_skill_cache.py --search "<task keywords>"`
-2. 如果找到匹配：
-   - 自動讀取最佳匹配的 SKILL.md
-   - 通知用戶：「[L3 Cache] 偵測到相關技能: xxx-skill，已臨時載入」
-3. 任務完成後：
-   - L3 內容不保留在後續上下文中
-```
-
-### 4.3 Antigravity Bridge 更新
-
-更新 `C:\Users\TOM\.gemini\antigravity\skills\antigravity-awesome-bridge\SKILL.md`：
-- 新增 L3 多源搜尋路徑
-- 新增 auto-eviction 指令
+1. **Git Clone 限制**: `--depth 1` 避免拉取完整歷史
+2. **唯讀模式**: 所有 L3 操作為 read-only，不寫入 D:\git
+3. **Content Hash 驗證**: 若 SKILL.md 被修改（hash 不匹配），發出 `⚠️ TAMPERED` 警告
+4. **Quarantine**: 被攔截的 SKILL.md 記錄到 `data/l3_quarantine.log`
 
 ---
 
-## 5. 資安設計 (STRIDE)
+## 6. 實作分階段 (Phased Implementation)
 
-| 威脅 | 風險等級 | 對策 |
-|------|----------|------|
-| **Spoofing** | LOW | L3 來源均為已知的本機 Git repos，非遠端下載 |
-| **Tampering** | MEDIUM | 讀取前檢查 SKILL.md 是否包含可疑 `eval()`/`exec()`/`subprocess` 指令 |
-| **Info Disclosure** | LOW | Read-only 模式，不寫入任何資料到 D:\git |
-| **Denial of Service** | LOW | 設定搜尋超時 (5s)，避免 FS scan 阻塞主流程 |
-| **Elevation of Privilege** | LOW | SKILL.md 僅作為指令文件讀取，不執行其中的腳本 |
+### Phase 173.1：核心引擎 + Installer（本週）
 
----
+| 任務 | 產出 |
+|------|------|
+| 建立 `config/l3_config.json` | 路徑 + repo 清單 + 安全設定 |
+| 實作 `scripts/build_l3_index.py` | 遍歷所有 repo → 產出 `l3_master_index.json` |
+| 實作 `scripts/l3_skill_cache.py` | `--search` / `--read` / `--sources` / `--rebuild-index` |
+| 更新 `scripts/aa_installer_logic.py` | 新增 `--with-l3-cache` + `--l3-path` 參數 |
+| Content Sanitizer | 黑名單掃描 + Hash 計算 |
 
-## 6. 邊界與約束 (Constraints)
+### Phase 173.2：Workflow 整合
 
-### DoD (Definition of Done)
-- [ ] `python scripts/l3_skill_cache.py --search "fastapi"` 能在 <1s 內返回匹配結果
-- [ ] 搜尋涵蓋所有 7,176 SKILL.md (Index + FS fallback)
-- [ ] 載入的 L3 技能不會出現在下次任務的上下文中
-- [ ] 所有 Workflow (`aa-discuss2`, `aa-execute`, `aa-plan`) 能自動觸發 L3 搜尋
+| 任務 | 產出 |
+|------|------|
+| 更新 `antigravity-awesome-bridge/SKILL.md` | L3 多源搜尋指令 |
+| 在 `aa-discuss2.md` 新增 Step 2.7 | 自動 L3 Discovery |
+| 在 `aa-execute.md` 新增 L3 pre-check | 執行前自動搜尋 |
+| Telemetry logging | `data/l3_telemetry.jsonl` |
 
-### 非功能需求
-- **效能**: Index 搜尋 <100ms，FS fallback <5s
-- **記憶體**: 單次 L3 載入不超過 50KB (一個 SKILL.md 平均 2-5KB)
-- **Token**: 單次 L3 注入不超過 2,000 tokens
+### Phase 173.3：未來優化（Backlog）
+
+| 任務 | 說明 |
+|------|------|
+| Embedding Hybrid Search | `0.65 * keyword + 0.35 * embedding` |
+| Skill Dependency Graph | NetworkX + `prerequisites` 抽取 |
+| L3 → L2 自動升級 | 常用技能建議安裝到 Global Skills |
+| MCP Server 封裝 | 將 L3 Cache 包裝為 MCP Tool |
 
 ---
 
 ## 7. 多 Agent 思考 (3-Perspective Analysis)
 
 ### 架構師視角
-> 「Hybrid Index + FS 是正確的折衷。Index 覆蓋主要 repo (4,509)，FS 補充長尾。Read-only 模式避免了 workspace 污染和 Git 衝突。」
+> 「路徑可配置化是正確的。自建 Master Index 消除了對上游格式的依賴。Hybrid 搜尋兼顧速度與覆蓋率。分 3 階段實作避免過度工程化。」
 
 ### 資安工程師視角
-> 「D:\git 是本地磁碟，不涉及遠端 fetch，風險可控。但需防止惡意 SKILL.md 注入危險指令。建議加一層 content sanitizer。」
+> 「Content Sanitizer + Hash 驗證形成雙層防禦。白名單 repo 限制了攻擊面。Quarantine log 提供事後稽核能力。建議 Phase 173.1 完成後做一次完整的安全掃描驗證。」
 
 ### AI 產品專家視角
-> 「自動發現 + 用完即棄的 UX 完美。但需要透明通知機制，讓用戶知道正在使用哪個 L3 技能。建議加 `[L3 Cache HIT]` 前綴。」
+> 「自動 Clone + 可配置路徑降低了使用者門檻。`[L3 Cache HIT]` 通知保持了透明度。Eager Eviction 避免了 Token 浪費。搜尋延遲 <1s 符合 UX 預期。」
 
 ---
 
-## 8. [ASSUMPTION] 標記
+## 8. DoD (Definition of Done)
 
-1. **[ASSUMPTION]** `D:\git` 路徑固定，不會因系統遷移而改變。
-   → 建議後續可配置化 (`l3_cache_paths` in `config.json`)
-2. **[ASSUMPTION]** `skills_index.json` 結構穩定，不需要版本適配。
-3. **[ASSUMPTION]** 7,176 個 SKILL.md 中沒有惡意內容（來源為已知的開源 repo）。
+- [ ] `python scripts/l3_skill_cache.py --search "fastapi"` 在 <1s 內返回結果
+- [ ] `python scripts/build_l3_index.py --root D:\git` 成功建置 Master Index
+- [ ] Content Sanitizer 能攔截包含 `eval()/exec()` 的 SKILL.md
+- [ ] Hash 驗證能偵測被竄改的 SKILL.md
+- [ ] Installer `--with-l3-cache --l3-path "X:\path"` 能自動 clone 所有 repo
+- [ ] 載入的 L3 技能不會出現在下次任務的上下文中
+- [ ] 搜尋平均延遲 < 800ms (P95)
+- [ ] 所有 Workflow 能自動觸發 L3 搜尋
 
 ---
 
-## 9. 替代方案比較
+## 9. 替代方案比較（最終版）
 
-| 方案 | 複雜度 | Token 效率 | 覆蓋率 | 選用 |
-|------|--------|-----------|--------|------|
-| **A: 預先全部安裝到 L2** | 高 (7,176 skills) | 極差 (Token 爆炸) | 100% | ❌ |
-| **B: L3 Cache (本方案)** | 中 | 優 (按需載入) | 100% | ✅ |
-| **C: 僅依賴 Web Search** | 低 | 差 (每次上網) | 不確定 | ❌ |
-| **D: MCP Server 封裝** | 高 | 好 | 100% | 🔄 未來考慮 |
+| 方案 | 複雜度 | Token 效率 | 覆蓋率 | 安全性 | 選用 |
+|------|--------|-----------|--------|--------|------|
+| **A: 預先全部安裝到 L2** | 高 | 極差 (Token 爆炸) | 100% | 高 | ❌ |
+| **B: L3 Cache + Sanitizer (本方案)** | 中 | 優 (按需載入) | 100% | 高 | ✅ |
+| **C: 僅依賴 Web Search** | 低 | 差 (每次上網) | 不確定 | 低 | ❌ |
+| **D: MCP Server 封裝** | 高 | 好 | 100% | 高 | 🔄 Phase 173.3 |
