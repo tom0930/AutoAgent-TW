@@ -343,4 +343,21 @@
 - @file:src/core/context_scoper.py
 - @file:action.yml
 - @file:Dockerfile.ci
-$entry
+### Phase 173 (2026-05-05) - L3 Skill Cache — 自動技能發現與生命週期管理
+- **核心架構**: 實作 L1→L2→L3 三級快取，支援 6,000+ 外部技能動態發現。
+- **資安防護**: 整合 `Content Sanitizer` 與 SHA-256 驗證，防止惡意代碼注入與供應鏈攻擊。
+- **品質追蹤**: 實作 Git Trailer (`L3-Skill`) 與 `l3_skill_ledger`，支援自動化 Bug 關聯分析與技能品質評分。
+- **流程整合**: 成功將 L3 發現與追蹤機制整合至 `aa-discuss2`, `aa-ship`, `aa-fix` 等核心工作流。
+- **安裝支援**: 專業安裝程式新增 `--with-l3-cache` 與 `--l3-path`。
+
+#### @file:
+- `config/l3_config.json`
+- `scripts/build_l3_index.py`
+- `scripts/l3_skill_cache.py`
+- `scripts/l3_trace_hook.py`
+- `scripts/aa_installer_logic.py`
+- `data/l3_master_index.json`
+- `data/l3_skill_ledger.jsonl`
+- `_agents/workflows/aa-discuss2.md`
+- `_agents/workflows/aa-ship.md`
+- `_agents/workflows/aa-fix.md`

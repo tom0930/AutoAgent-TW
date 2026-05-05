@@ -57,3 +57,4 @@
 - [X] Phase 129: Headless Mode + CI/CD Integration (v3.6.0) [DONE]
 - [X] Phase 171: Karpathy External Skills Integration (v3.6.1) [DONE]
 - [X] Phase 172: OpenClaw Restoration & Installer Repair (v3.6.2) [DONE]
+- [X] Phase 173: L3 Skill Cache — 自動技能發現與生命週期管理 (v3.6.3) [DONE]
