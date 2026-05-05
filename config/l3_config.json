@@ -1,0 +1,51 @@
+{
+  "l3_cache_root": "D:\\git",
+  "repos": [
+    {
+      "name": "antigravity-awesome-skills",
+      "url": "https://github.com/sickn33/antigravity-awesome-skills",
+      "priority": 0,
+      "has_index": true,
+      "enabled": true
+    },
+    {
+      "name": "awesome-HQ-claude-skills",
+      "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "priority": 1,
+      "has_index": false,
+      "enabled": true
+    },
+    {
+      "name": "awesome-HQ-codex-skills",
+      "url": "https://github.com/ComposioHQ/awesome-codex-skills",
+      "priority": 1,
+      "has_index": false,
+      "enabled": true
+    },
+    {
+      "name": "skills",
+      "url": "https://github.com/openai/skills",
+      "priority": 2,
+      "has_index": false,
+      "enabled": true
+    },
+    {
+      "name": "awesome-agent-skills",
+      "url": "https://github.com/VoltAgent/awesome-agent-skills",
+      "priority": 3,
+      "has_index": false,
+      "enabled": true
+    }
+  ],
+  "search": {
+    "timeout_seconds": 5,
+    "max_results": 5,
+    "score_threshold": 0.6,
+    "max_token_injection": 2000
+  },
+  "security": {
+    "enable_content_sanitizer": true,
+    "hash_verification": true,
+    "blocked_risk_level": 2
+  }
+}
