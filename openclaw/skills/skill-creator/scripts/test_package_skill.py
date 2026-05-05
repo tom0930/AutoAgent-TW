@@ -17,15 +17,13 @@ if str(SCRIPT_DIR) not in sys.path:
 
 
 fake_quick_validate = types.ModuleType("quick_validate")
-# pyrefly: ignore [missing-attribute]
 fake_quick_validate.validate_skill = lambda _path: (True, "Skill is valid!")
 original_quick_validate = sys.modules.get("quick_validate")
 sys.modules["quick_validate"] = fake_quick_validate
 
-# pyrefly: ignore [missing-import]
 import package_skill as package_skill_module
-# pyrefly: ignore [missing-import]
-from package_skill import package_skill
+
+package_skill = package_skill_module.package_skill
 
 if original_quick_validate is not None:
     sys.modules["quick_validate"] = original_quick_validate

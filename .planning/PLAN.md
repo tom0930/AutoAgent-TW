@@ -54,3 +54,34 @@ graph TD
 - [X] Wave 2: 提取 `karpathy-guidelines` 並搬移至 `.agents/skills/`
 - [X] Wave 3: 整合 `CLAUDE.md` 內容至 `AutoAgent-TW` 核心配置 (於 `docs/karpathy/` 歸檔並同步準則)
 - [X] Wave 4: 執行系統診斷與驗證
+
+---
+
+## Phase 3.6: OpenClaw Integration & Repair
+
+### 8 維度檢查 (8-Dimension Check)
+
+| 維度 | 內容 |
+|---|---|
+| **1. 需求拆解與邊界定義** | 分解為：(1) Installer 參數化 (2) OpenClaw 構建邏輯修復 (3) 缺失檔案修復 (4) 移除硬編碼路徑。 |
+| **2. 技術選型與理由** | 使用 Python `argparse` 與 PowerShell `Read-Host`。使用 `npm` 自動化構建與元數據生成。 |
+| **3. 系統架構圖** | `Installer -> logic.py --(optional)--> deploy_openclaw -> npm install -> gen metadata -> build` |
+| **4. 並行與效能設計** | 安裝過程為線性執行，`npm` 構建利用多核心平行處理。 |
+| **5. 資安設計與威脅建模** | **STRIDE**: T (Tampering) - 確保來源路徑合法且不含惡意腳本。 |
+| **6. AI 產品相關考量** | UX：提供互動式安裝選項，避免無意義的依賴下載。 |
+| **7. 錯誤處理、監控與恢復策略** | 使用 `try-except` 包裹構建流程，失敗時提供手動修復指引。 |
+| **8. 測試策略** | 驗證 `openclaw.mjs` 入口與 `dist/` 生成。 |
+
+- [x] Phase 3.6.1: Installer Architecture Upgrade
+    - [x] Modify `aa_installer_logic.py` to add `--with-openclaw` and fix `deploy_openclaw`.
+    - [x] Update `aa-installer.ps1` with interactive prompt for OpenClaw.
+- [x] Phase 3.6.2: OpenClaw Restoration & Build
+    - [x] Identify missing dependencies (e.g., `src/secrets/ref-contract.ts`).
+    - [x] Restore missing directories and 14,000+ files from canonical source.
+    - [x] Resolve `npm install` dependency conflicts with `--legacy-peer-deps`.
+    - [x] Execute `npm run config:channels:gen` for chat channel metadata.
+    - [x] Execute `npm run build` for `dist/` artifacts.
+- [x] Phase 3.6.3: Final Verification
+    - [x] Verify CLI entry point `node openclaw.mjs --version`.
+    - [x] Confirm `openclaw` starts without "Missing bundled chat channel metadata" error.
+    - [x] Test installation workflow.

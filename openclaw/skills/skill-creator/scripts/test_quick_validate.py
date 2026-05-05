@@ -7,7 +7,6 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, main
 
-# pyrefly: ignore [missing-import]
 import quick_validate
 
 

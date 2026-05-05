@@ -8,6 +8,7 @@ import type { OpenClawConfig } from "../../config/types.openclaw.js";
 import { logVerbose } from "../../globals.js";
 import { formatErrorMessage } from "../../infra/errors.js";
 import { generateSecureToken } from "../../infra/secure-random.js";
+import { createLazyImportLoader } from "../../shared/lazy-promise.js";
 import {
   normalizeOptionalLowercaseString,
   normalizeOptionalString,
@@ -35,7 +36,40 @@ import type { createModelSelectionState } from "./model-selection.js";
 import { extractInlineSimpleCommand } from "./reply-inline.js";
 import type { TypingController } from "./typing.js";
 
+type SkillCommandsRuntime = typeof import("../skill-commands.runtime.js");
+type OpenClawToolsRuntime = typeof import("../../agents/openclaw-tools.runtime.js");
+type AbortCutoffRuntime = typeof import("./abort-cutoff.runtime.js");
+type CommandsRuntime = typeof import("./commands.runtime.js");
+
+const skillCommandsRuntimeLoader = createLazyImportLoader<SkillCommandsRuntime>(
+  () => import("../skill-commands.runtime.js"),
+);
+const openClawToolsRuntimeLoader = createLazyImportLoader<OpenClawToolsRuntime>(
+  () => import("../../agents/openclaw-tools.runtime.js"),
+);
+const abortCutoffRuntimeLoader = createLazyImportLoader<AbortCutoffRuntime>(
+  () => import("./abort-cutoff.runtime.js"),
+);
+const commandsRuntimeLoader = createLazyImportLoader<CommandsRuntime>(
+  () => import("./commands.runtime.js"),
+);
 let builtinSlashCommands: Set<string> | null = null;
+
+function loadSkillCommandsRuntime(): Promise<SkillCommandsRuntime> {
+  return skillCommandsRuntimeLoader.load();
+}
+
+function loadOpenClawToolsRuntime(): Promise<OpenClawToolsRuntime> {
+  return openClawToolsRuntimeLoader.load();
+}
+
+function loadAbortCutoffRuntime(): Promise<AbortCutoffRuntime> {
+  return abortCutoffRuntimeLoader.load();
+}
+
+function loadCommandsRuntime(): Promise<CommandsRuntime> {
+  return commandsRuntimeLoader.load();
+}
 
 function getBuiltinSlashCommands(): Set<string> {
   if (builtinSlashCommands) {
@@ -74,6 +108,17 @@ function expandBundleCommandPromptTemplate(template: string, args?: string): str
     return rendered.trim();
   }
   return `${rendered.trim()}\n\nUser input:\n${normalizedArgs}`;
+}
+
+function isMentionOnlyResidualText(text: string, wasMentioned: boolean | undefined): boolean {
+  if (wasMentioned !== true) {
+    return false;
+  }
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return false;
+  }
+  return /^(?:<@[!&]?[A-Za-z0-9._:-]+>|<!(?:here|channel|everyone)>|[:,.!?-]|\s)+$/u.test(trimmed);
 }
 
 export type InlineActionResult =
@@ -194,7 +239,7 @@ export async function handleInlineActions(params: {
     shouldLoadSkillCommands && params.skillCommands
       ? params.skillCommands
       : shouldLoadSkillCommands
-        ? (await import("../skill-commands.runtime.js")).listSkillCommandsForWorkspace({
+        ? (await loadSkillCommandsRuntime()).listSkillCommandsForWorkspace({
             workspaceDir,
             cfg,
             agentId,
@@ -226,7 +271,7 @@ export async function handleInlineActions(params: {
         resolveGatewayMessageChannel(ctx.Provider) ??
         undefined;
 
-      const { createOpenClawTools } = await import("../../agents/openclaw-tools.runtime.js");
+      const { createOpenClawTools } = await loadOpenClawToolsRuntime();
       const tools = createOpenClawTools({
         agentSessionKey: sessionKey,
         agentChannel: channel,
@@ -315,7 +360,7 @@ export async function handleInlineActions(params: {
     }
     if (cutoff) {
       await (
-        await import("./abort-cutoff.runtime.js")
+        await loadAbortCutoffRuntime()
       ).clearAbortCutoffInSessionRuntime({
         sessionEntry: targetSessionEntry,
         sessionStore,
@@ -347,7 +392,7 @@ export async function handleInlineActions(params: {
     }) && inlineStatusRequested;
   let didSendInlineStatus = false;
   if (handleInlineStatus) {
-    const { buildStatusReply } = await import("./commands.runtime.js");
+    const { buildStatusReply } = await loadCommandsRuntime();
     const inlineStatusReply = await buildStatusReply({
       cfg,
       command,
@@ -359,6 +404,7 @@ export async function handleInlineActions(params: {
       provider,
       model,
       contextTokens,
+      workspaceDir,
       resolvedThinkLevel,
       resolvedVerboseLevel: resolvedVerboseLevel ?? "off",
       resolvedReasoningLevel,
@@ -374,7 +420,7 @@ export async function handleInlineActions(params: {
   }
 
   const runCommands = async (commandInput: typeof command) => {
-    const { handleCommands } = await import("./commands.runtime.js");
+    const { handleCommands } = await loadCommandsRuntime();
     return handleCommands({
       // Pass sessionCtx so command handlers can mutate stripped body for same-turn continuation.
       ctx: sessionCtx,
@@ -474,7 +520,11 @@ export async function handleInlineActions(params: {
     }
     return stripMentions(stripped, ctx, cfg, agentId).trim();
   })();
-  if (didSendInlineStatus && remainingBodyAfterInlineStatus.length === 0) {
+  if (
+    didSendInlineStatus &&
+    (remainingBodyAfterInlineStatus.length === 0 ||
+      isMentionOnlyResidualText(remainingBodyAfterInlineStatus, ctx.WasMentioned))
+  ) {
     typing.cleanup();
     return { kind: "reply", reply: undefined };
   }

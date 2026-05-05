@@ -9,6 +9,7 @@
 1. **指令優先級**: 優先使用 `/aa-orchestrate` 進行大任務拆解，而非直接寫代碼。
 2. **記憶隔離**: 所有敏感 API 操作必須標註 `[SECURED]` 並在執行後清除臨時記憶 (L1)。
 3. **修復而非重建**: 遇到問題先修復，而不是刪除重來。
+4. **Karpathy 準則**: 嚴格遵守 `karpathy-guidelines` 技能中的四大原則：Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution。
 
 ## 🛠️ 技術棧版本
 

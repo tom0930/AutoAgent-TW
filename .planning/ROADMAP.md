@@ -56,3 +56,4 @@
 - [X] Phase 169: Multi-Agent Execution Engine (Axis 2) (v3.5.7) [DONE]
 - [X] Phase 129: Headless Mode + CI/CD Integration (v3.6.0) [DONE]
 - [X] Phase 171: Karpathy External Skills Integration (v3.6.1) [DONE]
+- [X] Phase 172: OpenClaw Restoration & Installer Repair (v3.6.2) [DONE]

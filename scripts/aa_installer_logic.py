@@ -152,25 +152,52 @@ def register_global_commands(target_dir: Path) -> None:
         except Exception as e:
             logger.error(f"⚠️ PATH update failed: {e}. Please add {target_dir} to PATH manually.")
 
-def deploy_openclaw(target_dir: Path) -> None:
+def deploy_openclaw(target_dir: Path, with_openclaw: bool = False) -> None:
     """Deploys OpenClaw core with dependency resolution logic (Phase 122)."""
+    if not with_openclaw:
+        logger.info("OpenClaw ecosystem installation skipped (optional module).")
+        return
+
     logger.info("Deploying OpenClaw ecosystem...")
     oc_dest = target_dir / "openclaw"
     
-    # Check for source on dev machine (Z:\)
+    # Check for source (Dev Z:\ or relative)
     oc_source = Path("Z:/openclaw")
+    if not oc_source.exists():
+        # Fallback to local source folder if running from within repo
+        potential_source = Path(__file__).resolve().parent.parent / "openclaw"
+        if potential_source.exists():
+            oc_source = potential_source
+
     if oc_source.exists():
-        logger.info(f"Syncing from dev source: {oc_source}")
-        if oc_dest.exists(): shutil.rmtree(oc_dest)
-        shutil.copytree(oc_source, oc_dest, ignore=shutil.ignore_patterns("node_modules", ".git", ".planning", "dist/*.map"))
+        logger.info(f"Syncing from source: {oc_source}")
+        if oc_dest.exists() and oc_dest.resolve() != oc_source.resolve():
+            shutil.rmtree(oc_dest)
         
-        # Init registry
-        logger.info("Initializing metadata registry (npm install)...")
+        if oc_dest.resolve() != oc_source.resolve():
+            shutil.copytree(oc_source, oc_dest, ignore=shutil.ignore_patterns("node_modules", ".git", ".planning", "dist/*.map"))
+        
+        # Init registry and generate metadata
+        logger.info("Initializing OpenClaw (npm install & metadata generation)...")
         try:
+            # 1. Install dependencies
             subprocess.run(["npm.cmd", "install"], cwd=oc_dest, check=True, shell=True, capture_output=True)
-            logger.info("✅ OpenClaw registry initialized.")
+            
+            # 2. Generate missing channel metadata (Critical fix for "Missing bundled chat channel metadata")
+            logger.info("Generating channel metadata...")
+            subprocess.run(["npm.cmd", "run", "config:channels:gen"], cwd=oc_dest, check=True, shell=True, capture_output=True)
+            
+            # 3. Build if dist is missing
+            if not (oc_dest / "dist" / "entry.js").exists() and not (oc_dest / "dist" / "entry.mjs").exists():
+                logger.info("Building OpenClaw core artifacts...")
+                subprocess.run(["npm.cmd", "run", "build"], cwd=oc_dest, check=True, shell=True, capture_output=True)
+                
+            logger.info("✅ OpenClaw ecosystem initialized.")
         except Exception as e:
-            logger.warning(f"OpenClaw npm install failed: {e}")
+            logger.warning(f"OpenClaw setup failed: {e}. You may need to run 'pnpm install && pnpm build' manually in {oc_dest}.")
+    else:
+        logger.warning("OpenClaw source not found. Skipping deployment.")
+        return
     
     # Create OpenClaw Shim
     oc_shim = target_dir / "openclaw.cmd"
@@ -191,6 +218,7 @@ def main() -> None:
     parser.add_argument("--target", type=str, default=os.getcwd(), help="Installation directory")
     parser.add_argument("--auto", action="store_true", help="Non-interactive mode")
     parser.add_argument("--lang", type=str, default="zh-TW", help="Default language")
+    parser.add_argument("--with-openclaw", action="store_true", help="Install OpenClaw ecosystem")
     args = parser.parse_args()
 
     target_dir = Path(args.target).resolve()
@@ -243,7 +271,7 @@ fi
             logger.info("✅ Installed Git Pre-commit Hook for Shadow Check.")
 
         # 4. OpenClaw
-        deploy_openclaw(target_dir)
+        deploy_openclaw(target_dir, with_openclaw=args.with_openclaw)
         
         # 5. Configurations
         setup_git_config(auto=args.auto)

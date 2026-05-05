@@ -837,6 +837,8 @@ describe("isDangerousHostEnvOverrideVarName", () => {
     expect(isDangerousHostEnvOverrideVarName("AWS_CONFIG_FILE")).toBe(true);
     expect(isDangerousHostEnvOverrideVarName("aws_config_file")).toBe(true);
     expect(isDangerousHostEnvOverrideVarName("yarn_rc_filename")).toBe(true);
+    expect(isDangerousHostEnvOverrideVarName("SystemRoot")).toBe(true);
+    expect(isDangerousHostEnvOverrideVarName("windir")).toBe(true);
     expect(isDangerousHostEnvOverrideVarName("BASH_ENV")).toBe(false);
     expect(isDangerousHostEnvOverrideVarName("FOO")).toBe(false);
   });
@@ -1201,11 +1203,13 @@ describe("sanitizeSystemRunEnvOverrides", () => {
         TOKEN: "abc",
         LANG: "C",
         LC_ALL: "C",
+        LC_TIME: "C",
       },
     });
     expect(overrides).toEqual({
       LANG: "C",
       LC_ALL: "C",
+      LC_TIME: "C",
     });
   });
 
@@ -1228,11 +1232,13 @@ describe("sanitizeSystemRunEnvOverrides", () => {
         overrides: {
           lang: "C",
           ColorTerm: "truecolor",
+          lc_numeric: "C",
         },
       }),
     ).toEqual({
       lang: "C",
       ColorTerm: "truecolor",
+      lc_numeric: "C",
     });
   });
 });

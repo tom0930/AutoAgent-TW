@@ -20,7 +20,22 @@ export function isLocalCheckEnabled(env) {
   return raw !== "0" && raw !== "false";
 }
 
-export function hasFlag(args, name) {
+function isCiLikeEnv(env = process.env) {
+  return env.CI === "true" || env.GITHUB_ACTIONS === "true";
+}
+
+export function resolveLocalHeavyCheckEnv(env = process.env) {
+  if (isCiLikeEnv(env) || isLocalCheckEnabled(env)) {
+    return env;
+  }
+
+  return {
+    ...env,
+    OPENCLAW_LOCAL_CHECK: "1",
+  };
+}
+
+function hasFlag(args, name) {
   return args.some((arg) => arg === name || arg.startsWith(`${name}=`));
 }
 
@@ -46,7 +61,7 @@ export function applyLocalTsgoPolicy(args, env, hostResources) {
     );
   }
 
-  if (shouldThrottleLocalHeavyChecks(nextEnv, hostResources)) {
+  if (shouldThrottleLocalHeavyChecks(nextEnv, hostResources, "auto")) {
     insertBeforeSeparator(nextArgs, "--singleThreaded");
     insertBeforeSeparator(nextArgs, "--checkers", "1");
 
@@ -69,7 +84,8 @@ export function applyLocalOxlintPolicy(args, env, hostResources) {
   const nextArgs = [...args];
 
   insertBeforeSeparator(nextArgs, "--type-aware");
-  insertBeforeSeparator(nextArgs, "--tsconfig", "tsconfig.oxlint.json");
+  insertBeforeSeparator(nextArgs, "--tsconfig", "config/tsconfig/oxlint.json");
+  insertBeforeSeparator(nextArgs, "--allow", "eslint/no-underscore-dangle");
   if (
     !hasFlag(nextArgs, "--report-unused-disable-directives") &&
     !hasFlag(nextArgs, "--report-unused-disable-directives-severity")
@@ -77,19 +93,80 @@ export function applyLocalOxlintPolicy(args, env, hostResources) {
     insertBeforeSeparator(nextArgs, "--report-unused-disable-directives-severity", "error");
   }
 
-  if (shouldThrottleLocalHeavyChecks(nextEnv, hostResources)) {
+  if (shouldThrottleLocalHeavyChecks(nextEnv, hostResources) && !hasFlag(nextArgs, "--threads")) {
     insertBeforeSeparator(nextArgs, "--threads=1");
   }
 
   return { env: nextEnv, args: nextArgs };
 }
 
-export function shouldThrottleLocalHeavyChecks(env, hostResources) {
+export function shouldAcquireLocalHeavyCheckLockForOxlint(
+  args,
+  { cwd = process.cwd(), env = process.env } = {},
+) {
+  if (env.OPENCLAW_OXLINT_FORCE_LOCK === "1") {
+    return true;
+  }
+
+  if (
+    args.some(
+      (arg) =>
+        arg === "--help" ||
+        arg === "-h" ||
+        arg === "--version" ||
+        arg === "-V" ||
+        arg === "--rules" ||
+        arg === "--print-config" ||
+        arg === "--init",
+    )
+  ) {
+    return false;
+  }
+
+  const separatorIndex = args.indexOf("--");
+  const candidateArgs = (() => {
+    if (separatorIndex !== -1) {
+      return args.slice(separatorIndex + 1);
+    }
+    const firstFlagIndex = args.findIndex((arg) => arg.startsWith("-"));
+    return firstFlagIndex === -1 ? args : args.slice(0, firstFlagIndex);
+  })();
+  const explicitTargets = candidateArgs.filter((arg) => arg.length > 0 && !arg.startsWith("-"));
+  if (explicitTargets.length === 0) {
+    return true;
+  }
+
+  return !explicitTargets.every((target) => {
+    try {
+      return fs.statSync(path.resolve(cwd, target)).isFile();
+    } catch {
+      return false;
+    }
+  });
+}
+
+export function shouldAcquireLocalHeavyCheckLockForTsgo(args, env = process.env) {
+  if (env.OPENCLAW_TSGO_FORCE_LOCK === "1") {
+    return true;
+  }
+
+  return !args.some(
+    (arg) =>
+      arg === "--help" ||
+      arg === "-h" ||
+      arg === "--version" ||
+      arg === "-v" ||
+      arg === "--init" ||
+      arg === "--showConfig",
+  );
+}
+
+function shouldThrottleLocalHeavyChecks(env, hostResources, defaultMode = "throttled") {
   if (!isLocalCheckEnabled(env)) {
     return false;
   }
 
-  const mode = readLocalCheckMode(env);
+  const mode = readLocalCheckMode(env, defaultMode);
   if (mode === "throttled") {
     return true;
   }
@@ -196,7 +273,7 @@ export function acquireLocalHeavyCheckLockSync(params) {
   }
 }
 
-export function resolveGitCommonDir(cwd) {
+function resolveGitCommonDir(cwd) {
   const result = spawnSync("git", ["rev-parse", "--git-common-dir"], {
     cwd,
     encoding: "utf8",
@@ -237,7 +314,7 @@ function insertBeforeSeparator(args, ...items) {
   args.splice(insertIndex, 0, ...items);
 }
 
-function readLocalCheckMode(env) {
+function readLocalCheckMode(env, defaultMode) {
   const raw = env.OPENCLAW_LOCAL_CHECK_MODE?.trim().toLowerCase();
   if (raw === "throttled" || raw === "low-memory") {
     return "throttled";
@@ -245,9 +322,7 @@ function readLocalCheckMode(env) {
   if (raw === "full" || raw === "fast") {
     return "full";
   }
-  // Keep local heavy checks conservative by default. Developers can still opt
-  // into full-speed runs explicitly with OPENCLAW_LOCAL_CHECK_MODE=full.
-  return "throttled";
+  return defaultMode;
 }
 
 function resolveHostResources(hostResources) {

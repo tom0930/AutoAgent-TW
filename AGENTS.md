@@ -60,7 +60,7 @@
 
 ## 🛡️ PreToolUse 虛擬 Hook（即時攔截）
 
-> 來源：Karpathy Skills 原則 3 + Best Practice Hook 架構
+> 核心指導原則：[Karpathy Guidelines](.agents/skills/karpathy-guidelines/SKILL.md)
 > 目標：在 AI **嘗試操作的瞬間**攔截，而非事後 commit 前才檢查。
 
 ### 修改檔案前（edit_file / write_to_file）

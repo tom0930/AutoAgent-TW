@@ -7,7 +7,6 @@ import argparse
 from datetime import date, timedelta
 from unittest import TestCase, main
 
-# pyrefly: ignore [missing-import]
 from model_usage import filter_by_days, positive_int
 
 

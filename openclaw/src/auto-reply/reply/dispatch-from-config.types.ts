@@ -1,22 +1,26 @@
 import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { GetReplyOptions, SourceReplyDeliveryMode } from "../get-reply-options.types.js";
 import type { FinalizedMsgContext } from "../templating.js";
-import type { GetReplyOptions } from "../types.js";
-import type { ReplyDispatcher, ReplyDispatchKind } from "./reply-dispatcher.js";
+import type { FormatAbortReplyText, TryFastAbortFromMessage } from "./abort.runtime-types.js";
+import type { GetReplyFromConfig } from "./get-reply.types.js";
+import type { ReplyDispatchKind, ReplyDispatcher } from "./reply-dispatcher.types.js";
 
 export type DispatchFromConfigResult = {
   queuedFinal: boolean;
   counts: Record<ReplyDispatchKind, number>;
+  failedCounts?: Partial<Record<ReplyDispatchKind, number>>;
+  sourceReplyDeliveryMode?: SourceReplyDeliveryMode;
 };
 
 export type DispatchFromConfigParams = {
   ctx: FinalizedMsgContext;
   cfg: OpenClawConfig;
   dispatcher: ReplyDispatcher;
-  replyOptions?: Omit<GetReplyOptions, "onToolResult" | "onBlockReply">;
-  replyResolver?: typeof import("./get-reply-from-config.runtime.js").getReplyFromConfig;
-  fastAbortResolver?: typeof import("./abort.runtime.js").tryFastAbortFromMessage;
-  formatAbortReplyTextResolver?: typeof import("./abort.runtime.js").formatAbortReplyText;
-  /** Optional config override passed to getReplyFromConfig (e.g. per-sender timezone). */
+  replyOptions?: Omit<GetReplyOptions, "onBlockReply">;
+  replyResolver?: GetReplyFromConfig;
+  fastAbortResolver?: TryFastAbortFromMessage;
+  formatAbortReplyTextResolver?: FormatAbortReplyText;
+  /** Optional patch applied to the already loaded config before reply resolution. */
   configOverride?: OpenClawConfig;
 };
 

@@ -2,13 +2,15 @@ import type { ToolFsPolicy } from "../agents/tool-fs-policy.js";
 import type { AnyAgentTool } from "../agents/tools/common.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import type { HookEntry } from "../hooks/types.js";
-import type { DeliveryContext } from "../utils/delivery-context.shared.js";
+import type { DeliveryContext } from "../utils/delivery-context.types.js";
 
 /** Trusted execution context passed to plugin-owned agent tool factories. */
 export type OpenClawPluginToolContext = {
   config?: OpenClawConfig;
   /** Active runtime-resolved config snapshot when one is available. */
   runtimeConfig?: OpenClawConfig;
+  /** Returns the latest runtime-resolved config snapshot for long-lived tool definitions. */
+  getRuntimeConfig?: () => OpenClawConfig | undefined;
   /** Effective filesystem policy for the active tool run. */
   fsPolicy?: ToolFsPolicy;
   workspaceDir?: string;

@@ -31,6 +31,17 @@ if ($policy -eq "Restricted") {
 
 # 3. Execute Core Logic
 Write-Host "[2/3] Launching Core Installation Logic..." -ForegroundColor Blue
+
+$withOpenClaw = ""
+if ($PSBoundParameters.ContainsKey('auto') -or $env:AA_AUTO_INSTALL -eq "true") {
+    $withOpenClaw = ""
+} else {
+    $choice = Read-Host "Do you want to install OpenClaw ecosystem (Advanced Gateway)? (y/N)"
+    if ($choice -eq 'y' -or $choice -eq 'Y') {
+        $withOpenClaw = "--with-openclaw"
+    }
+}
+
 $currentDir = Get-Location
 $scriptPath = Join-Path $currentDir "scripts\aa_installer_logic.py"
 
@@ -39,7 +50,7 @@ if (-not (Test-Path $scriptPath)) {
 }
 
 # Run Python logic with --auto if requested by any external env or just run default
-python "$scriptPath" --target "$currentDir" --lang "zh-TW"
+python "$scriptPath" --target "$currentDir" --lang "zh-TW" $withOpenClaw
 
 # 4. Final Notification
 Write-Host "[3/3] Finalizing Environment..." -ForegroundColor Blue

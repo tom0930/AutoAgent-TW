@@ -14,7 +14,6 @@ import sys
 import zipfile
 from pathlib import Path
 
-# pyrefly: ignore [missing-import]
 from quick_validate import validate_skill
 
 

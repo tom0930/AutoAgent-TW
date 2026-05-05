@@ -1,22 +1,13 @@
-import {
-  getActivePluginChannelRegistryFromState,
-  getPluginRegistryState,
-} from "../plugins/runtime-state.js";
+import { getActivePluginChannelRegistryFromState } from "../plugins/runtime-channel-state.js";
 import {
   normalizeOptionalLowercaseString,
   normalizeOptionalString,
 } from "../shared/string-coerce.js";
-import {
-  CHANNEL_IDS,
-  CHAT_CHANNEL_ALIASES,
-  CHAT_CHANNEL_ORDER,
-  listChatChannelAliases,
-  normalizeChatChannelId,
-  type ChatChannelId,
-} from "./ids.js";
-import type { ChannelId, ChannelMeta } from "./plugins/types.public.js";
-export { getChatChannelMeta, listChatChannels } from "./chat-meta.js";
-export { CHANNEL_IDS, CHAT_CHANNEL_ORDER } from "./ids.js";
+import { CHAT_CHANNEL_ORDER, normalizeChatChannelId, type ChatChannelId } from "./ids.js";
+import type { ChannelId } from "./plugins/channel-id.types.js";
+import type { ChannelMeta } from "./plugins/types.core.js";
+export { getChatChannelMeta } from "./chat-meta.js";
+export { CHAT_CHANNEL_ORDER } from "./ids.js";
 export type { ChatChannelId } from "./ids.js";
 
 type RegisteredChannelPluginEntry = {
@@ -31,7 +22,7 @@ function listRegisteredChannelPluginEntries(): RegisteredChannelPluginEntry[] {
   if (channelRegistry && channelRegistry.channels && channelRegistry.channels.length > 0) {
     return channelRegistry.channels;
   }
-  return getPluginRegistryState()?.activeRegistry?.channels ?? [];
+  return [];
 }
 
 function findRegisteredChannelPluginEntry(
@@ -59,7 +50,7 @@ function findRegisteredChannelPluginEntryById(
     (entry) => normalizeOptionalLowercaseString(entry.plugin.id) === normalizedId,
   );
 }
-export { CHAT_CHANNEL_ALIASES, listChatChannelAliases, normalizeChatChannelId };
+export { normalizeChatChannelId };
 
 // Channel docking: prefer this helper in shared code. Importing from
 // `src/channels/plugins/*` can eagerly load channel implementations.
@@ -84,10 +75,6 @@ export function listRegisteredChannelPluginIds(): ChannelId[] {
     const id = normalizeOptionalString(entry.plugin.id);
     return id ? [id as ChannelId] : [];
   });
-}
-
-export function listRegisteredChannelPluginAliases(): string[] {
-  return listRegisteredChannelPluginEntries().flatMap((entry) => entry.plugin.meta?.aliases ?? []);
 }
 
 export function getRegisteredChannelPluginMeta(

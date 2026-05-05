@@ -4,7 +4,7 @@ import { GRAPH_ROOT } from "./attachments/shared.js";
 const GRAPH_BETA = "https://graph.microsoft.com/beta";
 import { createMSTeamsTokenProvider, loadMSTeamsSdkWithAuth } from "./sdk.js";
 import { readAccessToken } from "./token-response.js";
-import { resolveMSTeamsCredentials } from "./token.js";
+import { resolveDelegatedAccessToken, resolveMSTeamsCredentials } from "./token.js";
 import { buildUserAgent } from "./user-agent.js";
 
 export type GraphUser = {
@@ -14,12 +14,12 @@ export type GraphUser = {
   mail?: string;
 };
 
-export type GraphGroup = {
+type GraphGroup = {
   id?: string;
   displayName?: string;
 };
 
-export type GraphChannel = {
+type GraphChannel = {
   id?: string;
   displayName?: string;
 };
@@ -37,7 +37,7 @@ export function escapeOData(value: string): string {
 async function requestGraph(params: {
   token: string;
   path: string;
-  method?: "GET" | "POST" | "DELETE";
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
   root?: string;
   headers?: Record<string, string>;
   body?: unknown;
@@ -125,13 +125,13 @@ export async function fetchGraphAbsoluteUrl<T>(params: {
 }
 
 /** Graph collection response with optional pagination link. */
-export type GraphPagedResponse<T> = {
+type GraphPagedResponse<T> = {
   value?: T[];
   "@odata.nextLink"?: string;
 };
 
 /** Result of a paginated Graph API fetch. */
-export type PaginatedResult<T> = {
+type PaginatedResult<T> = {
   items: T[];
   truncated: boolean;
   found?: T;
@@ -198,9 +198,7 @@ export async function resolveGraphToken(
   }
 
   // Try delegated token if requested and configured
-  if (options?.preferDelegated && msteamsCfg?.delegatedAuth?.enabled) {
-    // Dynamic import to avoid circular dependency (token.ts imports from graph.ts indirectly)
-    const { resolveDelegatedAccessToken } = await import("./token.js");
+  if (options?.preferDelegated && msteamsCfg?.delegatedAuth?.enabled && creds.type === "secret") {
     const delegated = await resolveDelegatedAccessToken({
       tenantId: creds.tenantId,
       clientId: creds.appId,
@@ -268,6 +266,24 @@ export async function deleteGraphRequest(params: { token: string; path: string }
     method: "DELETE",
     errorPrefix: "Graph DELETE",
   });
+}
+
+export async function patchGraphJson<T>(params: {
+  token: string;
+  path: string;
+  body?: unknown;
+}): Promise<T> {
+  const res = await requestGraph({
+    token: params.token,
+    path: params.path,
+    method: "PATCH",
+    body: params.body,
+    errorPrefix: "Graph PATCH",
+  });
+  if (res.status === 204 || res.headers.get("content-length") === "0") {
+    return undefined as T;
+  }
+  return (await res.json()) as T;
 }
 
 export async function listChannelsForTeam(token: string, teamId: string): Promise<GraphChannel[]> {
