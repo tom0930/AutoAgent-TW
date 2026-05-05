@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.6.1] - 2026-05-05
+### Added
+- **Phase 171: Karpathy External Skills Integration**: Integrated `andrej-karpathy-skills` repository.
+- Added `karpathy-guidelines` skill to `.agents/skills/`.
+- Archived Karpathy documentation to `docs/karpathy/`.
+
 ## [v2.9.0] - 2026-04-15
 ### Added
 - Phase 141: Starship Cross-Shell Prompt integration.

@@ -61,3 +61,9 @@
   - **基礎設施**: 提供官方 `Dockerfile.ci` 與 `action.yml` (GitHub Actions)。
   - **驗證**: 通過 100% 無頭模式測試，整合 exit codes 標準。
 - [X] Phase 129: Headless Mode + CI/CD Integration (v3.6.0) - ✅ DONE
+- **Phase 171**: Karpathy External Skills Integration (v3.6.1)
+  - **核心強化**: 整合 `forrestchang/andrej-karpathy-skills` 至 `.agents/skills/` 目錄。
+  - **適配優化**: 導入 Karpathy 式的極簡主義開發準則，優化 Token 消耗。
+  - **文檔歸檔**: 於 `docs/karpathy/` 備份相關範例與 EXAMPLES.md。
+  - **驗證**: 完成技能發現測試，確保與現有技能引擎無縫對接。
+- [X] Phase 171: Karpathy External Skills Integration (v3.6.1) - ✅ DONE
