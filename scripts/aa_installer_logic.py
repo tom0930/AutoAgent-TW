@@ -213,12 +213,60 @@ def setup_venv(target_dir: Path) -> Path:
     
     return venv_dir / "Scripts" / "python.exe" if os.name == "nt" else venv_dir / "bin" / "python"
 
+def deploy_l3_cache(target_dir: Path, l3_path: Optional[str] = None, with_l3: bool = False) -> None:
+    """Deploys L3 Skill Cache with automated repository cloning (Phase 173)."""
+    if not with_l3:
+        logger.info("L3 Skill Cache installation skipped.")
+        return
+
+    config_path = target_dir / "config" / "l3_config.json"
+    if not config_path.exists():
+        logger.warning(f"L3 configuration not found at {config_path}. Skipping.")
+        return
+
+    with config_path.open("r", encoding="utf-8") as f:
+        config = json.load(f)
+
+    # Override root if provided
+    l3_root = Path(l3_path) if l3_path else Path(config.get("l3_cache_root", "D:\\git"))
+    l3_root.mkdir(parents=True, exist_ok=True)
+    
+    logger.info(f"Deploying L3 Skill Cache at {l3_root}...")
+
+    for repo in config.get("repos", []):
+        if not repo.get("enabled", True):
+            continue
+        
+        repo_dir = l3_root / repo["name"]
+        if repo_dir.exists():
+            logger.info(f"Repo {repo['name']} already exists. Skipping clone.")
+            continue
+        
+        logger.info(f"Cloning {repo['name']} from {repo['url']}...")
+        try:
+            subprocess.run(["git", "clone", "--depth", "1", repo["url"], str(repo_dir)], check=True)
+        except Exception as e:
+            logger.warning(f"Failed to clone {repo['name']}: {e}")
+
+    # Build initial index
+    logger.info("Building initial L3 Master Index...")
+    indexer_py = target_dir / "scripts" / "build_l3_index.py"
+    python_exe = target_dir / "venv" / "Scripts" / "python.exe" if os.name == "nt" else target_dir / "venv" / "bin" / "python"
+    
+    if indexer_py.exists():
+        try:
+            subprocess.run([str(python_exe), str(indexer_py), "--root", str(l3_root)], check=True)
+        except Exception as e:
+            logger.warning(f"Initial L3 indexing failed: {e}")
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="AutoAgent-TW Industrial Installer")
     parser.add_argument("--target", type=str, default=os.getcwd(), help="Installation directory")
     parser.add_argument("--auto", action="store_true", help="Non-interactive mode")
     parser.add_argument("--lang", type=str, default="zh-TW", help="Default language")
     parser.add_argument("--with-openclaw", action="store_true", help="Install OpenClaw ecosystem")
+    parser.add_argument("--with-l3-cache", action="store_true", help="Install L3 Skill Cache repos")
+    parser.add_argument("--l3-path", type=str, help="Override L3 cache root path")
     args = parser.parse_args()
 
     target_dir = Path(args.target).resolve()
@@ -272,6 +320,9 @@ fi
 
         # 4. OpenClaw
         deploy_openclaw(target_dir, with_openclaw=args.with_openclaw)
+
+        # 4.5 L3 Skill Cache (Phase 173)
+        deploy_l3_cache(target_dir, l3_path=args.l3_path, with_l3=args.with_l3_cache)
         
         # 5. Configurations
         setup_git_config(auto=args.auto)
