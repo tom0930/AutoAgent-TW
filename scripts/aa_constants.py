@@ -7,25 +7,31 @@ Background Daemons, and Sub-Agents.
 import os
 from pathlib import Path
 
-def get_aa_home() -> Path:
-    """Return the AutoAgent home directory (default: current directory).
+def get_aa_core() -> Path:
+    """Return the AutoAgent core installation directory.
     
-    Reads AA_HOME env var, falls back to the project root.
+    Reads AA_CORE env var, falls back to Z:\\AutoAgent-TW as default.
     """
-    # In AutoAgent-TW, the home is usually the project root z:\autoagent-TW
-    return Path(os.getenv("AA_HOME", os.getcwd())).resolve()
+    return Path(os.getenv("AA_CORE", r"Z:\AutoAgent-TW")).resolve()
+
+def get_workspace() -> Path:
+    """Return the active user workspace (sandbox) directory.
+    
+    Reads AA_WORKSPACE env var, falls back to the current working directory.
+    """
+    return Path(os.getenv("AA_WORKSPACE", os.getcwd())).resolve()
 
 def get_planning_dir() -> Path:
-    """Return the path to the centralized .planning directory."""
-    return get_aa_home() / ".planning"
+    """Return the path to the centralized .planning directory in the workspace."""
+    return get_workspace() / ".planning"
 
 def get_state_dir() -> Path:
-    """Return the path to the .agent-state directory."""
-    return get_aa_home() / ".agent-state"
+    """Return the path to the .agent-state directory in the workspace."""
+    return get_workspace() / ".agent-state"
 
 def get_logs_dir() -> Path:
     """Return the path to the .agents/logs directory."""
-    return get_aa_home() / ".agents" / "logs"
+    return get_workspace() / ".agents" / "logs"
 
 def get_skills_dir() -> Path:
     """Return the path to the global skills directory."""
@@ -33,8 +39,8 @@ def get_skills_dir() -> Path:
     global_dir = Path(os.path.expandvars(r"%USERPROFILE%\.gemini\antigravity\skills"))
     if global_dir.exists():
         return global_dir
-    return get_aa_home() / ".agents" / "skills"
+    return get_workspace() / ".agents" / "skills"
 
 def get_config_path() -> Path:
     """Return the path to the mcp_servers.json config."""
-    return get_aa_home() / ".agents" / "mcp_servers.json"
+    return get_workspace() / ".agents" / "mcp_servers.json"

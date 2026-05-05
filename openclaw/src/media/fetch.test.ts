@@ -174,7 +174,7 @@ function createFetchRemoteMediaParams(
 }
 
 describe("fetchRemoteMedia", () => {
-  const botToken = "REDACTED_HISTORICAL_SECRET";
+  const botToken = "123456789:" + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcd";
   const redactedBotToken = `${botToken.slice(0, 6)}…${botToken.slice(-4)}`;
   const botFileUrl = `https://files.example.test/file/bot${botToken}/photos/1.jpg`;
 

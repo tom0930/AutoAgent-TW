@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-05-05T13:51:34.410227",
+  "workspace_name": "sandbox_test",
+  "qa_reports": [
+    {
+      "filename": "qa_174_failed.md",
+      "content": "F\u0000a\u0000i\u0000l\u0000e\u0000d\u0000 \u0000t\u0000o\u0000 \u0000r\u0000u\u0000n\u0000 \u0000u\u0000n\u0000i\u0000t\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000\n\u0000\n\u0000"
+    }
+  ],
+  "context": null,
+  "plan": null,
+  "status": "raw"
+}

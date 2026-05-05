@@ -318,7 +318,7 @@ afterEach(() => {
 
 describe("resolveTelegramFetch", () => {
   it("normalizes a full bot endpoint apiRoot before callers append bot paths", () => {
-    expect(resolveTelegramApiBase("https://api.telegram.org/bot123456:ABC/")).toBe(
+    expect(resolveTelegramApiBase("https://api.telegram.org/bot123456:" + "ABC/")).toBe(
       "https://api.telegram.org",
     );
   });

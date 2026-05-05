@@ -248,8 +248,10 @@ def main():
         signal.signal(signal.SIGALRM, _timeout_handler)
         signal.alarm(TIMEOUT_SECONDS)
 
-    # 定位 repo root
-    repo_root = Path(__file__).resolve().parent.parent
+    from scripts.aa_constants import get_workspace
+
+    # 定位 workspace root
+    repo_root = get_workspace()
 
     # 載入 risk contract
     contract = load_risk_contract(repo_root)

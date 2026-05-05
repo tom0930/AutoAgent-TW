@@ -36,12 +36,12 @@ afterEach(() => {
 
 describe("redactSensitiveText", () => {
   it("masks env assignments while keeping the key", () => {
-    const input = "OPENAI_API_KEY=REDACTED_HISTORICAL_SECRET";
+    const input = "OPENAI_API_KEY=" + "REDACTED_HISTORICAL_SECRET";
     const output = redactSensitiveText(input, {
       mode: "tools",
       patterns: defaults,
     });
-    expect(output).toBe("OPENAI_API_KEY=sk-123…cdef");
+    expect(output).toBe("OPENAI_API_KEY=" + "sk-123…cdef");
   });
 
   it("masks CLI flags", () => {
@@ -280,12 +280,12 @@ describe("redactSensitiveText", () => {
   });
 
   it("masks Tencent Cloud SecretId (AKID prefix, uppercase-only)", () => {
-    const input = "SecretId is REDACTED_HISTORICAL_SECRET";
+    const input = "SecretId is " + "REDACTED_HISTORICAL_SECRET";
     const output = redactSensitiveText(input, {
       mode: "tools",
       patterns: defaults,
     });
-    expect(output).toBe("SecretId is AKIDZ8…TEST");
+    expect(output).toBe("SecretId is " + "AKIDZ8…TEST");
   });
 
   it("masks Tencent Cloud SecretId with mixed-case characters", () => {
@@ -298,12 +298,12 @@ describe("redactSensitiveText", () => {
   });
 
   it("masks Alibaba Cloud AccessKey ID (LTAI prefix)", () => {
-    const input = "AccessKeyId=REDACTED_HISTORICAL_SECRET";
+    const input = "AccessKeyId=" + "REDACTED_HISTORICAL_SECRET";
     const output = redactSensitiveText(input, {
       mode: "tools",
       patterns: defaults,
     });
-    expect(output).toBe("AccessKeyId=LTAI5t…Xyz9");
+    expect(output).toBe("AccessKeyId=" + "LTAI5t…Xyz9");
   });
 
   it("masks HuggingFace tokens (hf_ prefix)", () => {

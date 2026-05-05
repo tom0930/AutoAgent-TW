@@ -107,11 +107,12 @@ def run_check(
     t_start = time.time()
 
     try:
+        from scripts.aa_constants import get_workspace
         result = subprocess.run(
             cmd,
             capture_output=False,   # stream stdout directly to terminal
             text=True,
-            cwd=str(Path(__file__).parent.parent),  # project root
+            cwd=str(get_workspace()),  # workspace root
         )
         elapsed = time.time() - t_start
         exit_code = result.returncode
