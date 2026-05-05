@@ -92,10 +92,62 @@ class L3SkillCache:
             self.console.print("[yellow]No skill ledger found. Usage data is currently empty.[/yellow]")
             return
 
-        # Simple report logic (to be expanded in Task 4.2)
-        self.console.print("[bold blue]L3 Skill Quality Report (Preview)[/bold blue]")
-        # Placeholder for actual stats logic
-        self.console.print("Ledger exists. Run Wave 4 tasks to populate full analytics.")
+        stats = {}
+        try:
+            with open(ledger_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    entry = json.loads(line)
+                    sid = entry.get('skill_id')
+                    if not sid: continue
+                    
+                    if sid not in stats:
+                        stats[sid] = {"uses": 0, "fixes": 0, "total_score": 0.0, "last_used": ""}
+                    
+                    if entry.get('event') == 'used':
+                        stats[sid]["uses"] += 1
+                        stats[sid]["total_score"] += entry.get('score', 0.0)
+                        stats[sid]["last_used"] = entry.get('timestamp', '')[:10]
+                    elif entry.get('event') == 'correlated_fix':
+                        stats[sid]["fixes"] += 1
+        except Exception as e:
+            self.console.print(f"[bold red]Error parsing ledger:[/bold red] {e}")
+            return
+
+        table = Table(title="L3 Skill Quality Report")
+        table.add_column("Skill ID", style="cyan")
+        table.add_column("Uses", style="magenta", justify="right")
+        table.add_column("Fixes", style="red", justify="right")
+        table.add_column("Avg Score", style="blue", justify="right")
+        table.add_column("Quality Score", style="bold green", justify="right")
+        table.add_column("Action", style="white")
+
+        import math
+        for sid, data in stats.items():
+            avg_score = data["total_score"] / max(data["uses"], 1)
+            fix_rate = data["fixes"] / max(data["uses"], 1)
+            
+            # Quality formula: 0.4*success + 0.3*score + 0.2*usage - 0.5*fix_rate
+            # Simplified for now:
+            success_score = 1.0 - fix_rate
+            usage_bonus = min(math.log(data["uses"] + 1) / 5.0, 0.2)
+            quality = (0.4 * success_score) + (0.3 * (avg_score/2.5)) + usage_bonus
+            
+            action = "STABLE"
+            if quality >= 0.8: action = "[bold green]PROBE L2[/]"
+            elif quality < 0.4: action = "[bold red]BLACKLIST[/]"
+            elif fix_rate > 0.5: action = "[yellow]WARN (BUGGY)[/]"
+
+            table.add_row(
+                sid,
+                str(data["uses"]),
+                str(data["fixes"]),
+                f"{avg_score:.2f}",
+                f"{quality:.2f}",
+                action
+            )
+
+        self.console.print(table)
+        self.console.print("\n[dim]Quality Score = 0.4*(1-fix_rate) + 0.3*(avg_score/2.5) + 0.2*(log usage)[/dim]")
 
     def display_search_results(self, results):
         if not results:
