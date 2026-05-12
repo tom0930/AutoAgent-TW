@@ -1,7 +1,7 @@
 # 專案狀態 (STATE): v3.6.0
 
-- **當前進度**: Phase 175 (Graphify Knowledge Graph Integration) - 🚀 IN PROGRESS
-- **完成階段**: 173 (L3 Skill Cache) - ✅ DONE
+- **當前進度**: Phase 178 (Stability Audit & Process Automation) - ✅ DONE
+- **完成階段**: 178 (Stability Audit & Process Automation) - ✅ DONE
 - **專案核心**: Knowledge Graph Navigation & Automation
 - **最後更新日期**: 2026-05-12
 
@@ -78,3 +78,16 @@
   - **適配優化**: 整合 Gemini 1.5 Flash，並支援 Smart Mode (AST vs Semantic)。
   - **自動化**: 建立 `post-merge` git hook 與 `.graphifyignore` 保護機制。
   - **Agent 整合**: 實作 `tool_graphify.py` 與 `graphify_rules.md`，引導 Agent 進行圖譜導航。
+
+- [X] Phase 176: Graphify Infrastructure Hardening (v3.7.5) - ✅ DONE
+  - **效能優化**: 實作「絕對路徑過濾」，將 AST 提取範圍縮小 99%，大幅提升 indexing 速度。
+  - **穩定性**: 解決 Windows 環境下 `_os` 模組調用的 NameError，並建立自動化產出同步機制。
+
+- [X] Phase 177: MemPalace Safety Gate (v3.7.6) - ✅ DONE
+  - **熔斷機制**: 實作 500 檔案門檻檢查，自動跳過高雜訊目錄（如 AST 快取）。
+  - **透明度**: 導入 `[!HINT]` 提示系統，於採礦結束後自動報告被略過的路徑。
+
+- [X] Phase 178: Stability Audit & Process Automation (v3.7.7) - ✅ DONE
+  - **門禁系統**: 實作 `stability_audit.py`，強制對修改模組進行運行期導入檢查。
+  - **SOP 整合**: 將穩定性審計嵌入 `aa-qa` 工作流，從流程端杜絕 `NameError` 與 `ImportError`。
+  - **基礎設施**: 修正了 `scripts/` 套件的導入路徑問題，確保審計工具在任何環境下皆可運作。

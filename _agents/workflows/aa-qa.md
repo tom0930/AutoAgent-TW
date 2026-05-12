@@ -21,7 +21,10 @@ description: QA Check Phase N / 執行階段 N 的 QA 檢查。
 1. 執行單元測試、集成測試。
 2. 進行代碼靜態分析 (Linter, Type Checkers)。
    - **MUST DO**: 執行 `python scripts/shadow_check.py --action check` (Shadow Check 暫時啟動 Pyrefly，供底層審計使用，並保持等待讓 `/aa-ship` 可快速接著使用)
-3. 使用 `run_command` 捕捉並記錄測試輸出。
+3. **穩定性審計 (Stability Audit)**:
+   - **MANDATORY**: 執行 `python scripts/stability_audit.py`。
+   - 此步驟確保所有修改的模組在執行期皆能正常 import，無 `NameError` 或 `ImportError`。
+4. 使用 `run_command` 捕捉並記錄測試輸出。
 
 ### Step 3: 代碼審查 (Code Review)
 針對 Phase N 的變更：

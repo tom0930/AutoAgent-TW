@@ -26,6 +26,9 @@
 - [X] Phase 160: AutoCLI Integration (v3.3.2) [DONE]
 - [X] Phase 170: Industrial Resilience & Safe Compression [DONE]
 - [X] Phase 171: Multi-Agent Coordination & Omniscient Assistant [DONE]
+- [X] Phase 176: Graphify Hardening & Orchestration (v3.7.5) [DONE]
+- [X] Phase 177: MemPalace Safety Gate & High-Level Indexing (v3.7.6) [DONE]
+- [ ] Phase 178: Stability Audit & Process Automation (v3.7.7) [IN PROGRESS]
 - [ ] Phase 129: Headless Mode + CI/CD Integration [BACKLOG]
 
 ## Feedback & Ideas
