@@ -11,15 +11,30 @@ from src.core.orchestration.coordinator import OrchestrationCoordinator
 import subprocess
 
 
+def get_graphify_stats():
+    status_path = Path(".planning/graphify-out/status.json")
+    if status_path.exists():
+        try:
+            import json
+            with open(status_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return f"Graph: {data.get('status', 'N/A')} (FP: {data.get('fingerprint', 'None')[:8]})"
+        except Exception:
+            pass
+    return "Graph: No Index"
+
+
 def update_dashboard(task, status="running", next_goal="None"):
     updater_path = Path(".agents/skills/status-notifier/scripts/status_updater.py")
+    graph_info = get_graphify_stats()
+    
     if updater_path.exists():
         subprocess.run(
             [
                 sys.executable,
                 str(updater_path),
                 "--task",
-                task,
+                f"{task} | {graph_info}",
                 "--status",
                 status,
                 "--next",

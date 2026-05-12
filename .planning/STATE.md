@@ -1,9 +1,9 @@
 # 專案狀態 (STATE): v3.6.0
 
-- **當前進度**: Phase 129 (Headless CI/CD Integration) - ✅ DONE
-- **完成階段**: 129 (Headless CI/CD Integration) - ✅ DONE
-- **專案核心**: Headless Runtime & CI Automation
-- **最後更新日期**: 2026-04-30
+- **當前進度**: Phase 175 (Graphify Knowledge Graph Integration) - 🚀 IN PROGRESS
+- **完成階段**: 173 (L3 Skill Cache) - ✅ DONE
+- **專案核心**: Knowledge Graph Navigation & Automation
+- **最後更新日期**: 2026-05-12
 
 ## 核心功能清單 (Features)
 - [X] **Resilience Core**: Exponential Backoff, Error Classification [DONE]
@@ -73,3 +73,8 @@
   - **資安設計**: Content Sanitizer + SHA-256 Hash 驗證 + Quarantine
   - **品質迴路**: Git Trailer 溯源 + Fix 關聯分析 + Quality Ledger
   - **驗證**: 搜尋延遲 < 1s, 6296 技能成功索引, 報表功能正常
+- [X] Phase 175: Graphify Knowledge Graph Integration (v3.7.2) - ✅ DONE
+  - **核心強化**: 實作 `aa-graphify` 全功能 CLI 與 `graphify_orchestrator` 調度器。
+  - **適配優化**: 整合 Gemini 1.5 Flash，並支援 Smart Mode (AST vs Semantic)。
+  - **自動化**: 建立 `post-merge` git hook 與 `.graphifyignore` 保護機制。
+  - **Agent 整合**: 實作 `tool_graphify.py` 與 `graphify_rules.md`，引導 Agent 進行圖譜導航。

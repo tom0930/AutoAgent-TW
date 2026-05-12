@@ -33,6 +33,7 @@ temp/
 *.zip
 *.rar
 .pytest_cache/
+graphify-out/
 
 # === IDE、OS 與快取 ===
 .vscode/

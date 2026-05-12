@@ -20,9 +20,14 @@ python scripts/context_guard.py .
 3. 若預估 Token > 100K → 發出 ⚠️ 警告並建議瘦身。
 4. 確認安全後才進入 Step 1。
 
-### Step 1: 匯入上下文
-1. 讀取 `.planning/PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`。
-2. 讀取 `.planning/phases/{N}-*/CONTEXT.md` 以確定當前階段的設計決策。
+### Step 1.5: Graphify 架構搜尋 (Architectural Knowledge Injection)
+1. 檢查 `.planning/graphify-out/status.json` 是否可用。
+2. 若可用，執行：
+```bash
+python scripts/aa_graphify.py query "分析 Phase {{N}} 涉及的組件關係與潛在影響範圍"
+```
+3. 將產出的 `GRAPH_REPORT.md` 內容併入 `RESEARCH.md` 作為架構基準。
+4. 若圖譜過舊 (Drift Detected)，建議執行 `aa-graphify update`。
 
 ### Step 2: 階段性領域研究 (Session Research)
 針對 Phase N 的具體組件：

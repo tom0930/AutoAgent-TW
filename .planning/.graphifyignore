@@ -1,0 +1,14 @@
+# Graphify Ignore Patterns
+.git/
+.planning/
+.agent-state/
+graphify-out/
+__pycache__/
+node_modules/
+venv/
+.venv/
+*.key
+*.pem
+.env
+*.log
+*.tmp
