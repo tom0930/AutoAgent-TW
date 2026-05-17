@@ -285,8 +285,19 @@ class HarnessGateway:
 
     def _init_security(self):
         """Initialize the Security Sentinel service."""
-        # Future: load guardian hooks, context_guard, token_killer
-        self.logger.debug("Security Sentinel: no-op (hooks auto-registered)")
+        from .context_guard import ContextGuard
+        cfg = self.config.get("context_guard", {})
+        self.context_guard = ContextGuard(
+            context_limit=cfg.get("limit", 128_000),
+            warn_ratio=cfg.get("warn_ratio", 0.70),
+            critical_ratio=cfg.get("critical_ratio", 0.85),
+        )
+        self.logger.info(
+            f"ContextGuard active: limit={self.context_guard.context_limit:,}, "
+            f"warn={self.context_guard.warn_ratio:.0%}, "
+            f"critical={self.context_guard.critical_ratio:.0%}"
+        )
+        return self.context_guard
 
     def _init_memory(self):
         """Initialize the MemPalace memory service."""

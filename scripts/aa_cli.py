@@ -40,6 +40,16 @@ def run_doctor(args):
     cmd = [sys.executable, str(script_path)]
     subprocess.run(cmd, cwd=str(get_workspace()))
 
+def run_clear_session(args, unknown_args):
+    """Run the dynamic context reset tool."""
+    script_path = get_aa_core() / "scripts" / "aa_clear_session.py"
+    if not script_path.exists():
+        print(f"[-] Error: {script_path} not found.")
+        sys.exit(1)
+        
+    cmd = [sys.executable, str(script_path)] + unknown_args
+    subprocess.run(cmd, cwd=str(get_workspace()))
+
 def main():
     parser = argparse.ArgumentParser(
         description="AutoAgent-TW Global CLI Router",
@@ -57,6 +67,9 @@ def main():
     # aa doctor
     parser_doc = subparsers.add_parser("doctor", help="Run system diagnostics")
     
+    # aa clear-session
+    parser_clear = subparsers.add_parser("clear-session", help="Prune historical session messages and recover token budget")
+    
     args, unknown = parser.parse_known_args()
     
     if args.command == "l3":
@@ -66,6 +79,8 @@ def main():
         run_feedback(args)
     elif args.command == "doctor":
         run_doctor(args)
+    elif args.command == "clear-session":
+        run_clear_session(args, unknown)
     else:
         parser.print_help()
 

@@ -134,6 +134,10 @@ class SessionManager:
         # Phase 170: Security Sanitizer
         self._sanitizer = InputSanitizer()
         
+        # Phase 179: Context Guard
+        from .context_guard import ContextGuard
+        self._context_guard = ContextGuard()
+        
         # 載入已存在的 Session
         self._load_sessions()
         
@@ -264,6 +268,39 @@ class SessionManager:
             if not is_safe:
                 self.logger.warning(f"Message blocked by Security Sanitizer: {reason}")
                 raise PermissionError(f"Security Policy Violation: {reason}")
+            
+            # Phase 179: Track and accumulate tokens
+            tokens = self._context_guard.estimate_tokens(message)
+            session.token_count += tokens
+            self._context_guard.track(f"send_{role}", len(message))
+            
+            # 檢查是否觸發警告或強制中斷 (熔斷)
+            if self._context_guard.should_force_stop():
+                import sys
+                from pathlib import Path
+                warn_msg = self._context_guard.get_pause_message("critical")
+                self.logger.critical(warn_msg)
+                
+                # 自動進行當前狀態備份 (Handoff)
+                handoff_data = {
+                    "session_key": session.key,
+                    "token_count": session.token_count,
+                    "last_active": session.last_active,
+                    "messages": [asdict(m) for m in session.messages]
+                }
+                handoff_path = Path("handoff.json")
+                self._context_guard.save_handoff(handoff_data, handoff_path)
+                self.logger.info(f"Handoff saved successfully at {handoff_path.absolute()}")
+                
+                # 拋出例外強制中斷
+                raise SystemExit(warn_msg)
+                
+            elif self._context_guard.should_warn():
+                import sys
+                warn_msg = self._context_guard.get_pause_message("warn")
+                self.logger.warning(warn_msg)
+                # 輸出到 stderr 提醒 Agent 注意
+                print(warn_msg, file=sys.stderr)
             
             msg = session.add_message(role, message, metadata)
             self._save_session(session)
@@ -424,6 +461,10 @@ class SessionManager:
                 with open(path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     session = Session.from_dict(data)
+                    # Phase 179: 載入舊 Session 時，若 token_count 為 0 則補算
+                    if session.token_count == 0 and session.messages:
+                        for msg in session.messages:
+                            session.token_count += self._context_guard.estimate_tokens(msg.content)
                     self.sessions[session.key] = session
             except Exception as e:
                 pass  # 忽略損壞的 Session 檔案
