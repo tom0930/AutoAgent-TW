@@ -59,3 +59,8 @@
 - [X] Phase 172: OpenClaw Restoration & Installer Repair (v3.6.2) [DONE]
 - [X] Phase 173: L3 Skill Cache — 自動技能發現與生命週期管理 (v3.6.3) [DONE]
 - [X] Phase 174: Security Remediation & CI Environment Alignment (v3.7.0) [DONE]
+- [X] Phase 175: Graphify Knowledge Graph Integration (v3.7.2) [DONE]
+- [X] Phase 176: Graphify Infrastructure Hardening (v3.7.5) [DONE]
+- [X] Phase 177: MemPalace Safety Gate (v3.7.6) [DONE]
+- [X] Phase 178: Stability Audit & Process Automation (v3.7.7) [DONE]
+- [ ] Phase 179: AI Architecture Perception Optimization (v3.8.0) [NEXT]
