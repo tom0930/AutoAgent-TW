@@ -152,3 +152,45 @@ AutoAgent-TW 已將 OCR 整合至內部技能與工作流中：
    - 有 Key 時：自動呼叫 `ocr review --audience agent`
    - 無 Key 時：自動轉為 `ocr delegate preview` 配合本地 LLM
 3. **自癒循環路由**：審查若發現 High Priority 問題標記為 `[REJECTED]`，系統會自動導向到 `/aa-fix` 進行微創修復。
+
+
+----
+I will test if the `ocr` CLI command is currently available in the system PATH.
+
+Ran command: `ocr --version`
+
+I will check if `npm` is available to install `ocr`.
+
+Ran command: `npm --version`
+
+I will run `npm install -g @alibaba-group/open-code-review` to install the `ocr` CLI globally so it is immediately available on your system.
+
+Ran command: `npm install -g @alibaba-group/open-code-review`
+
+## 核心結論
+
+剛剛的 Plan 完成的是 **AutoAgent-TW 專案與 Agent 架構層面的整合**（包含建立技能 [.agents/skills/aa-ocr/SKILL.md](file:///z:/AutoAgent-TW/.agents/skills/aa-ocr/SKILL.md)、更新工作流 [_agents/workflows/aa-review.md](file:///z:/AutoAgent-TW/_agents/workflows/aa-review.md)、備份與更新文檔）；而 `@alibaba-group/open-code-review` 則是底層的獨立 CLI 工具。
+
+如果您**沒有全域安裝**它，**完全不會影響 AutoAgent 的運作**！因為我們在技能中已經設計了 **Delegation Mode（委派備援機制）**，當系統未檢測到 `ocr` 全域指令時，AutoAgent 會自動讀取本地 `Z:\open-code-review` 的規則進行審查。
+
+---
+
+## 說明
+
+當前兩種模式的運作方式如下：
+
+1. **已在 Plan 中完成部分 (不需要額外安裝即可運作)**：
+   - 技能 [.agents/skills/aa-ocr/SKILL.md](file:///z:/AutoAgent-TW/.agents/skills/aa-ocr/SKILL.md) 已經可以被 AutoAgent 自動發現並使用。
+   - 當您執行 `/aa-review` 時，系統會自動在背景使用 **Delegation Mode (委派模式)**，利用 `Z:\open-code-review` 中的規則與現有的 LLM 模型完成審查。
+
+2. **選擇性安裝 `npm install -g` 的目的 (選配)**：
+   - 僅當您希望自己在 Terminal/PowerShell 終端機手動輸入 `ocr review` 命令時才需要安裝。
+   - 若您平時都是交給 AutoAgent (aa-tw) 在編輯器內自動審查，則**完全不需要安裝**。
+
+---
+
+## 重點整理
+
+- **Plan 的完成內容**：完成 AutoAgent 內部 Workflow、Skill、索引註冊與文檔更新。
+- **目前的預設機制**：無需全域安裝即可直接在 `aa-tw` 工作流中透過 Delegation Mode 使用。
+- **結論**：您**不需要**手動執行 `npm install -g`，直接使用 `/aa-review` 即可享受完整的審查功能！
