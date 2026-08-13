@@ -17,16 +17,18 @@ description: AI Automated Code Reviewer / AI 自動代碼審查員。專為無�
 2. 執行 `git diff` 提取原始 Code Diff。
 3. 讀取 `.planning/phases/{N}-*/PLAN.md` 以確定審查邊界（哪些是預期變更，哪些是副作用）。
 
-### Step 2: 深度靜態掃描 (Deep Static Scan)
-1. 調用 `pylint` / `ruff` (Python) 或 `clang-tidy` (C++)。
-2. 檢查是否包含敏感資訊（Secrets, Keys）。
-3. **SECURITY.md 同步檢查**: 確認程式碼變更是否已更新相關安全文檔。
+### Step 2: 深度靜態與 OCR 確定性掃描 (Deep Static & OCR Scan)
+1. 觸發 `aa-ocr` 技能：優先檢測 `ocr` CLI。若存在 API Key，執行 `ocr review --audience agent`；若無 API Key，退回至 `ocr delegate preview` (Delegation Mode) 進行檔案過濾與規則加載。
+2. 調用 `pylint` / `ruff` (Python) 或 `clang-tidy` (C++)。
+3. 檢查是否包含敏感資訊（Secrets, Keys）。
+4. **SECURITY.md 同步檢查**: 確認程式碼變更是否已更新相關安全文檔。
 
-### Step 3: AI 建築師評審 (AI Architect Review)
-針對以下維度進行深度思考：
+### Step 3: AI 建築師與 OCR 規則審審 (AI Architect Review & OCR Rules)
+針對以下維度與 `.opencodereview/rule.json` 進行深度思考：
 1. **Thread Safety**: 檢查是否有 Race Conditions。
 2. **Resource Management**: 檢查是否有資源未釋放。
-3. **GSD Compliance**: 是否符合 Discuss → Plan → Execute 流程中的決策。
+3. **Position Precision**: 利用 OCR 的行級精準度標記，避免審查行號漂移。
+4. **GSD Compliance**: 是否符合 Discuss → Plan → Execute 流程中的決策。
 
 ### Step 4: 生成 REVIEW-REPORT.md
 產出包含以下內容的 Markdown：

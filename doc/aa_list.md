@@ -75,7 +75,7 @@ Viewed package.json:1-15
 位於 `C:\Users\TOM\.gemini\antigravity\skills`，共計 **171** 項工業級技能。關鍵技能包括：
 
 * **自動化建構**: `aa-auto-build`, `claw-auto-build`
-* **安全與審計**: `aa-guard`, `security-auditor`, `vulnerability-scanner`
+* **安全與審計**: `aa-guard`, `aa-ocr` (Alibaba Open Code Review), `security-auditor`, `vulnerability-scanner`
 * **財務自動化**: `invoice-automation`, `jpg2excel`, `test_invoice`
 * **架構設計**: `architecture-patterns`, `senior-architect`, `event-sourcing-architect`
 * **特定工具**: `nlm-skill` (NotebookLM), `vivado-rva` (即將整合)
@@ -84,7 +84,7 @@ Viewed package.json:1-15
 
 這是 `AutoAgent-TW` 的核心大腦邏輯：
 
-* **核心循環**: `aa-discuss2.md`, `aa-plan.md`, `aa-execute.md`, `aa-qa.md`, `aa-ship.md`
+* **核心循環**: `aa-discuss2.md`, `aa-plan.md`, `aa-execute.md`, `aa-review.md` (已整合 aa-ocr), `aa-qa.md`, `aa-ship.md`
 * **自癒機制**: `aa-fix.md`, `aa-resume.md`
 * **歷史記憶**: `aa-memory.md`, `aa-history.md`
 * **工業特化**: `aa-fw-debug.md` (韌體除錯), `aa-testclaw.md`
