@@ -49,3 +49,106 @@ https://www.youtube.com/shorts/M1Dyg-hd7i0
 - 你主要用 **Antigravity Editor**，希望 **編輯器內即時、多維度**（尤其安全/架構/測試）反饋：選 **Antigravity Review**，並用 `.antigravity-review.yml` 收斂假陽性。 [antigravitylab](https://antigravitylab.net/en/articles/editor/ai-code-review)
 
 如果你願意，我可以依你的工作流（例如：Xilinx/FreeRTOS 專案、是否用 GitHub、是否已有 Claude Code 訂閱）給一個更貼合的導入方案與設定範例。
+
+---
+
+## Alibaba Open Code Review (OCR) 安裝、設定與使用指南
+
+### 1. 安裝方式 (Installation)
+
+**全域 CLI 安裝 (推薦)**：
+```bash
+npm install -g @alibaba-group/open-code-review
+```
+安裝完成後可執行 `ocr --version` 確認是否安裝成功。
+
+---
+
+### 2. 模型與環境設定 (LLM & Configuration)
+
+#### 模式 A：Direct Mode (配置 API Key)
+若要直接由 `ocr` CLI 呼叫 LLM 端點，有兩種設定方式：
+
+**選項 1：環境變數設定 (適合 CI/CD)**
+```bash
+export OCR_LLM_URL=https://api.anthropic.com/v1/messages
+export OCR_LLM_TOKEN=<Your-API-Key>
+export OCR_LLM_MODEL=claude-opus-4-6
+export OCR_USE_ANTHROPIC=true
+```
+
+**選項 2：互動式與持久化設定**
+```bash
+# 互動式 UI 選取提供商與輸入 Key
+ocr config provider
+ocr config model
+
+# 或直接指令寫入設定檔 (~/.opencodereview/config.json)
+ocr config set llm.url https://api.anthropic.com/v1/messages
+ocr config set llm.auth_token <Your-API-Key>
+ocr config set llm.model claude-opus-4-6
+ocr config set llm.use_anthropic true
+
+# 測試連線
+ocr llm test
+```
+
+#### 模式 B：Delegation Mode (無 API Key / 本地 Agent 模式)
+當**沒有配置 API Key** 或在無外部 API Key 的本地 Agent 環境下，可使用委派模式（Delegation Mode）。OCR 會負責檔案篩選與 Smart Bundling，並產出預覽規則，讓本地 Agent（如 AutoAgent-TW）使用其自身的大模型執行審查：
+```bash
+# 檢視綁定檔案與規則預覽
+ocr delegate preview
+
+# 指定檔案並取得套用規則
+ocr delegate rule src/main.cpp src/handler.cpp
+```
+
+---
+
+### 3. 常用審查指令 (CLI Usage)
+
+| 使用情境 | 執行指令 | 說明 |
+| :--- | :--- | :--- |
+| **工作區審查 (Workspace Mode)** | `ocr review` | 審查目前所有 Staged, Unstaged 與 Untracked 改動 |
+| **Agent 無干擾模式 (靜默輸出)** | `ocr review --audience agent -b "商務脈絡說明"` | 適合 Agent 呼叫，關閉進度條 UI 並附加背景 context |
+| **分支比對 (Branch Diff)** | `ocr review --from main --to feature-branch` | 比對分支從 Diverge 點之後的所有變更 |
+| **單一 Commit 審查** | `ocr review --commit <commit-hash>` | 針對特定 Commit 進行變更檢查 |
+| **全檔掃描 (Full-file Scan)** | `ocr scan --path src/core` | 不依賴 Git diff，針對整個目錄進行全面掃描 |
+| **預覽比對 (Dry-run)** | `ocr review --preview` | 僅列出哪些檔案會被送交審查，不消耗 Token |
+
+---
+
+### 4. 專案自訂審查規則 (.opencodereview/rule.json)
+
+專案根目錄下可建立 `.opencodereview/rule.json` 來設定領域專屬的審查規範（如 FPGA/C++ RAII/並發規範）：
+
+```json
+{
+  "rules": [
+    {
+      "path": "**/*.cpp",
+      "rule": "所有動態記憶體分配 (new/malloc) 必須有相應的解構或 Smart Pointer 釋放；指標存取前必須檢查 NULL。",
+      "merge_system_rule": true
+    },
+    {
+      "path": "**/*.py",
+      "rule": "新加函式必須具備 PEP 484 Type Hints，且不可直接靜默捕獲 Exception。",
+      "merge_system_rule": true
+    }
+  ]
+}
+```
+
+*註：`merge_system_rule: true` 代表該規則會與系統預設規則合併，而非完全覆蓋。*
+
+---
+
+### 5. AutoAgent-TW 整合指南 (aa-ocr Skill)
+
+AutoAgent-TW 已將 OCR 整合至內部技能與工作流中：
+
+1. **技能位置**：[.agents/skills/aa-ocr/SKILL.md](file:///z:/AutoAgent-TW/.agents/skills/aa-ocr/SKILL.md)
+2. **工作流整合**：在 [_agents/workflows/aa-review.md](file:///z:/AutoAgent-TW/_agents/workflows/aa-review.md) 的 Step 2/Step 3 中會自動判定：
+   - 有 Key 時：自動呼叫 `ocr review --audience agent`
+   - 無 Key 時：自動轉為 `ocr delegate preview` 配合本地 LLM
+3. **自癒循環路由**：審查若發現 High Priority 問題標記為 `[REJECTED]`，系統會自動導向到 `/aa-fix` 進行微創修復。
